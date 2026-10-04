@@ -1,0 +1,217 @@
+/* ============================================
+   12. SHOP BY BRAND
+   لوگوی برندها روی پس‌زمینه سفید | فاصله زیاد
+   ============================================ */
+
+.shop-by-brand {
+  background: var(--bg);
+  border-top: 1px solid var(--border-soft);
+}
+
+.shop-by-brand__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: var(--title-gap);
+}
+
+.shop-by-brand__title {
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-bold);
+  color: var(--text);
+}
+
+.shop-by-brand__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--primary);
+  transition: gap var(--t-fast), color var(--t-fast);
+}
+
+.shop-by-brand__link svg {
+  width: 16px;
+  height: 16px;
+  transition: transform var(--t-fast);
+}
+
+.shop-by-brand__link:hover {
+  color: var(--primary-dark);
+}
+
+.shop-by-brand__link:hover svg {
+  transform: translateX(-3px);
+}
+
+/* ============================================
+   GRID
+   ============================================ */
+
+.shop-by-brand__grid {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* ============================================
+   BRAND CARD
+   ============================================ */
+
+.brand-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 26px 12px 22px;
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  text-decoration: none;
+  color: var(--text);
+  transition:
+    transform var(--t-base),
+    border-color var(--t-base),
+    box-shadow var(--t-base),
+    background var(--t-base);
+  overflow: hidden;
+  min-height: 118px;
+}
+
+.brand-card::before {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 3px;
+  background: var(--brand-color, var(--primary));
+  transform: scaleX(0);
+  transition: transform var(--t-base);
+  transform-origin: center;
+}
+
+.brand-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--brand-color, var(--primary));
+  box-shadow: 0 10px 26px -12px rgba(23, 32, 42, 0.14);
+}
+
+.brand-card:hover::before {
+  transform: scaleX(1);
+}
+
+/* ============================================
+   LOGO (SVG + Text)
+   ============================================ */
+
+.brand-card__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--brand-color, var(--text));
+  transition: transform var(--t-base);
+}
+
+.brand-card:hover .brand-card__logo {
+  transform: scale(1.04);
+}
+
+.brand-card__logo svg {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.brand-card__name {
+  font-size: 14px;
+  font-weight: var(--fw-black);
+  letter-spacing: -0.3px;
+  color: var(--brand-color, var(--text));
+  line-height: 1;
+}
+
+.brand-card__count {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: var(--fw-medium);
+}
+
+/* ============================================
+   COLOR VARIANTS
+   ============================================ */
+
+.brand-card--apple    { --brand-color: #1A1F28; }
+.brand-card--samsung  { --brand-color: #2386D7; }
+.brand-card--xiaomi   { --brand-color: #F59E0B; }
+.brand-card--google   { --brand-color: #4285F4; }
+.brand-card--oneplus  { --brand-color: #16B5A5; }
+.brand-card--honor    { --brand-color: #7C5CFF; }
+.brand-card--nothing  { --brand-color: #17202A; }
+.brand-card--motorola { --brand-color: #005B59; }
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1200px) {
+  .shop-by-brand__grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1024px) {
+  .shop-by-brand__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .shop-by-brand__title {
+    font-size: var(--fs-xl);
+  }
+}
+
+@media (max-width: 640px) {
+  .shop-by-brand {
+    padding-block: 40px;
+  }
+
+  .shop-by-brand__head {
+    margin-bottom: 16px;
+  }
+
+  /* اسکرول افقی */
+  .shop-by-brand__grid {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 10px;
+    padding: 4px var(--container-pad) 16px;
+    margin-inline: calc(var(--container-pad) * -1);
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .shop-by-brand__grid::-webkit-scrollbar { display: none; }
+
+  .brand-card {
+    flex: 0 0 130px;
+    scroll-snap-align: start;
+    padding: 20px 10px 18px;
+    min-height: 108px;
+  }
+
+  .brand-card__logo svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .brand-card__name {
+    font-size: 13px;
+  }
+}

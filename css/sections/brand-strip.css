@@ -1,0 +1,137 @@
+/* ============================================
+   06. BRAND / PRODUCT NAVIGATION STRIP
+   نوار باریک انتخاب سریع دسته
+   ============================================ */
+
+.brand-strip {
+  background: var(--bg);
+  border-top: 1px solid var(--border-soft);
+  border-bottom: 1px solid var(--border-soft);
+  position: relative;
+}
+
+.brand-strip__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  height: 56px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+.brand-strip__inner::-webkit-scrollbar { display: none; }
+
+/* ============================================
+   ITEM
+   ============================================ */
+
+.brand-strip__item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 18px;
+  height: 36px;
+  border-radius: 999px;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  transition:
+    background var(--t-fast),
+    color var(--t-fast);
+}
+
+.brand-strip__item:hover {
+  background: var(--bg-soft);
+  color: var(--text);
+}
+
+.brand-strip__item.is-active {
+  background: var(--primary);
+  color: #fff;
+  font-weight: var(--fw-semibold);
+}
+
+.brand-strip__item svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 2;
+}
+
+/* accent برای «همه» */
+.brand-strip__item--all {
+  color: var(--text);
+  font-weight: var(--fw-semibold);
+}
+
+.brand-strip__item--all.is-active {
+  background: var(--dark);
+}
+
+/* جداکننده اختیاری */
+.brand-strip__sep {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  margin-inline: 8px;
+  flex-shrink: 0;
+}
+
+/* فید محو در لبه‌ها برای حس اسکرول */
+.brand-strip::before,
+.brand-strip::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.brand-strip::before {
+  right: 0;
+  background: linear-gradient(to left, var(--bg), transparent);
+  opacity: 0;
+  transition: opacity var(--t-base);
+}
+
+.brand-strip::after {
+  left: 0;
+  background: linear-gradient(to right, var(--bg), transparent);
+  opacity: 0;
+  transition: opacity var(--t-base);
+}
+
+.brand-strip.has-scroll-start::before { opacity: 1; }
+.brand-strip.has-scroll-end::after    { opacity: 1; }
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .brand-strip__inner {
+    height: 48px;
+    padding-inline: var(--container-pad);
+    gap: 6px;
+  }
+
+  .brand-strip__item {
+    padding: 0 14px;
+    height: 32px;
+    font-size: var(--fs-xs);
+  }
+
+  .brand-strip__item svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .brand-strip__sep {
+    margin-inline: 4px;
+  }
+}

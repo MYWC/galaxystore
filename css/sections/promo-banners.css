@@ -1,0 +1,262 @@
+/* ============================================
+   08. PROMOTIONAL BANNER GRID
+   ۳ بنر کنار هم | Radius 18px | Editorial
+   ============================================ */
+
+.promo-banners {
+  background: var(--bg);
+}
+
+.promo-banners__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+/* ============================================
+   BANNER CARD
+   ============================================ */
+
+.promo-banner {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  min-height: 200px;
+  border-radius: 18px;
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--text);
+  transition: transform var(--t-base), box-shadow var(--t-base);
+  isolation: isolate;
+}
+
+.promo-banner:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px -16px rgba(23, 32, 42, 0.20);
+}
+
+/* محتوای متنی */
+.promo-banner__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 28px 24px;
+  flex: 1 1 55%;
+  max-width: 60%;
+}
+
+.promo-banner__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: var(--promo-accent, var(--primary));
+  width: fit-content;
+}
+
+.promo-banner__eyebrow-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.promo-banner__title {
+  font-size: 22px;
+  font-weight: var(--fw-black);
+  line-height: 1.25;
+  color: var(--text);
+  letter-spacing: -0.4px;
+}
+
+.promo-banner__title-accent {
+  color: var(--promo-accent, var(--primary));
+}
+
+.promo-banner__desc {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-top: 2px;
+}
+
+.promo-banner__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 9px 16px;
+  background: #fff;
+  border-radius: 999px;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  color: var(--text);
+  width: fit-content;
+  box-shadow: 0 4px 12px rgba(23, 32, 42, 0.08);
+  transition: gap var(--t-fast), background var(--t-fast), color var(--t-fast);
+}
+
+.promo-banner__cta svg {
+  width: 14px;
+  height: 14px;
+  transition: transform var(--t-fast);
+}
+
+.promo-banner:hover .promo-banner__cta {
+  background: var(--promo-accent, var(--primary));
+  color: #fff;
+}
+
+.promo-banner:hover .promo-banner__cta svg {
+  transform: translateX(-3px);
+}
+
+/* ============================================
+   VISUAL SIDE
+   ============================================ */
+
+.promo-banner__visual {
+  position: relative;
+  flex: 1 1 45%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 2;
+}
+
+.promo-banner__visual .ph {
+  width: 100%;
+  max-width: 130px;
+  aspect-ratio: 1 / 1;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(4px);
+  border: 1px dashed rgba(255, 255, 255, 0.9);
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+/* ============================================
+   BACKGROUND DECORATION
+   ============================================ */
+
+.promo-banner__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.promo-banner__bg::before {
+  content: '';
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.5;
+  top: -60px;
+  left: -60px;
+}
+
+.promo-banner__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.04) 1px, transparent 0);
+  background-size: 22px 22px;
+  opacity: 0.5;
+}
+
+/* ============================================
+   VARIANTS
+   ============================================ */
+
+/* --- iPhone (آبی) --- */
+.promo-banner--iphone {
+  background: linear-gradient(135deg, #EAF4FD 0%, #DCEBFB 100%);
+  --promo-accent: #2386D7;
+}
+.promo-banner--iphone .promo-banner__bg::before {
+  background: #2386D7;
+}
+
+/* --- Samsung (تیره + Teal) --- */
+.promo-banner--samsung {
+  background: linear-gradient(135deg, #E5F4F2 0%, #D3ECE8 100%);
+  --promo-accent: #005B59;
+}
+.promo-banner--samsung .promo-banner__bg::before {
+  background: #16B5A5;
+}
+
+/* --- Accessories (نارنجی ملایم) --- */
+.promo-banner--accessories {
+  background: linear-gradient(135deg, #FFF3E6 0%, #FFE7CE 100%);
+  --promo-accent: #EF6C1F;
+}
+.promo-banner--accessories .promo-banner__bg::before {
+  background: #F59E0B;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .promo-banners__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .promo-banner--accessories {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .promo-banners {
+    padding-block: 40px;
+  }
+
+  .promo-banners__grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .promo-banner--accessories {
+    grid-column: auto;
+  }
+
+  .promo-banner {
+    min-height: 170px;
+  }
+
+  .promo-banner__content {
+    padding: 20px 16px;
+    max-width: 65%;
+  }
+
+  .promo-banner__title {
+    font-size: 17px;
+  }
+
+  .promo-banner__desc {
+    font-size: var(--fs-xs);
+  }
+
+  .promo-banner__cta {
+    padding: 7px 12px;
+    font-size: 11px;
+    margin-top: 8px;
+  }
+
+  .promo-banner__visual .ph {
+    max-width: 90px;
+  }
+}

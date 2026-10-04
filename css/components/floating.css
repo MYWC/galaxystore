@@ -1,0 +1,123 @@
+/* ============================================
+   FLOATING ACTIONS
+   Back to Top + Support Chat
+   ============================================ */
+
+.floating {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: var(--z-float);
+  pointer-events: none;
+}
+
+.floating__btn {
+  pointer-events: auto;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  box-shadow: 0 10px 26px -8px rgba(23, 32, 42, 0.28);
+  transition:
+    opacity var(--t-base),
+    transform var(--t-base),
+    background var(--t-fast);
+  cursor: pointer;
+}
+
+.floating__btn svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 2.2;
+}
+
+/* --- Back to Top --- */
+.floating__btn--top {
+  background: var(--text);
+  opacity: 0;
+  transform: translateY(12px) scale(0.9);
+  visibility: hidden;
+}
+
+.floating__btn--top.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  visibility: visible;
+}
+
+.floating__btn--top:hover {
+  background: var(--primary);
+  transform: translateY(-3px);
+}
+
+/* --- Support Chat --- */
+.floating__btn--chat {
+  background: linear-gradient(135deg, var(--secondary), var(--primary));
+  position: relative;
+}
+
+.floating__btn--chat::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  background: inherit;
+  opacity: 0.35;
+  filter: blur(12px);
+  z-index: -1;
+}
+
+.floating__btn--chat:hover {
+  transform: translateY(-3px) scale(1.04);
+}
+
+/* نشانگر آنلاین */
+.floating__online {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--success);
+  border: 2.5px solid #fff;
+  animation: onlinePulse 2s ease-in-out infinite;
+}
+
+@keyframes onlinePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(24, 185, 129, 0.5); }
+  50%      { box-shadow: 0 0 0 6px rgba(24, 185, 129, 0); }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 640px) {
+  .floating {
+    bottom: 16px;
+    left: 16px;
+    gap: 10px;
+  }
+
+  .floating__btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+  }
+
+  .floating__btn svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .floating__online { animation: none; }
+}

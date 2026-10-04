@@ -1,0 +1,79 @@
+/* ============================================
+   03. NAVIGATION
+   نوار باریک زیر Header
+   ============================================ */
+
+.nav {
+  background: #fff;
+  border-bottom: 1px solid var(--border-soft);
+  position: sticky;
+  top: 80px;
+  z-index: var(--z-nav);
+}
+
+.nav__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  height: 50px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav__inner::-webkit-scrollbar { display: none; }
+
+.nav__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  height: 100%;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--text);
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color var(--t-fast), border-color var(--t-fast);
+}
+
+.nav__link:hover {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.nav__link--accent {
+  color: var(--discount);
+  font-weight: var(--fw-semibold);
+}
+
+.nav__link--accent:hover {
+  color: var(--discount);
+  border-bottom-color: var(--discount);
+}
+
+.nav__link svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* جداکننده اختیاری */
+.nav__sep {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  margin-inline: 6px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .nav {
+    top: 64px;
+  }
+  .nav__inner {
+    height: 46px;
+    padding-inline: var(--container-pad);
+  }
+  .nav__link {
+    padding: 0 12px;
+    font-size: var(--fs-xs);
+  }
+}

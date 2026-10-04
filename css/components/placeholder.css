@@ -1,0 +1,29 @@
+/* ============================================
+   PLACEHOLDER SYSTEM
+   تمام عکس‌های سایت با این کلاس‌ها نمایش داده می‌شوند
+   ============================================ */
+
+.ph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-soft);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  text-align: center;
+  user-select: none;
+  padding: 8px;
+  line-height: 1.4;
+}
+
+.ph--square   { aspect-ratio: 1 / 1; }
+.ph--phone    { aspect-ratio: 9 / 16; }
+.ph--hero     { aspect-ratio: 16 / 10; }
+.ph--banner   { aspect-ratio: 16 / 6; }
+.ph--category { aspect-ratio: 1 / 1; }
+.ph--article  { aspect-ratio: 16 / 9; }
+.ph--avatar   { aspect-ratio: 1 / 1; border-radius: 50%; }
+.ph--logo     { aspect-ratio: 3 / 1; }

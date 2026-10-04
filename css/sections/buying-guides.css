@@ -1,0 +1,289 @@
+/* ============================================
+   11. BUYING GUIDES / SEASONAL BANNERS
+   ============================================ */
+
+.buying-guides {
+  background: var(--bg);
+}
+
+.buying-guides__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: var(--title-gap);
+}
+
+.buying-guides__title {
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-bold);
+  color: var(--text);
+}
+
+.buying-guides__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--primary);
+  transition: gap var(--t-fast), color var(--t-fast);
+}
+
+.buying-guides__link svg {
+  width: 16px;
+  height: 16px;
+  transition: transform var(--t-fast);
+}
+
+.buying-guides__link:hover {
+  color: var(--primary-dark);
+}
+
+.buying-guides__link:hover svg {
+  transform: translateX(-3px);
+}
+
+.buying-guides__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.guide-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 18px;
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--text);
+  transition:
+    transform var(--t-base),
+    box-shadow var(--t-base),
+    border-color var(--t-base);
+}
+
+.guide-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 44px -20px rgba(23, 32, 42, 0.20);
+  border-color: var(--border);
+}
+
+.guide-card__media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: linear-gradient(135deg, #F2F7FC, #E6EEF8);
+}
+
+.guide-card__media .ph {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  border: none;
+  background:
+    linear-gradient(135deg,
+      var(--guide-color-1, #EAF4FD) 0%,
+      var(--guide-color-2, #DCEBFB) 100%);
+  color: rgba(23, 32, 42, 0.55);
+  font-size: 13px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.5px;
+}
+
+.guide-card__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 55%, rgba(23, 32, 42, 0.05) 100%);
+  pointer-events: none;
+}
+
+.guide-card__tag {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 11px;
+  background: #fff;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: var(--fw-semibold);
+  color: var(--guide-color-accent, var(--primary));
+  box-shadow: 0 4px 14px -4px rgba(23, 32, 42, 0.14);
+  z-index: 2;
+}
+
+.guide-card__tag-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.guide-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px 20px 22px;
+  flex: 1;
+}
+
+.guide-card__title {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+  color: var(--text);
+  line-height: 1.45;
+  letter-spacing: -0.2px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(1.45em * 2);
+  transition: color var(--t-fast);
+}
+
+.guide-card:hover .guide-card__title {
+  color: var(--primary);
+}
+
+.guide-card__desc {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  line-height: 1.75;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.guide-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.guide-card__read {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  color: var(--primary);
+  transition: gap var(--t-fast);
+}
+
+.guide-card__read svg {
+  width: 14px;
+  height: 14px;
+  transition: transform var(--t-fast);
+}
+
+.guide-card:hover .guide-card__read svg {
+  transform: translateX(-3px);
+}
+
+.guide-card__time {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: var(--fw-medium);
+}
+
+.guide-card__time svg {
+  width: 13px;
+  height: 13px;
+  stroke-width: 2;
+}
+
+.guide-card--apple {
+  --guide-color-1: #EAF4FD;
+  --guide-color-2: #D6E8FA;
+  --guide-color-accent: #2386D7;
+}
+
+.guide-card--samsung {
+  --guide-color-1: #E5F4F2;
+  --guide-color-2: #D0EAE5;
+  --guide-color-accent: #005B59;
+}
+
+.guide-card--budget {
+  --guide-color-1: #FFF3E6;
+  --guide-color-2: #FFE4C7;
+  --guide-color-accent: #EF6C1F;
+}
+
+@media (max-width: 1024px) {
+  .buying-guides__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .buying-guides__grid .guide-card:nth-child(3) {
+    grid-column: 1 / -1;
+  }
+
+  .buying-guides__grid .guide-card:nth-child(3) .guide-card__media {
+    aspect-ratio: 21 / 9;
+  }
+}
+
+@media (max-width: 768px) {
+  .buying-guides__title {
+    font-size: var(--fs-xl);
+  }
+}
+
+@media (max-width: 640px) {
+  .buying-guides {
+    padding-block: 40px;
+  }
+
+  .buying-guides__head {
+    margin-bottom: 16px;
+  }
+
+  .buying-guides__grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .buying-guides__grid .guide-card:nth-child(3) {
+    grid-column: auto;
+  }
+
+  .buying-guides__grid .guide-card:nth-child(3) .guide-card__media {
+    aspect-ratio: 16 / 9;
+  }
+
+  .guide-card__body {
+    padding: 16px 16px 18px;
+    gap: 8px;
+  }
+
+  .guide-card__title {
+    font-size: var(--fs-base);
+    min-height: auto;
+  }
+
+  .guide-card__desc {
+    font-size: var(--fs-xs);
+  }
+
+  .guide-card__meta {
+    padding-top: 12px;
+  }
+}

@@ -1,0 +1,397 @@
+/* ============================================
+   15. APP / SPECIAL OFFER BANNER
+   پس‌زمینه کرم | تصویر موبایل | QR + دکمه دانلود
+   ============================================ */
+
+.app-banner {
+  background: var(--bg);
+}
+
+.app-banner__inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: center;
+  gap: 40px;
+  padding: 60px 56px;
+  background: linear-gradient(135deg, #FAF7F2 0%, #F3EEE4 100%);
+  border-radius: 24px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* هاله‌های نرم */
+.app-banner__inner::before,
+.app-banner__inner::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-banner__inner::before {
+  width: 320px;
+  height: 320px;
+  background: rgba(245, 158, 11, 0.14);
+  top: -100px;
+  right: -60px;
+}
+
+.app-banner__inner::after {
+  width: 280px;
+  height: 280px;
+  background: rgba(35, 134, 215, 0.10);
+  bottom: -100px;
+  left: -60px;
+}
+
+/* ============================================
+   CONTENT
+   ============================================ */
+
+.app-banner__content {
+  position: relative;
+  z-index: 1;
+  max-width: 520px;
+}
+
+.app-banner__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: #fff;
+  border: 1px solid rgba(245, 158, 11, 0.24);
+  border-radius: 999px;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  color: #B45309;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 14px -6px rgba(245, 158, 11, 0.20);
+}
+
+.app-banner__eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #F59E0B;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.22);
+}
+
+.app-banner__title {
+  font-size: clamp(26px, 3vw, 38px);
+  font-weight: var(--fw-black);
+  line-height: 1.25;
+  letter-spacing: -0.6px;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.app-banner__title-accent {
+  color: #EF6C1F;
+}
+
+.app-banner__desc {
+  font-size: var(--fs-md);
+  line-height: 1.85;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  max-width: 460px;
+}
+
+/* لیست مزایا */
+.app-banner__features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 22px;
+  margin-bottom: 28px;
+}
+
+.app-banner__feature {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--text);
+}
+
+.app-banner__feature svg {
+  width: 16px;
+  height: 16px;
+  color: var(--secondary);
+  stroke-width: 2.6;
+  flex-shrink: 0;
+}
+
+/* CTA Row */
+.app-banner__cta-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.app-banner__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  padding-inline: 24px;
+  background: var(--text);
+  color: #fff;
+  border-radius: var(--radius-md);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  transition: background var(--t-fast), transform var(--t-fast);
+}
+
+.app-banner__btn:hover {
+  background: var(--primary);
+}
+
+.app-banner__btn:active {
+  transform: scale(0.98);
+}
+
+.app-banner__btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* QR Code */
+.app-banner__qr {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-banner__qr-code {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  flex-shrink: 0;
+}
+
+.app-banner__qr-code svg {
+  width: 100%;
+  height: 100%;
+  color: var(--text);
+}
+
+.app-banner__qr-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  font-weight: var(--fw-medium);
+  max-width: 100px;
+}
+
+/* ============================================
+   VISUAL
+   ============================================ */
+
+.app-banner__visual {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 340px;
+}
+
+.app-banner__phone {
+  position: relative;
+  width: 200px;
+  aspect-ratio: 9 / 19.5;
+  border-radius: 32px;
+  background: #1a1f28;
+  padding: 6px;
+  box-shadow:
+    0 40px 80px -30px rgba(23, 32, 42, 0.35),
+    0 20px 40px -20px rgba(23, 32, 42, 0.20),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  animation: appPhoneFloat 6s ease-in-out infinite;
+}
+
+.app-banner__phone-screen {
+  width: 100%;
+  height: 100%;
+  border-radius: 26px;
+  background: linear-gradient(160deg, #FFFFFF 0%, #F3EEE4 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px 14px;
+  position: relative;
+  overflow: hidden;
+  border: 1px dashed rgba(239, 108, 31, 0.20);
+}
+
+.app-banner__phone-screen::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 34%;
+  height: 14px;
+  background: #1a1f28;
+  border-radius: 0 0 10px 10px;
+}
+
+.app-banner__phone-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #EF6C1F, #F59E0B);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  margin-top: 8px;
+}
+
+.app-banner__phone-logo svg {
+  width: 22px;
+  height: 22px;
+}
+
+.app-banner__phone-text {
+  font-size: 11px;
+  font-weight: var(--fw-bold);
+  color: var(--text);
+  text-align: center;
+  line-height: 1.4;
+}
+
+.app-banner__phone-text span {
+  display: block;
+  font-size: 10px;
+  font-weight: var(--fw-medium);
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* badge شناور روی گوشی */
+.app-banner__badge {
+  position: absolute;
+  bottom: 20%;
+  left: 10%;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 26px -10px rgba(23, 32, 42, 0.20);
+  font-size: 11px;
+  font-weight: var(--fw-semibold);
+  color: var(--text);
+  z-index: 2;
+}
+
+.app-banner__badge svg {
+  width: 16px;
+  height: 16px;
+  color: var(--discount);
+  fill: var(--discount);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes appPhoneFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-banner__phone { animation: none; }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .app-banner__inner {
+    grid-template-columns: 1fr;
+    padding: 48px 32px;
+    text-align: center;
+    gap: 32px;
+  }
+
+  .app-banner__content { max-width: 100%; margin-inline: auto; }
+  .app-banner__desc { margin-inline: auto; }
+  .app-banner__features { justify-content: center; }
+  .app-banner__cta-row { justify-content: center; }
+  .app-banner__eyebrow { margin-inline: auto; }
+
+  .app-banner__visual { min-height: 260px; }
+  .app-banner__phone { width: 160px; }
+  .app-banner__badge { left: 50%; transform: translateX(-50%); bottom: 6%; }
+}
+
+@media (max-width: 640px) {
+  .app-banner { padding-block: 40px; }
+
+  .app-banner__inner {
+    padding: 36px 20px;
+    border-radius: 18px;
+    gap: 28px;
+  }
+
+  .app-banner__title {
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+
+  .app-banner__desc {
+    font-size: var(--fs-sm);
+    margin-bottom: 20px;
+  }
+
+  .app-banner__features {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+
+  .app-banner__cta-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .app-banner__btn {
+    width: 100%;
+    justify-content: center;
+    height: 48px;
+  }
+
+  .app-banner__qr {
+    justify-content: center;
+  }
+
+  .app-banner__visual { min-height: 220px; }
+  .app-banner__phone { width: 130px; border-radius: 26px; padding: 5px; }
+  .app-banner__phone-screen { border-radius: 21px; }
+
+  .app-banner__badge {
+    bottom: 4%;
+    padding: 8px 12px;
+  }
+}

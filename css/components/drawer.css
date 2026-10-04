@@ -1,0 +1,325 @@
+/* ============================================
+   MOBILE DRAWER
+   منوی کناری موبایل (راست‌چین)
+   ============================================ */
+
+/* --- Overlay --- */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 21, 28, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: var(--z-drawer);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--t-base), visibility var(--t-base);
+}
+
+body.drawer-open .drawer-overlay {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* --- Drawer Panel --- */
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 320px;
+  max-width: 85vw;
+  background: #fff;
+  z-index: calc(var(--z-drawer) + 1);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform var(--t-slow);
+  box-shadow: -20px 0 50px -20px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+body.drawer-open .drawer {
+  transform: translateX(0);
+}
+
+/* ============================================
+   DRAWER HEAD
+   ============================================ */
+
+.drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border-soft);
+  flex-shrink: 0;
+}
+
+.drawer__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: var(--fw-black);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.drawer__logo-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.drawer__logo-mark svg {
+  width: 20px;
+  height: 20px;
+}
+
+.drawer__logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.drawer__logo-text span:first-child {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-black);
+}
+
+.drawer__logo-text span:last-child {
+  font-size: 9px;
+  font-weight: var(--fw-medium);
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.drawer__close {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  background: var(--bg-soft);
+  transition: background var(--t-fast), color var(--t-fast);
+  flex-shrink: 0;
+}
+
+.drawer__close:hover {
+  background: #FDECEC;
+  color: var(--discount);
+}
+
+.drawer__close svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ============================================
+   DRAWER BODY
+   ============================================ */
+
+.drawer__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 0;
+  scrollbar-width: thin;
+}
+
+.drawer__body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.drawer__body::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+/* --- Section Title --- */
+.drawer__section {
+  padding: 8px 18px;
+}
+
+.drawer__section + .drawer__section {
+  margin-top: 14px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.drawer__section-title {
+  font-size: 11px;
+  font-weight: var(--fw-bold);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 8px;
+  padding-inline: 4px;
+}
+
+/* --- Nav List --- */
+.drawer__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.drawer__link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--text);
+  text-decoration: none;
+  transition: background var(--t-fast), color var(--t-fast);
+}
+
+.drawer__link:hover {
+  background: var(--bg-soft);
+  color: var(--primary);
+}
+
+.drawer__link svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: color var(--t-fast);
+}
+
+.drawer__link:hover svg {
+  color: var(--primary);
+}
+
+.drawer__link--accent {
+  color: var(--discount);
+  font-weight: var(--fw-semibold);
+}
+
+.drawer__link--accent svg {
+  color: var(--discount);
+}
+
+.drawer__link--accent:hover {
+  background: #FDECEC;
+  color: var(--discount);
+}
+
+/* --- Badge در Drawer --- */
+.drawer__link-badge {
+  margin-inline-start: auto;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 7px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: var(--fw-bold);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.drawer__link-badge--discount {
+  background: var(--discount);
+}
+
+/* ============================================
+   DRAWER FOOT
+   ============================================ */
+
+.drawer__foot {
+  padding: 16px 18px;
+  border-top: 1px solid var(--border-soft);
+  background: var(--bg-soft);
+  flex-shrink: 0;
+}
+
+.drawer__contact {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid var(--border-soft);
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color var(--t-fast);
+}
+
+.drawer__contact:hover {
+  border-color: var(--primary);
+}
+
+.drawer__contact-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.drawer__contact-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.drawer__contact-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.drawer__contact-text span:first-child {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: var(--fw-medium);
+}
+
+.drawer__contact-text span:last-child {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  color: var(--text);
+}
+
+/* ============================================
+   BODY LOCK
+   ============================================ */
+
+body.drawer-open {
+  overflow: hidden;
+}
+
+/* ============================================
+   RESPONSIVE — Drawer فقط در موبایل/تبلت
+   ============================================ */
+
+@media (min-width: 1025px) {
+  .drawer,
+  .drawer-overlay {
+    display: none;
+  }
+}
+
+@media (max-width: 360px) {
+  .drawer { width: 290px; }
+  .drawer__link { font-size: var(--fs-xs); padding: 10px; }
+}

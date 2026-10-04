@@ -1,0 +1,211 @@
+/* ============================================
+   10. TRENDING PRODUCTS
+   با Tab Navigation فعال | پس‌زمینه سفید
+   ============================================ */
+
+.trending {
+  background: var(--bg);
+}
+
+/* ============================================
+   HEAD
+   ============================================ */
+
+.trending__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.trending__title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.trending__title {
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-bold);
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.trending__subtitle {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+.trending__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--primary);
+  transition: gap var(--t-fast), color var(--t-fast);
+  white-space: nowrap;
+}
+
+.trending__link svg {
+  width: 16px;
+  height: 16px;
+  transition: transform var(--t-fast);
+}
+
+.trending__link:hover {
+  color: var(--primary-dark);
+}
+
+.trending__link:hover svg {
+  transform: translateX(-3px);
+}
+
+/* ============================================
+   TABS
+   ============================================ */
+
+.trending__tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 28px;
+  padding: 5px;
+  background: var(--bg-soft);
+  border-radius: 999px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  width: fit-content;
+  max-width: 100%;
+}
+.trending__tabs::-webkit-scrollbar { display: none; }
+
+.trending__tab {
+  position: relative;
+  padding: 9px 20px;
+  border-radius: 999px;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--text-muted);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background var(--t-fast),
+    color var(--t-fast),
+    box-shadow var(--t-fast);
+  flex-shrink: 0;
+}
+
+.trending__tab:hover {
+  color: var(--text);
+}
+
+.trending__tab.is-active {
+  background: #fff;
+  color: var(--primary);
+  font-weight: var(--fw-semibold);
+  box-shadow: 0 2px 10px -2px rgba(23, 32, 42, 0.10);
+}
+
+/* شمارنده کنار تب */
+.trending__tab-count {
+  display: inline-block;
+  margin-inline-start: 6px;
+  font-size: 11px;
+  font-weight: var(--fw-medium);
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.trending__tab.is-active .trending__tab-count {
+  color: var(--primary);
+  opacity: 1;
+}
+
+/* ============================================
+   GRID
+   ============================================ */
+
+.trending__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+/* حالت خالی */
+.trending__empty {
+  grid-column: 1 / -1;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+/* انیمیشن ورود کارت‌ها */
+.trending__grid .p-card {
+  animation: pCardIn 0.35s ease both;
+}
+
+.trending__grid .p-card:nth-child(1) { animation-delay: 0s; }
+.trending__grid .p-card:nth-child(2) { animation-delay: 0.04s; }
+.trending__grid .p-card:nth-child(3) { animation-delay: 0.08s; }
+.trending__grid .p-card:nth-child(4) { animation-delay: 0.12s; }
+.trending__grid .p-card:nth-child(5) { animation-delay: 0.16s; }
+.trending__grid .p-card:nth-child(6) { animation-delay: 0.20s; }
+.trending__grid .p-card:nth-child(7) { animation-delay: 0.24s; }
+.trending__grid .p-card:nth-child(8) { animation-delay: 0.28s; }
+
+@keyframes pCardIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trending__grid .p-card { animation: none; }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1200px) {
+  .trending__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .trending__title {
+    font-size: var(--fs-xl);
+  }
+}
+
+@media (max-width: 768px) {
+  .trending__head {
+    margin-bottom: 16px;
+  }
+
+  .trending__tabs {
+    margin-bottom: 20px;
+    border-radius: 14px;
+  }
+
+  .trending__tab {
+    padding: 7px 14px;
+    font-size: var(--fs-xs);
+  }
+
+  .trending__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .trending__grid {
+    gap: 10px;
+  }
+}

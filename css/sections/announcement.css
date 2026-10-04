@@ -1,0 +1,67 @@
+/* ============================================
+   01. ANNOUNCEMENT BAR
+   ارتفاع ۳۲–۳۸px | پس‌زمینه #F3FAFC
+   ============================================ */
+
+.announcement {
+  background: #F3FAFC;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: var(--fs-xs);
+  color: var(--text);
+  height: 38px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.announcement__inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-8);
+  width: 100%;
+}
+
+.announcement__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  color: var(--text-muted);
+  font-weight: var(--fw-medium);
+}
+
+.announcement__item svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.announcement__divider {
+  width: 1px;
+  height: 14px;
+  background: var(--border);
+}
+
+/* موبایل: فقط یک پیام متحرک */
+@media (max-width: 900px) {
+  .announcement__inner {
+    gap: var(--sp-4);
+  }
+  .announcement__item:nth-child(n+3),
+  .announcement__divider:nth-child(n+3) {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .announcement {
+    height: 34px;
+    font-size: 11px;
+  }
+  .announcement__item:nth-child(n+2),
+  .announcement__divider {
+    display: none;
+  }
+}
