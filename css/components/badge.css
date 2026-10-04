@@ -1,0 +1,34 @@
+/* ============================================
+   BADGE
+   ============================================ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  border-radius: 999px;
+  line-height: 1.6;
+}
+
+.badge--discount {
+  background: #FDECEC;
+  color: var(--discount);
+}
+
+.badge--new {
+  background: #E7F2FB;
+  color: var(--info);
+}
+
+.badge--hot {
+  background: #FFF2E1;
+  color: var(--warning);
+}
+
+.badge--in-stock {
+  background: #E6F7F1;
+  color: var(--success);
+}
