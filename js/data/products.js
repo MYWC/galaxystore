@@ -1,132 +1,296 @@
 /* ============================================
-   PRODUCT CARD RENDERER
+   PRODUCTS DATA
    ============================================ */
 
-import { formatPrice } from '../data/products.js';
+export const products = [
+  {
+    id: 'ip17p-256',
+    brand: 'Apple',
+    name: 'آیفون 17 پرو',
+    model: 'iPhone 17 Pro',
+    slug: 'iphone-17-pro',
+    ram: '8GB',
+    storage: '256GB',
+    color: 'Titanium Blue',
+    rating: 4.9,
+    reviews: 124,
+    price: 109900000,
+    oldPrice: 119900000,
+    discount: 8,
+    stock: 14,
+    badges: ['hot'],
+    category: 'apple',
+    image: null,
+  },
+  {
+    id: 'gs26u-512',
+    brand: 'Samsung',
+    name: 'سامسونگ گلکسی S26 اولترا',
+    model: 'Galaxy S26 Ultra',
+    slug: 'galaxy-s26-ultra',
+    ram: '12GB',
+    storage: '512GB',
+    color: 'Phantom Black',
+    rating: 4.8,
+    reviews: 98,
+    price: 94900000,
+    oldPrice: 105000000,
+    discount: 10,
+    stock: 6,
+    badges: ['discount', 'new'],
+    category: 'samsung',
+    image: null,
+  },
+  {
+    id: 'mi15p-256',
+    brand: 'Xiaomi',
+    name: 'شیائومی 15 پرو',
+    model: 'Xiaomi 15 Pro',
+    slug: 'xiaomi-15-pro',
+    ram: '12GB',
+    storage: '256GB',
+    color: 'Midnight Green',
+    rating: 4.7,
+    reviews: 76,
+    price: 58900000,
+    oldPrice: 67900000,
+    discount: 13,
+    stock: 22,
+    badges: ['discount'],
+    category: 'xiaomi',
+    image: null,
+  },
+  {
+    id: 'px9p-128',
+    brand: 'Google',
+    name: 'گوگل پیکسل 9 پرو',
+    model: 'Pixel 9 Pro',
+    slug: 'pixel-9-pro',
+    ram: '12GB',
+    storage: '128GB',
+    color: 'Obsidian',
+    rating: 4.6,
+    reviews: 45,
+    price: 71900000,
+    oldPrice: 79900000,
+    discount: 10,
+    stock: 9,
+    badges: ['new'],
+    category: 'flagship',
+    image: null,
+  },
+  {
+    id: 'op13-256',
+    brand: 'OnePlus',
+    name: 'وان‌پلاس 13',
+    model: 'OnePlus 13',
+    slug: 'oneplus-13',
+    ram: '12GB',
+    storage: '256GB',
+    color: 'Arctic Dawn',
+    rating: 4.7,
+    reviews: 62,
+    price: 54900000,
+    oldPrice: 61900000,
+    discount: 11,
+    stock: 4,
+    badges: ['hot', 'discount'],
+    category: 'flagship',
+    image: null,
+  },
+  {
+    id: 'ip16p-128',
+    brand: 'Apple',
+    name: 'آیفون 16 پرو',
+    model: 'iPhone 16 Pro',
+    slug: 'iphone-16-pro',
+    ram: '8GB',
+    storage: '128GB',
+    color: 'Natural Titanium',
+    rating: 4.8,
+    reviews: 187,
+    price: 82900000,
+    oldPrice: 92900000,
+    discount: 11,
+    stock: 12,
+    badges: ['hot'],
+    category: 'apple',
+    image: null,
+  },
+  {
+    id: 'gs25-256',
+    brand: 'Samsung',
+    name: 'گلکسی S25',
+    model: 'Galaxy S25',
+    slug: 'galaxy-s25',
+    ram: '8GB',
+    storage: '256GB',
+    color: 'Icy Blue',
+    rating: 4.7,
+    reviews: 132,
+    price: 47900000,
+    oldPrice: 55900000,
+    discount: 14,
+    stock: 18,
+    badges: ['discount'],
+    category: 'samsung',
+    image: null,
+  },
+  {
+    id: 'mi14t-256',
+    brand: 'Xiaomi',
+    name: 'شیائومی 14T پرو',
+    model: 'Xiaomi 14T Pro',
+    slug: 'xiaomi-14t-pro',
+    ram: '12GB',
+    storage: '256GB',
+    color: 'Titan Gray',
+    rating: 4.6,
+    reviews: 89,
+    price: 32900000,
+    oldPrice: 38900000,
+    discount: 15,
+    stock: 25,
+    badges: ['discount'],
+    category: 'xiaomi',
+    image: null,
+  },
+  {
+    id: 'rog9-512',
+    brand: 'Asus',
+    name: 'ایسوس ROG Phone 9',
+    model: 'ROG Phone 9',
+    slug: 'rog-phone-9',
+    ram: '16GB',
+    storage: '512GB',
+    color: 'Phantom Black',
+    rating: 4.8,
+    reviews: 34,
+    price: 78900000,
+    oldPrice: 88900000,
+    discount: 11,
+    stock: 7,
+    badges: ['new', 'hot'],
+    category: 'gaming',
+    image: null,
+  },
+  {
+    id: 'redmi-note-14',
+    brand: 'Xiaomi',
+    name: 'ردمی نوت 14 پرو',
+    model: 'Redmi Note 14 Pro',
+    slug: 'redmi-note-14-pro',
+    ram: '8GB',
+    storage: '256GB',
+    color: 'Ocean Blue',
+    rating: 4.5,
+    reviews: 210,
+    price: 12900000,
+    oldPrice: 15900000,
+    discount: 19,
+    stock: 45,
+    badges: ['discount', 'hot'],
+    category: 'budget',
+    image: null,
+  },
+  {
+    id: 'poco-x7',
+    brand: 'Xiaomi',
+    name: 'پوکو X7 پرو',
+    model: 'POCO X7 Pro',
+    slug: 'poco-x7-pro',
+    ram: '8GB',
+    storage: '256GB',
+    color: 'Yellow',
+    rating: 4.6,
+    reviews: 148,
+    price: 14900000,
+    oldPrice: 17900000,
+    discount: 17,
+    stock: 32,
+    badges: ['discount'],
+    category: 'budget',
+    image: null,
+  },
+];
 
-const ICONS = {
-  heart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`,
-  compare: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>`,
-  eye: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,
-  cart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`,
-  check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
-  star: `<svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6L12 2z"/></svg>`,
-};
+/* ============================================
+   FLASH SALE PRODUCTS
+   ============================================ */
 
-const BADGE_MAP = {
-  discount: (p) => `<span class="badge badge--discount">٪${p.discount} تخفیف</span>`,
-  new:      () => `<span class="badge badge--new">جدید</span>`,
-  hot:      () => `<span class="badge badge--hot">پرفروش</span>`,
-  in_stock: () => `<span class="badge badge--in-stock">موجود</span>`,
-};
+export const flashSaleProducts = [
+  {
+    id: 'fs-ip16-128',
+    brand: 'Apple',
+    name: 'آیفون 16',
+    ram: '8GB',
+    storage: '128GB',
+    price: 62900000,
+    oldPrice: 79900000,
+    discount: 21,
+    totalStock: 30,
+    sold: 23,
+    image: null,
+  },
+  {
+    id: 'fs-gs25-256',
+    brand: 'Samsung',
+    name: 'گلکسی S25',
+    ram: '8GB',
+    storage: '256GB',
+    price: 47900000,
+    oldPrice: 59900000,
+    discount: 20,
+    totalStock: 25,
+    sold: 18,
+    image: null,
+  },
+  {
+    id: 'fs-mi14t-256',
+    brand: 'Xiaomi',
+    name: 'شیائومی 14T پرو',
+    ram: '12GB',
+    storage: '256GB',
+    price: 32900000,
+    oldPrice: 41900000,
+    discount: 21,
+    totalStock: 40,
+    sold: 33,
+    image: null,
+  },
+  {
+    id: 'fs-airpods',
+    brand: 'Apple',
+    name: 'ایرپادز پرو 2',
+    ram: null,
+    storage: null,
+    price: 8900000,
+    oldPrice: 11900000,
+    discount: 25,
+    totalStock: 50,
+    sold: 43,
+    image: null,
+  },
+];
 
-function renderStars(rating) {
-  const full = Math.floor(rating);
-  const hasHalf = rating - full >= 0.5;
-  let out = '';
-  for (let i = 0; i < full; i++) out += ICONS.star;
-  if (hasHalf) out += ICONS.star;
-  for (let i = out.split('<svg').length - 1; i < 5; i++) out += ICONS.star;
-  return out;
-}
+/* ============================================
+   TRENDING TABS
+   ============================================ */
 
-function renderStock(stock) {
-  if (stock === 0) {
-    return `<span class="p-card__stock p-card__stock--out">ناموجود</span>`;
-  }
-  if (stock <= 5) {
-    return `<span class="p-card__stock p-card__stock--low">${ICONS.check} فقط ${stock} عدد باقی مانده</span>`;
-  }
-  return `<span class="p-card__stock">${ICONS.check} موجود در انبار</span>`;
-}
+export const trendingTabs = [
+  { id: 'all',      label: 'همه' },
+  { id: 'apple',    label: 'آیفون' },
+  { id: 'samsung',  label: 'سامسونگ' },
+  { id: 'xiaomi',   label: 'شیائومی' },
+  { id: 'gaming',   label: 'گیمینگ' },
+  { id: 'budget',   label: 'اقتصادی' },
+  { id: 'flagship', label: 'پرچمدار' },
+];
 
-export function renderProductCard(product) {
-  const {
-    id, brand, name, ram, storage,
-    rating, reviews, price, oldPrice, discount,
-    stock, badges = [], image,
-  } = product;
+/* ============================================
+   FORMAT PRICE
+   ============================================ */
 
-  const badgesHTML = badges
-    .map((b) => (BADGE_MAP[b] ? BADGE_MAP[b](product) : ''))
-    .join('');
-
-  const oldPriceHTML = oldPrice
-    ? `<span class="p-card__price-old">${formatPrice(oldPrice)}</span>`
-    : '';
-
-  const imageHTML = image
-    ? `<img src="${image}" alt="${name}" loading="lazy" />`
-    : `<div class="ph ph--square">تصویر محصول</div>`;
-
-  const ctaDisabled = stock === 0;
-  const ctaAttrs = ctaDisabled
-    ? 'aria-disabled="true" disabled'
-    : `data-add-to-cart="${id}"`;
-
-  return `
-    <article class="p-card" data-product-id="${id}">
-      <div class="p-card__media">
-        ${badgesHTML ? `<div class="p-card__badges">${badgesHTML}</div>` : ''}
-
-        <div class="p-card__actions">
-          <button class="p-card__action" aria-label="افزودن به علاقه‌مندی" data-wishlist="${id}">
-            ${ICONS.heart}
-          </button>
-          <button class="p-card__action" aria-label="افزودن به مقایسه" data-compare="${id}">
-            ${ICONS.compare}
-          </button>
-          <button class="p-card__action" aria-label="نمایش سریع" data-quickview="${id}">
-            ${ICONS.eye}
-          </button>
-        </div>
-
-        <div class="p-card__img">
-          ${imageHTML}
-        </div>
-      </div>
-
-      <div class="p-card__body">
-        <span class="p-card__brand">
-          <span class="p-card__brand-dot"></span>
-          ${brand}
-        </span>
-
-        <h3 class="p-card__title" title="${name}">${name}</h3>
-
-        <div class="p-card__specs">
-          ${storage ? `<span class="p-card__spec">${storage}</span>` : ''}
-          ${ram ? `<span class="p-card__spec">${ram} RAM</span>` : ''}
-        </div>
-
-        <div class="p-card__rating">
-          <span class="p-card__stars">${renderStars(rating)}</span>
-          <span class="p-card__rating-value">${rating.toFixed(1)}</span>
-          <span>(${reviews})</span>
-        </div>
-
-        <div class="p-card__divider"></div>
-
-        ${renderStock(stock)}
-
-        <div class="p-card__price">
-          <span class="p-card__price-current">
-            ${formatPrice(price)}
-            <span>تومان</span>
-          </span>
-          ${oldPriceHTML}
-        </div>
-
-        <button class="p-card__cta" ${ctaAttrs}>
-          ${ICONS.cart}
-          افزودن به سبد
-        </button>
-      </div>
-    </article>
-  `;
-}
-
-export function renderProductList(container, items) {
-  if (!container) return;
-  container.innerHTML = items.map(renderProductCard).join('');
+export function formatPrice(n) {
+  return n.toLocaleString('fa-IR');
 }
