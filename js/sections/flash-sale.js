@@ -20,12 +20,22 @@ function renderFlashCard(p) {
     ? Math.min(100, Math.round((sold / totalStock) * 100))
     : 0;
 
-  const imageHTML = image
-    ? `<img src="${image}" alt="${name}" loading="lazy" />`
-    : `<div class="ph ph--square">تصویر محصول</div>`;
+  // استخراج id واقعی از id فایل فلش (fs-iphone-16 → iphone-16)
+  const realId = id.startsWith('fs-') ? id.slice(3) : id;
+  const imgSrc = image || `assets/images/products/${realId}.jpg`;
+
+  const imageHTML = `
+    <img
+      src="${imgSrc}"
+      alt="${name}"
+      loading="lazy"
+      onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'ph ph--square\\'>تصویر محصول</div>';"
+    />
+  `;
 
   return `
     <article class="f-card" data-product-id="${id}">
+
       <div class="f-card__media">
         <span class="f-card__discount">
           <span>٪${discount}</span>
@@ -42,6 +52,7 @@ function renderFlashCard(p) {
       </div>
 
       <div class="f-card__body">
+
         <span class="f-card__brand">${brand}</span>
         <h3 class="f-card__title">${name}</h3>
 
@@ -67,10 +78,15 @@ function renderFlashCard(p) {
           ${ICONS.cart}
           افزودن به سبد
         </button>
+
       </div>
     </article>
   `;
 }
+
+/* ============================================
+   COUNTDOWN
+   ============================================ */
 
 function pad2(n) {
   return String(n).padStart(2, '0');

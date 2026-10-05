@@ -16,6 +16,8 @@ const ICONS = {
   compare: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>`,
 };
 
+let currentVariantIndex = 0;
+
 function renderStars(rating) {
   const full = Math.round(rating);
   return Array.from({ length: 5 })
@@ -29,7 +31,10 @@ function renderStock(stock) {
   return `<span class="qv-modal__stock">${ICONS.check} موجود در انبار</span>`;
 }
 
-/* ---------- Open ---------- */
+/* ============================================
+   OPEN
+   ============================================ */
+
 export function openQuickView(productId) {
   const overlay = document.getElementById('qv-overlay');
   const content = document.getElementById('qv-content');
@@ -38,19 +43,26 @@ export function openQuickView(productId) {
   const p = products.find((x) => x.id === productId);
   if (!p) return;
 
-  const oldHTML = p.oldPrice
-    ? `<span class="qv-modal__price-old">${formatPrice(p.oldPrice)}</span>`
-    : '';
+  currentVariantIndex = 0;
+
+  const imgSrc = p.image || `assets/images/products/${p.id}.jpg`;
 
   const isWished = wishlist.has(p.id);
   const isCompared = compare.has(p.id);
 
   content.innerHTML = `
     <div class="qv-modal__media">
-      <div class="qv-modal__img">تصویر محصول</div>
+      <div class="qv-modal__img">
+        <img
+          src="${imgSrc}"
+          alt="${p.name}"
+          style="width:100%; height:100%; object-fit:contain; border-radius:14px;"
+          onerror="this.style.display='none'; this.parentElement.innerHTML='تصویر محصول';"
+        />
+      </div>
       <div class="qv-modal__badges">
-        ${p.discount ? `<span class="badge badge--discount">٪${p.discount} تخفیف</span>` : ''}
         ${p.badges?.includes('new') ? `<span class="badge badge--new">جدید</span>` : ''}
+        ${p.badges?.includes('hot') ? `<span class="badge badge--hot">پرفروش</span>` : ''}
       </div>
     </div>
 
@@ -74,64 +86,32 @@ export function openQuickView(productId) {
         متفاوت. مناسب برای کاربری روزمره و حرفه‌ای.
       </p>
 
-      <div class="qv-modal__specs">
-        ${p.storage ? `
-          <div class="qv-modal__spec">
-            <span class="qv-modal__spec-label">حافظه</span>
-            <span class="qv-modal__spec-value">${p.storage}</span>
-          </div>
-        ` : ''}
-        ${p.ram ? `
-          <div class="qv-modal__spec">
-            <span class="qv-modal__spec-label">رم</span>
-            <span class="qv-modal__spec-value">${p.ram}</span>
-          </div>
-        ` : ''}
-        ${p.color ? `
-          <div class="qv-modal__spec">
-            <span class="qv-modal__spec-label">رنگ</span>
-            <span class="qv-modal__spec-value">${p.color}</span>
-          </div>
-        ` : ''}
-        <div class="qv-modal__spec">
-          <span class="qv-modal__spec-label">مدل</span>
-          <span class="qv-modal__spec-value">${p.model || p.name}</span>
-        </div>
+      <div class="qv-modal__specs" data-qv-specs>
+        ${renderSpecs(p, p.variants[0])}
       </div>
 
-      ${renderStock(p.stock)}
+      <div data-qv-stock>
+        ${renderStock(p.variants[0].stock)}
+      </div>
 
       <div class="qv-modal__price">
-        <span class="qv-modal__price-current">
-          ${formatPrice(p.price)}
+        <span class="qv-modal__price-current" data-qv-price>
+          ${formatPrice(p.variants[0].price)}
           <span>تومان</span>
         </span>
-        ${oldHTML}
       </div>
 
       <div class="qv-modal__cta-row">
-        <button
-          class="qv-modal__add"
-          data-qv-add="${p.id}"
-          ${p.stock === 0 ? 'disabled' : ''}
-        >
+        <button class="qv-modal__add" data-qv-add="${p.id}">
           ${ICONS.cart}
           افزودن به سبد خرید
         </button>
 
-        <button
-          class="qv-modal__secondary ${isWished ? 'is-active' : ''}"
-          data-qv-wish="${p.id}"
-          aria-label="علاقه‌مندی"
-        >
+        <button class="qv-modal__secondary ${isWished ? 'is-active' : ''}" data-qv-wish="${p.id}" aria-label="علاقه‌مندی">
           ${ICONS.heart}
         </button>
 
-        <button
-          class="qv-modal__secondary ${isCompared ? 'is-active' : ''}"
-          data-qv-compare="${p.id}"
-          aria-label="مقایسه"
-        >
+        <button class="qv-modal__secondary ${isCompared ? 'is-active' : ''}" data-qv-compare="${p.id}" aria-label="مقایسه">
           ${ICONS.compare}
         </button>
       </div>
@@ -142,17 +122,41 @@ export function openQuickView(productId) {
   document.body.classList.add('qv-open');
 }
 
+function renderSpecs(p, variant) {
+  return `
+    <div class="qv-modal__spec">
+      <span class="qv-modal__spec-label">حافظه</span>
+      <span class="qv-modal__spec-value">${variant.storage}</span>
+    </div>
+    <div class="qv-modal__spec">
+      <span class="qv-modal__spec-label">رم</span>
+      <span class="qv-modal__spec-value">${variant.ram}</span>
+    </div>
+    ${p.colors?.length ? `
+      <div class="qv-modal__spec">
+        <span class="qv-modal__spec-label">رنگ‌ها</span>
+        <span class="qv-modal__spec-value">${p.colors.slice(0, 3).join(' • ')}</span>
+      </div>
+    ` : ''}
+    <div class="qv-modal__spec">
+      <span class="qv-modal__spec-label">سال</span>
+      <span class="qv-modal__spec-value">${p.year || '-'}</span>
+    </div>
+  `;
+}
+
 export function closeQuickView() {
   document.body.classList.remove('qv-open');
 }
 
-/* ---------- Init ---------- */
+/* ============================================
+   INIT
+   ============================================ */
+
 export function initQuickView() {
   const overlay = document.getElementById('qv-overlay');
-  const closeBtn = document.getElementById('qv-close');
   if (!overlay) return;
 
-  // Open از طریق Event Delegation روی document
   document.addEventListener('click', (e) => {
     const trigger = e.target.closest('[data-quickview]');
     if (trigger) {
@@ -161,31 +165,35 @@ export function initQuickView() {
       return;
     }
 
-    // Close
     if (e.target === overlay || e.target.closest('#qv-close')) {
       closeQuickView();
       return;
     }
 
-    // Add to cart
     const add = e.target.closest('[data-qv-add]');
     if (add) {
       const p = products.find((x) => x.id === add.dataset.qvAdd);
       if (!p) return;
-      cart.add(p, 1);
+      const v = p.variants[currentVariantIndex] || p.variants[0];
+      const cartItem = {
+        id: `${p.id}-${v.storage}`,
+        brand: p.brand,
+        name: p.name,
+        ram: v.ram,
+        storage: v.storage,
+        price: v.price,
+        oldPrice: v.oldPrice || null,
+        image: p.image,
+      };
+      cart.add(cartItem, 1);
       add.classList.add('is-added');
       add.innerHTML = `${ICONS.check} اضافه شد`;
-      toast({
-        type: 'success',
-        title: 'به سبد اضافه شد',
-        message: p.name,
-      });
+      toast({ type: 'success', title: 'به سبد اضافه شد', message: p.name });
       setTimeout(() => closeQuickView(), 500);
       setTimeout(() => openCart(), 700);
       return;
     }
 
-    // Wishlist toggle
     const wish = e.target.closest('[data-qv-wish]');
     if (wish) {
       const p = products.find((x) => x.id === wish.dataset.qvWish);
@@ -201,7 +209,6 @@ export function initQuickView() {
       return;
     }
 
-    // Compare toggle
     const cmp = e.target.closest('[data-qv-compare]');
     if (cmp) {
       const p = products.find((x) => x.id === cmp.dataset.qvCompare);
@@ -218,7 +225,6 @@ export function initQuickView() {
     }
   });
 
-  // ESC
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && document.body.classList.contains('qv-open')) {
       closeQuickView();

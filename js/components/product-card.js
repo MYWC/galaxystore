@@ -1,5 +1,5 @@
 /* ============================================
-   PRODUCT CARD RENDERER — با Storage Pills
+   PRODUCT CARD RENDERER — با Storage Pills + عکس خودکار
    ============================================ */
 
 import { formatPrice } from '../data/products.js';
@@ -15,18 +15,18 @@ const ICONS = {
 
 const BADGE_MAP = {
   discount: (p) => {
-    const d = p.discount || calcDiscount(p);
-    return `<span class="badge badge--discount">٪${d} تخفیف</span>`;
+    const d = calcDiscount(p);
+    return d ? `<span class="badge badge--discount">٪${d} تخفیف</span>` : '';
   },
-  new:      () => `<span class="badge badge--new">جدید</span>`,
-  hot:      () => `<span class="badge badge--hot">پرفروش</span>`,
+  new: () => `<span class="badge badge--new">جدید</span>`,
+  hot: () => `<span class="badge badge--hot">پرفروش</span>`,
 };
 
 function calcDiscount(p) {
   if (!p.variants?.length) return 0;
-  const v = p.variants[0];
-  if (!v.oldPrice || v.oldPrice <= v.price) return 0;
-  return Math.round(((v.oldPrice - v.price) / v.oldPrice) * 100);
+  const withOld = p.variants.find((v) => v.oldPrice && v.oldPrice > v.price);
+  if (!withOld) return 0;
+  return Math.round(((withOld.oldPrice - withOld.price) / withOld.oldPrice) * 100);
 }
 
 function renderStars(rating) {
@@ -54,17 +54,25 @@ export function renderProductCard(product) {
 
   if (!variants.length) return '';
 
-  // واریانت پیشفرض: ارزانترین
   const defaultVariant = [...variants].sort((a, b) => a.price - b.price)[0];
   const vIndex = variants.indexOf(defaultVariant);
 
   const badgesHTML = badges
     .map((b) => (BADGE_MAP[b] ? BADGE_MAP[b](product) : ''))
+    .filter(Boolean)
     .join('');
 
-  const imageHTML = image
-    ? `<img src="${image}" alt="${name}" loading="lazy" />`
-    : `<div class="ph ph--square">تصویر محصول</div>`;
+  // عکس خودکار از id
+  const imgSrc = image || `assets/images/products/${id}.jpg`;
+
+  const imageHTML = `
+    <img
+      src="${imgSrc}"
+      alt="${name}"
+      loading="lazy"
+      onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'ph ph--square\\'>تصویر محصول</div>';"
+    />
+  `;
 
   const storagesHTML = variants.map((v, i) => `
     <button
