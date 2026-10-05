@@ -1,6 +1,5 @@
 /* ============================================
    PRODUCT CARD
-   مهم‌ترین کامپوننت کل سایت
    ============================================ */
 
 .p-card {
@@ -23,10 +22,6 @@
   border-color: var(--border);
 }
 
-/* ============================================
-   MEDIA / IMAGE
-   ============================================ */
-
 .p-card__media {
   position: relative;
   background: linear-gradient(180deg, #F8FBFF 0%, #F2F7FC 100%);
@@ -39,17 +34,19 @@
   width: 100%;
   aspect-ratio: 1 / 1;
   border-radius: 12px;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
-  font-weight: var(--fw-medium);
-  color: var(--text-muted);
   transition: transform var(--t-slow);
+  background: #fff;
 }
 
-.p-card:hover .p-card__img {
-  transform: scale(1.04);
+.p-card__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .p-card__img .ph {
@@ -58,9 +55,9 @@
   border-radius: 12px;
 }
 
-/* ============================================
-   BADGES
-   ============================================ */
+.p-card:hover .p-card__img {
+  transform: scale(1.04);
+}
 
 .p-card__badges {
   position: absolute;
@@ -76,10 +73,6 @@
 .p-card__badges .badge {
   box-shadow: 0 2px 6px rgba(23, 32, 42, 0.06);
 }
-
-/* ============================================
-   ACTIONS
-   ============================================ */
 
 .p-card__actions {
   position: absolute;
@@ -133,10 +126,6 @@
   height: 16px;
   stroke-width: 2;
 }
-
-/* ============================================
-   BODY
-   ============================================ */
 
 .p-card__body {
   display: flex;
@@ -210,13 +199,8 @@
   stroke-width: 2.4;
 }
 
-.p-card__stock--low {
-  color: var(--warning);
-}
-
-.p-card__stock--out {
-  color: var(--text-muted);
-}
+.p-card__stock--low { color: var(--warning); }
+.p-card__stock--out { color: var(--text-muted); }
 
 .p-card__rating {
   display: inline-flex;
@@ -251,10 +235,6 @@
   margin: 4px 0;
 }
 
-/* ============================================
-   PRICE
-   ============================================ */
-
 .p-card__price {
   display: flex;
   align-items: baseline;
@@ -286,10 +266,6 @@
   text-decoration-color: rgba(239, 83, 80, 0.6);
 }
 
-/* ============================================
-   ADD TO CART
-   ============================================ */
-
 .p-card__cta {
   display: inline-flex;
   align-items: center;
@@ -303,18 +279,11 @@
   border-radius: var(--radius-md);
   font-size: var(--fs-sm);
   font-weight: var(--fw-semibold);
-  transition:
-    background var(--t-fast),
-    transform var(--t-fast);
+  transition: background var(--t-fast), transform var(--t-fast);
 }
 
-.p-card__cta:hover {
-  background: var(--primary-dark);
-}
-
-.p-card__cta:active {
-  transform: scale(0.98);
-}
+.p-card__cta:hover { background: var(--primary-dark); }
+.p-card__cta:active { transform: scale(0.98); }
 
 .p-card__cta svg {
   width: 16px;
@@ -322,9 +291,7 @@
   stroke-width: 2;
 }
 
-.p-card__cta.is-added {
-  background: var(--success);
-}
+.p-card__cta.is-added { background: var(--success); }
 
 .p-card__cta:disabled,
 .p-card__cta[aria-disabled="true"] {
@@ -333,31 +300,12 @@
   cursor: not-allowed;
 }
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
-
 @media (max-width: 640px) {
-  .p-card__media {
-    padding: 14px 12px 12px;
-  }
-
-  .p-card__body {
-    padding: 12px;
-    gap: 6px;
-  }
-
-  .p-card__title {
-    font-size: var(--fs-sm);
-  }
-
-  .p-card__price-current {
-    font-size: var(--fs-base);
-  }
-
-  .p-card__price-current span:last-child {
-    font-size: 10px;
-  }
+  .p-card__media { padding: 14px 12px 12px; }
+  .p-card__body { padding: 12px; gap: 6px; }
+  .p-card__title { font-size: var(--fs-sm); }
+  .p-card__price-current { font-size: var(--fs-base); }
+  .p-card__price-current span:last-child { font-size: 10px; }
 
   .p-card__cta {
     height: 38px;
@@ -365,10 +313,7 @@
     margin-top: 8px;
   }
 
-  .p-card__actions {
-    opacity: 1;
-    transform: none;
-  }
+  .p-card__actions { opacity: 1; transform: none; }
 
   .p-card__action {
     width: 30px;
@@ -376,19 +321,7 @@
     border-radius: 8px;
   }
 
-  .p-card__action svg {
-    width: 14px;
-    height: 14px;
-  }
-
-  .p-card__badges {
-    top: 8px;
-    right: 8px;
-    gap: 4px;
-  }
-
-  .p-card__spec {
-    font-size: 10px;
-    padding: 2px 6px;
-  }
+  .p-card__action svg { width: 14px; height: 14px; }
+  .p-card__badges { top: 8px; right: 8px; gap: 4px; }
+  .p-card__spec { font-size: 10px; padding: 2px 6px; }
 }

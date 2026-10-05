@@ -1,22 +1,56 @@
 /* ============================================
    PLACEHOLDER SYSTEM
-   تمام عکس‌های سایت با این کلاس‌ها نمایش داده می‌شوند
    ============================================ */
 
 .ph {
+  position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: var(--bg-soft);
-  border: 1px dashed var(--border);
+  gap: 8px;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      var(--bg-soft),
+      var(--bg-soft) 10px,
+      #EFF3F7 10px,
+      #EFF3F7 20px
+    );
+  border: 1.5px dashed var(--border);
   border-radius: var(--radius-md);
   color: var(--text-muted);
   font-size: var(--fs-xs);
   font-weight: var(--fw-medium);
   text-align: center;
   user-select: none;
-  padding: 8px;
+  padding: 12px;
   line-height: 1.4;
+  transition: border-color var(--t-fast), background var(--t-fast);
+}
+
+.ph::before {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 28px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='18' height='18' rx='2'/><circle cx='8.5' cy='8.5' r='1.5'/><polyline points='21 15 16 10 5 21'/></svg>");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.65;
+}
+
+.ph:hover {
+  border-color: var(--primary);
+  background:
+    repeating-linear-gradient(
+      45deg,
+      #EBF4FD,
+      #EBF4FD 10px,
+      #E0EEFB 10px,
+      #E0EEFB 20px
+    );
 }
 
 .ph--square   { aspect-ratio: 1 / 1; }
@@ -27,3 +61,23 @@
 .ph--article  { aspect-ratio: 16 / 9; }
 .ph--avatar   { aspect-ratio: 1 / 1; border-radius: 50%; }
 .ph--logo     { aspect-ratio: 3 / 1; }
+
+.ph--sm {
+  font-size: 10px;
+  padding: 6px;
+  gap: 4px;
+}
+.ph--sm::before {
+  width: 18px;
+  height: 18px;
+}
+
+.ph--xs {
+  font-size: 9px;
+  padding: 4px;
+  gap: 2px;
+}
+.ph--xs::before {
+  width: 14px;
+  height: 14px;
+}

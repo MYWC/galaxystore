@@ -1,7 +1,5 @@
 /* ============================================
    13. TRUST / WHY US
-   پس‌زمینه Dark Teal #005B59 | Full Width
-   تصویر چپ + متن راست + آمار
    ============================================ */
 
 .why-us {
@@ -12,7 +10,6 @@
   padding-block: 90px;
 }
 
-/* هاله‌های نرم */
 .why-us::before,
 .why-us::after {
   content: '';
@@ -43,20 +40,12 @@
   z-index: 1;
 }
 
-/* ============================================
-   LAYOUT
-   ============================================ */
-
 .why-us__inner {
   display: grid;
   grid-template-columns: 1fr 1.05fr;
   align-items: center;
   gap: 60px;
 }
-
-/* ============================================
-   VISUAL (چپ)
-   ============================================ */
 
 .why-us__visual {
   position: relative;
@@ -73,17 +62,28 @@
   justify-content: center;
 }
 
+.why-us__visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
 .why-us__visual .ph {
   width: 90%;
   height: 90%;
   background: rgba(255, 255, 255, 0.06);
-  border: 1px dashed rgba(255, 255, 255, 0.28);
+  border: 1.5px dashed rgba(255, 255, 255, 0.28);
   color: rgba(255, 255, 255, 0.7);
   border-radius: 16px;
   font-size: 13px;
 }
 
-/* کارت شناور داخل تصویر */
+.why-us__visual .ph::before {
+  filter: invert(1) brightness(2);
+  opacity: 0.7;
+}
+
 .why-us__badge {
   position: absolute;
   bottom: 20px;
@@ -135,13 +135,7 @@
   font-weight: var(--fw-medium);
 }
 
-/* ============================================
-   CONTENT (راست)
-   ============================================ */
-
-.why-us__content {
-  max-width: 560px;
-}
+.why-us__content { max-width: 560px; }
 
 .why-us__eyebrow {
   display: inline-flex;
@@ -174,9 +168,7 @@
   margin-bottom: 18px;
 }
 
-.why-us__title-accent {
-  color: #6FE0CE;
-}
+.why-us__title-accent { color: #6FE0CE; }
 
 .why-us__desc {
   font-size: var(--fs-md);
@@ -185,10 +177,6 @@
   margin-bottom: 32px;
   max-width: 520px;
 }
-
-/* ============================================
-   STATS
-   ============================================ */
 
 .why-us__stats {
   display: grid;
@@ -227,14 +215,8 @@
   font-weight: var(--fw-medium);
 }
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
-
 @media (max-width: 1024px) {
-  .why-us {
-    padding-block: 70px;
-  }
+  .why-us { padding-block: 70px; }
   .why-us__inner {
     grid-template-columns: 1fr;
     gap: 40px;
@@ -250,57 +232,35 @@
     margin-inline: auto;
     text-align: center;
   }
-  .why-us__desc {
-    margin-inline: auto;
-  }
-  .why-us__eyebrow {
-    margin-inline: auto;
-  }
+  .why-us__desc { margin-inline: auto; }
+  .why-us__eyebrow { margin-inline: auto; }
 }
 
 @media (max-width: 640px) {
-  .why-us {
-    padding-block: 52px;
-  }
-
+  .why-us { padding-block: 52px; }
   .why-us__inner { gap: 28px; }
-
   .why-us__title {
     font-size: 24px;
     margin-bottom: 14px;
   }
-
   .why-us__desc {
     font-size: var(--fs-sm);
     margin-bottom: 24px;
   }
-
   .why-us__badge {
     bottom: 12px;
     right: 12px;
     padding: 10px 12px;
     gap: 8px;
   }
-
-  .why-us__badge-icon {
-    width: 32px;
-    height: 32px;
-  }
-
+  .why-us__badge-icon { width: 32px; height: 32px; }
   .why-us__badge-text strong { font-size: 12px; }
-  .why-us__badge-text span   { font-size: 10px; }
-
+  .why-us__badge-text span { font-size: 10px; }
   .why-us__stats {
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
     padding-top: 22px;
   }
-
-  .why-us__stat-value {
-    font-size: 20px;
-  }
-
-  .why-us__stat-label {
-    font-size: 10px;
-  }
+  .why-us__stat-value { font-size: 20px; }
+  .why-us__stat-label { font-size: 10px; }
 }

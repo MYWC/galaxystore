@@ -194,12 +194,22 @@
 }
 
 .f-card__img {
+  position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
   border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.f-card__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .f-card__img .ph {
@@ -208,6 +218,7 @@
   border-radius: 12px;
 }
 
+.f-card:hover .f-card__img img,
 .f-card:hover .f-card__img .ph {
   transform: scale(1.04);
   transition: transform var(--t-slow);
@@ -235,10 +246,7 @@
   gap: 1px;
 }
 
-.f-card__discount span:first-child {
-  font-size: 15px;
-}
-
+.f-card__discount span:first-child { font-size: 15px; }
 .f-card__discount span:last-child {
   font-size: 9px;
   font-weight: var(--fw-semibold);
@@ -263,12 +271,7 @@
   transition: background var(--t-fast), color var(--t-fast);
 }
 
-.f-card__wish:hover {
-  background: var(--discount);
-  color: #fff;
-  border-color: var(--discount);
-}
-
+.f-card__wish:hover,
 .f-card__wish.is-active {
   background: var(--discount);
   color: #fff;
@@ -378,10 +381,6 @@
   font-weight: var(--fw-semibold);
 }
 
-.f-card__progress-sold {
-  color: var(--text-muted);
-}
-
 .f-card__cta {
   display: inline-flex;
   align-items: center;
@@ -398,27 +397,10 @@
   transition: background var(--t-fast), transform var(--t-fast);
 }
 
-.f-card__cta:hover {
-  background: var(--primary);
-}
-
-.f-card__cta:active {
-  transform: scale(0.98);
-}
-
-.f-card__cta svg {
-  width: 16px;
-  height: 16px;
-  stroke-width: 2;
-}
-
-.f-card__cta.is-added {
-  background: var(--success);
-}
-
-/* ============================================
-   RESPONSIVE
-   ============================================ */
+.f-card__cta:hover { background: var(--primary); }
+.f-card__cta:active { transform: scale(0.98); }
+.f-card__cta svg { width: 16px; height: 16px; stroke-width: 2; }
+.f-card__cta.is-added { background: var(--success); }
 
 @media (max-width: 1200px) {
   .flash-sale__grid {
@@ -428,54 +410,34 @@
 }
 
 @media (max-width: 900px) {
-  .flash-sale__head {
-    align-items: flex-start;
-  }
+  .flash-sale__head { align-items: flex-start; }
   .flash-sale__countdown {
     order: 3;
     flex-basis: 100%;
     justify-content: space-between;
   }
-  .flash-sale__link {
-    order: 2;
-  }
+  .flash-sale__link { order: 2; }
 }
 
 @media (max-width: 768px) {
-  .flash-sale__title {
-    font-size: var(--fs-lg);
-  }
-
+  .flash-sale__title { font-size: var(--fs-lg); }
   .flash-sale__icon {
     width: 38px;
     height: 38px;
     border-radius: 11px;
   }
-  .flash-sale__icon svg {
-    width: 20px;
-    height: 20px;
-  }
-
+  .flash-sale__icon svg { width: 20px; height: 20px; }
   .flash-sale__cd-box {
     min-width: 36px;
     height: 36px;
     font-size: 15px;
   }
-
-  .flash-sale__countdown-label {
-    font-size: 10px;
-  }
+  .flash-sale__countdown-label { font-size: 10px; }
 }
 
 @media (max-width: 640px) {
-  .flash-sale {
-    padding-block: 40px;
-  }
-
-  .flash-sale__head {
-    margin-bottom: 16px;
-    gap: 12px;
-  }
+  .flash-sale { padding-block: 40px; }
+  .flash-sale__head { margin-bottom: 16px; gap: 12px; }
 
   .flash-sale__grid {
     display: flex;
@@ -495,22 +457,13 @@
     scroll-snap-align: start;
   }
 
-  .f-card__media {
-    padding: 16px 14px 14px;
-  }
-
+  .f-card__media { padding: 16px 14px 14px; }
   .f-card__discount {
     min-width: 38px;
     height: 38px;
     font-size: 12px;
     border-radius: 10px;
   }
-
-  .f-card__discount span:first-child {
-    font-size: 13px;
-  }
-
-  .f-card__price-current {
-    font-size: var(--fs-base);
-  }
+  .f-card__discount span:first-child { font-size: 13px; }
+  .f-card__price-current { font-size: var(--fs-base); }
 }

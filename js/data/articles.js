@@ -12,6 +12,7 @@ export const articles = [
     date: '۱۵ مهر ۱۴۰۴',
     readTime: '۱۰ دقیقه',
     href: '/magazine/best-phones-2026',
+    image: null,
   },
   {
     id: 'a2',
@@ -22,6 +23,7 @@ export const articles = [
     date: '۱۲ مهر ۱۴۰۴',
     readTime: '۸ دقیقه',
     href: '/magazine/iphone-vs-galaxy',
+    image: null,
   },
   {
     id: 'a3',
@@ -32,5 +34,6 @@ export const articles = [
     date: '۸ مهر ۱۴۰۴',
     readTime: '۶ دقیقه',
     href: '/magazine/7-tips-before-buying',
+    image: null,
   },
 ];

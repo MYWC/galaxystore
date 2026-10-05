@@ -1,5 +1,5 @@
 /* ============================================
-   11. BUYING GUIDES / SEASONAL BANNERS
+   11. BUYING GUIDES
    ============================================ */
 
 .buying-guides {
@@ -36,13 +36,8 @@
   transition: transform var(--t-fast);
 }
 
-.buying-guides__link:hover {
-  color: var(--primary-dark);
-}
-
-.buying-guides__link:hover svg {
-  transform: translateX(-3px);
-}
+.buying-guides__link:hover { color: var(--primary-dark); }
+.buying-guides__link:hover svg { transform: translateX(-3px); }
 
 .buying-guides__grid {
   display: grid;
@@ -79,6 +74,18 @@
   background: linear-gradient(135deg, #F2F7FC, #E6EEF8);
 }
 
+.guide-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform var(--t-slow);
+}
+
+.guide-card:hover .guide-card__media img {
+  transform: scale(1.05);
+}
+
 .guide-card__media .ph {
   width: 100%;
   height: 100%;
@@ -98,8 +105,9 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 55%, rgba(23, 32, 42, 0.05) 100%);
+  background: linear-gradient(180deg, transparent 55%, rgba(23, 32, 42, 0.08) 100%);
   pointer-events: none;
+  z-index: 1;
 }
 
 .guide-card__tag {
@@ -149,9 +157,7 @@
   transition: color var(--t-fast);
 }
 
-.guide-card:hover .guide-card__title {
-  color: var(--primary);
-}
+.guide-card:hover .guide-card__title { color: var(--primary); }
 
 .guide-card__desc {
   font-size: var(--fs-sm);
@@ -190,9 +196,7 @@
   transition: transform var(--t-fast);
 }
 
-.guide-card:hover .guide-card__read svg {
-  transform: translateX(-3px);
-}
+.guide-card:hover .guide-card__read svg { transform: translateX(-3px); }
 
 .guide-card__time {
   display: inline-flex;
@@ -231,40 +235,28 @@
   .buying-guides__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-
   .buying-guides__grid .guide-card:nth-child(3) {
     grid-column: 1 / -1;
   }
-
   .buying-guides__grid .guide-card:nth-child(3) .guide-card__media {
     aspect-ratio: 21 / 9;
   }
 }
 
 @media (max-width: 768px) {
-  .buying-guides__title {
-    font-size: var(--fs-xl);
-  }
+  .buying-guides__title { font-size: var(--fs-xl); }
 }
 
 @media (max-width: 640px) {
-  .buying-guides {
-    padding-block: 40px;
-  }
-
-  .buying-guides__head {
-    margin-bottom: 16px;
-  }
-
+  .buying-guides { padding-block: 40px; }
+  .buying-guides__head { margin-bottom: 16px; }
   .buying-guides__grid {
     grid-template-columns: 1fr;
     gap: 14px;
   }
-
   .buying-guides__grid .guide-card:nth-child(3) {
     grid-column: auto;
   }
-
   .buying-guides__grid .guide-card:nth-child(3) .guide-card__media {
     aspect-ratio: 16 / 9;
   }
@@ -273,17 +265,10 @@
     padding: 16px 16px 18px;
     gap: 8px;
   }
-
   .guide-card__title {
     font-size: var(--fs-base);
     min-height: auto;
   }
-
-  .guide-card__desc {
-    font-size: var(--fs-xs);
-  }
-
-  .guide-card__meta {
-    padding-top: 12px;
-  }
+  .guide-card__desc { font-size: var(--fs-xs); }
+  .guide-card__meta { padding-top: 12px; }
 }

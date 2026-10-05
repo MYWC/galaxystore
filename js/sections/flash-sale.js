@@ -4,15 +4,10 @@
 
 import { flashSaleProducts, formatPrice } from '../data/products.js';
 
-/* ---------- Icons ---------- */
 const ICONS = {
   heart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`,
   cart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`,
 };
-
-/* ============================================
-   FLASH CARD RENDERER
-   ============================================ */
 
 function renderFlashCard(p) {
   const {
@@ -26,12 +21,11 @@ function renderFlashCard(p) {
     : 0;
 
   const imageHTML = image
-    ? `<img src="${image}" alt="${name}" class="f-card__img" loading="lazy" />`
-    : `<div class="f-card__img"><div class="ph ph--square">تصویر محصول</div></div>`;
+    ? `<img src="${image}" alt="${name}" loading="lazy" />`
+    : `<div class="ph ph--square">تصویر محصول</div>`;
 
   return `
     <article class="f-card" data-product-id="${id}">
-
       <div class="f-card__media">
         <span class="f-card__discount">
           <span>٪${discount}</span>
@@ -42,11 +36,12 @@ function renderFlashCard(p) {
           ${ICONS.heart}
         </button>
 
-        ${imageHTML}
+        <div class="f-card__img">
+          ${imageHTML}
+        </div>
       </div>
 
       <div class="f-card__body">
-
         <span class="f-card__brand">${brand}</span>
         <h3 class="f-card__title">${name}</h3>
 
@@ -72,15 +67,10 @@ function renderFlashCard(p) {
           ${ICONS.cart}
           افزودن به سبد
         </button>
-
       </div>
     </article>
   `;
 }
-
-/* ============================================
-   COUNTDOWN
-   ============================================ */
 
 function pad2(n) {
   return String(n).padStart(2, '0');
@@ -94,12 +84,9 @@ function initCountdown() {
   const minutesEl = el.querySelector('[data-cd="minutes"]');
   const secondsEl = el.querySelector('[data-cd="seconds"]');
 
-  // پایان: امروز + 12 ساعت 48 دقیقه (پویا: فردا نیمه‌شب ساده‌تر)
-  // برای نسخه حرفه‌ای، زمان پایان را از ساعت 12:48:35 شروع می‌کنیم
   const DURATION_MS = ((12 * 60 + 48) * 60 + 35) * 1000;
   const STORAGE_KEY = 'flashSaleEndAt';
 
-  // اگر در localStorage ذخیره نشده یا منقضی شده، زمان جدید بساز
   let endAt = Number(localStorage.getItem(STORAGE_KEY));
   if (!endAt || endAt < Date.now()) {
     endAt = Date.now() + DURATION_MS;
@@ -108,7 +95,6 @@ function initCountdown() {
 
   const tick = () => {
     const remaining = Math.max(0, endAt - Date.now());
-
     const totalSec = Math.floor(remaining / 1000);
     const hours   = Math.floor(totalSec / 3600);
     const minutes = Math.floor((totalSec % 3600) / 60);
@@ -118,24 +104,16 @@ function initCountdown() {
     minutesEl.textContent = pad2(minutes);
     secondsEl.textContent = pad2(seconds);
 
-    if (remaining <= 0) {
-      clearInterval(timer);
-    }
+    if (remaining <= 0) clearInterval(timer);
   };
 
   tick();
   const timer = setInterval(tick, 1000);
 }
 
-/* ============================================
-   INIT
-   ============================================ */
-
 export function initFlashSale() {
   const grid = document.getElementById('flash-sale-grid');
   if (!grid) return;
-
   grid.innerHTML = flashSaleProducts.map(renderFlashCard).join('');
-
   initCountdown();
 }

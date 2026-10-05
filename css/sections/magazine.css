@@ -1,5 +1,5 @@
 /* ============================================
-   16. MAGAZINE / ARTICLES
+   16. MAGAZINE
    ============================================ */
 
 .magazine {
@@ -49,23 +49,14 @@
   transition: transform var(--t-fast);
 }
 
-.magazine__link:hover {
-  color: var(--primary-dark);
-}
-
-.magazine__link:hover svg {
-  transform: translateX(-3px);
-}
+.magazine__link:hover { color: var(--primary-dark); }
+.magazine__link:hover svg { transform: translateX(-3px); }
 
 .magazine__grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
 }
-
-/* ============================================
-   ARTICLE CARD
-   ============================================ */
 
 .article-card {
   display: flex;
@@ -91,8 +82,20 @@
 .article-card__media {
   position: relative;
   aspect-ratio: 16 / 10;
-  background: var(--art-gradient, linear-gradient(135deg, #EAF4FD, #DCEBFB));
   overflow: hidden;
+  background: var(--art-gradient, linear-gradient(135deg, #EAF4FD, #DCEBFB));
+}
+
+.article-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform var(--t-slow);
+}
+
+.article-card:hover .article-card__media img {
+  transform: scale(1.05);
 }
 
 .article-card__media .ph {
@@ -105,11 +108,6 @@
   font-size: 13px;
   font-weight: var(--fw-semibold);
   letter-spacing: 0.5px;
-}
-
-.article-card:hover .article-card__media .ph {
-  transform: scale(1.04);
-  transition: transform var(--t-slow);
 }
 
 .article-card__tag {
@@ -159,9 +157,7 @@
   transition: color var(--t-fast);
 }
 
-.article-card:hover .article-card__title {
-  color: var(--primary);
-}
+.article-card:hover .article-card__title { color: var(--primary); }
 
 .article-card__desc {
   font-size: var(--fs-sm);
@@ -199,9 +195,7 @@
   transition: transform var(--t-fast);
 }
 
-.article-card:hover .article-card__read svg {
-  transform: translateX(-3px);
-}
+.article-card:hover .article-card__read svg { transform: translateX(-3px); }
 
 .article-card__date {
   display: inline-flex;
@@ -212,88 +206,43 @@
   font-weight: var(--fw-medium);
 }
 
-.article-card__date svg {
-  width: 13px;
-  height: 13px;
-}
+.article-card__date svg { width: 13px; height: 13px; }
 
-/* Color Variants */
 .article-card--blue {
   --art-gradient: linear-gradient(135deg, #EAF4FD, #D6E8FA);
   --art-accent: #2386D7;
 }
-
 .article-card--teal {
   --art-gradient: linear-gradient(135deg, #E5F4F2, #D0EAE5);
   --art-accent: #005B59;
 }
-
 .article-card--orange {
   --art-gradient: linear-gradient(135deg, #FFF3E6, #FFE4C7);
   --art-accent: #EF6C1F;
 }
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
-
 @media (max-width: 1024px) {
-  .magazine__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .magazine__grid .article-card:nth-child(3) {
-    grid-column: 1 / -1;
-  }
-
+  .magazine__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .magazine__grid .article-card:nth-child(3) { grid-column: 1 / -1; }
   .magazine__grid .article-card:nth-child(3) .article-card__media {
     aspect-ratio: 21 / 9;
   }
 }
 
 @media (max-width: 768px) {
-  .magazine__title {
-    font-size: var(--fs-xl);
-  }
+  .magazine__title { font-size: var(--fs-xl); }
 }
 
 @media (max-width: 640px) {
-  .magazine {
-    padding-block: 40px;
-  }
-
-  .magazine__head {
-    margin-bottom: 16px;
-  }
-
-  .magazine__grid {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-
-  .magazine__grid .article-card:nth-child(3) {
-    grid-column: auto;
-  }
-
+  .magazine { padding-block: 40px; }
+  .magazine__head { margin-bottom: 16px; }
+  .magazine__grid { grid-template-columns: 1fr; gap: 14px; }
+  .magazine__grid .article-card:nth-child(3) { grid-column: auto; }
   .magazine__grid .article-card:nth-child(3) .article-card__media {
     aspect-ratio: 16 / 10;
   }
-
-  .article-card__body {
-    padding: 16px;
-    gap: 8px;
-  }
-
-  .article-card__title {
-    font-size: var(--fs-base);
-    min-height: auto;
-  }
-
-  .article-card__desc {
-    font-size: var(--fs-xs);
-  }
-
-  .article-card__meta {
-    padding-top: 12px;
-  }
+  .article-card__body { padding: 16px; gap: 8px; }
+  .article-card__title { font-size: var(--fs-base); min-height: auto; }
+  .article-card__desc { font-size: var(--fs-xs); }
+  .article-card__meta { padding-top: 12px; }
 }
