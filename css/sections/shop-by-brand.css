@@ -1,6 +1,5 @@
 /* ============================================
-   12. SHOP BY BRAND
-   لوگوی برندها روی پس‌زمینه سفید | فاصله زیاد
+   12. SHOP BY BRAND — 10 برند
    ============================================ */
 
 .shop-by-brand {
@@ -38,27 +37,14 @@
   transition: transform var(--t-fast);
 }
 
-.shop-by-brand__link:hover {
-  color: var(--primary-dark);
-}
-
-.shop-by-brand__link:hover svg {
-  transform: translateX(-3px);
-}
-
-/* ============================================
-   GRID
-   ============================================ */
+.shop-by-brand__link:hover { color: var(--primary-dark); }
+.shop-by-brand__link:hover svg { transform: translateX(-3px); }
 
 .shop-by-brand__grid {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 16px;
 }
-
-/* ============================================
-   BRAND CARD
-   ============================================ */
 
 .brand-card {
   position: relative;
@@ -99,13 +85,7 @@
   box-shadow: 0 10px 26px -12px rgba(23, 32, 42, 0.14);
 }
 
-.brand-card:hover::before {
-  transform: scaleX(1);
-}
-
-/* ============================================
-   LOGO (SVG + Text)
-   ============================================ */
+.brand-card:hover::before { transform: scaleX(1); }
 
 .brand-card__logo {
   display: flex;
@@ -116,9 +96,7 @@
   transition: transform var(--t-base);
 }
 
-.brand-card:hover .brand-card__logo {
-  transform: scale(1.04);
-}
+.brand-card:hover .brand-card__logo { transform: scale(1.04); }
 
 .brand-card__logo svg {
   width: 28px;
@@ -141,7 +119,7 @@
 }
 
 /* ============================================
-   COLOR VARIANTS
+   COLOR VARIANTS — 10 برند
    ============================================ */
 
 .brand-card--apple    { --brand-color: #1A1F28; }
@@ -152,15 +130,15 @@
 .brand-card--honor    { --brand-color: #7C5CFF; }
 .brand-card--nothing  { --brand-color: #17202A; }
 .brand-card--motorola { --brand-color: #005B59; }
+.brand-card--realme   { --brand-color: #FFC915; }
+.brand-card--huawei   { --brand-color: #CF0A2C; }
 
 /* ============================================
    RESPONSIVE
    ============================================ */
 
 @media (max-width: 1200px) {
-  .shop-by-brand__grid {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-  }
+  .shop-by-brand__grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
 
 @media (max-width: 1024px) {
@@ -171,21 +149,13 @@
 }
 
 @media (max-width: 768px) {
-  .shop-by-brand__title {
-    font-size: var(--fs-xl);
-  }
+  .shop-by-brand__title { font-size: var(--fs-xl); }
 }
 
 @media (max-width: 640px) {
-  .shop-by-brand {
-    padding-block: 40px;
-  }
+  .shop-by-brand { padding-block: 40px; }
+  .shop-by-brand__head { margin-bottom: 16px; }
 
-  .shop-by-brand__head {
-    margin-bottom: 16px;
-  }
-
-  /* اسکرول افقی */
   .shop-by-brand__grid {
     display: flex;
     overflow-x: auto;
@@ -206,12 +176,6 @@
     min-height: 108px;
   }
 
-  .brand-card__logo svg {
-    width: 24px;
-    height: 24px;
-  }
-
-  .brand-card__name {
-    font-size: 13px;
-  }
+  .brand-card__logo svg { width: 24px; height: 24px; }
+  .brand-card__name { font-size: 13px; }
 }

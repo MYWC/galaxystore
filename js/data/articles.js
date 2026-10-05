@@ -1,5 +1,5 @@
 /* ============================================
-   ARTICLES DATA
+   ARTICLES DATA — موبایل و تبلت
    ============================================ */
 
 export const articles = [
@@ -28,12 +28,12 @@ export const articles = [
   {
     id: 'a3',
     variant: 'orange',
-    tag: 'نکات کاربردی',
-    title: 'قبل از خرید گوشی به این ۷ نکته توجه کنید',
-    desc: 'چک‌لیستی ساده اما ضروری که باعث می‌شود از خرید خود پشیمان نشوید.',
+    tag: 'راهنمای تبلت',
+    title: 'قبل از خرید تبلت به این ۷ نکته توجه کنید',
+    desc: 'چک‌لیستی ساده اما ضروری برای خرید تبلتی که واقعاً به نیازهای شما پاسخ می‌دهد.',
     date: '۸ مهر ۱۴۰۴',
     readTime: '۶ دقیقه',
-    href: '/magazine/7-tips-before-buying',
+    href: '/magazine/7-tips-before-buying-tablet',
     image: null,
   },
 ];
