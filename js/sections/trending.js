@@ -7,6 +7,11 @@ import { renderProductList } from '../components/product-card.js';
 
 const MAX_ITEMS = 8;
 
+function minPrice(p) {
+  if (!p.variants?.length) return Infinity;
+  return Math.min(...p.variants.map((v) => v.price));
+}
+
 function filterByCategory(catId) {
   let list;
 
@@ -17,9 +22,9 @@ function filterByCategory(catId) {
   } else if (catId === 'tablet') {
     list = products.filter((p) => p.type === 'tablet');
   } else if (catId === 'flagship') {
-    list = products.filter((p) => p.price >= 50000000);
+    list = products.filter((p) => minPrice(p) >= 150000000);
   } else if (catId === 'budget') {
-    list = products.filter((p) => p.price <= 20000000);
+    list = products.filter((p) => minPrice(p) <= 50000000);
   } else {
     list = products.filter((p) => p.category === catId);
   }
@@ -31,8 +36,8 @@ function countByCategory(catId) {
   if (catId === 'all') return products.length;
   if (catId === 'phone')    return products.filter((p) => p.type === 'phone').length;
   if (catId === 'tablet')   return products.filter((p) => p.type === 'tablet').length;
-  if (catId === 'flagship') return products.filter((p) => p.price >= 50000000).length;
-  if (catId === 'budget')   return products.filter((p) => p.price <= 20000000).length;
+  if (catId === 'flagship') return products.filter((p) => minPrice(p) >= 150000000).length;
+  if (catId === 'budget')   return products.filter((p) => minPrice(p) <= 50000000).length;
   return products.filter((p) => p.category === catId).length;
 }
 
@@ -44,11 +49,7 @@ function renderTabs(activeId) {
     const count = countByCategory(t.id);
     const active = t.id === activeId ? ' is-active' : '';
     return `
-      <button
-        class="trending__tab${active}"
-        data-tab="${t.id}"
-        type="button"
-      >
+      <button class="trending__tab${active}" data-tab="${t.id}" type="button">
         ${t.label}
         <span class="trending__tab-count">${count}</span>
       </button>
