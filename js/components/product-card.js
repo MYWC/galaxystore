@@ -1,5 +1,5 @@
 /* ============================================
-   PRODUCT CARD RENDERER
+   PRODUCT CARD RENDERER — با Storage Pills
    ============================================ */
 
 import { formatPrice } from '../data/products.js';
@@ -14,11 +14,20 @@ const ICONS = {
 };
 
 const BADGE_MAP = {
-  discount: (p) => `<span class="badge badge--discount">٪${p.discount} تخفیف</span>`,
+  discount: (p) => {
+    const d = p.discount || calcDiscount(p);
+    return `<span class="badge badge--discount">٪${d} تخفیف</span>`;
+  },
   new:      () => `<span class="badge badge--new">جدید</span>`,
   hot:      () => `<span class="badge badge--hot">پرفروش</span>`,
-  in_stock: () => `<span class="badge badge--in-stock">موجود</span>`,
 };
+
+function calcDiscount(p) {
+  if (!p.variants?.length) return 0;
+  const v = p.variants[0];
+  if (!v.oldPrice || v.oldPrice <= v.price) return 0;
+  return Math.round(((v.oldPrice - v.price) / v.oldPrice) * 100);
+}
 
 function renderStars(rating) {
   const full = Math.floor(rating);
@@ -30,60 +39,60 @@ function renderStars(rating) {
   return out;
 }
 
-function renderStock(stock) {
-  if (stock === 0) {
-    return `<span class="p-card__stock p-card__stock--out">ناموجود</span>`;
-  }
-  if (stock <= 5) {
-    return `<span class="p-card__stock p-card__stock--low">${ICONS.check} فقط ${stock} عدد باقی مانده</span>`;
-  }
+function renderStock(variant) {
+  if (variant.stock === 0) return `<span class="p-card__stock p-card__stock--out">ناموجود</span>`;
+  if (variant.stock <= 5) return `<span class="p-card__stock p-card__stock--low">${ICONS.check} فقط ${variant.stock} عدد</span>`;
   return `<span class="p-card__stock">${ICONS.check} موجود در انبار</span>`;
 }
 
+/* ============================================
+   RENDER
+   ============================================ */
+
 export function renderProductCard(product) {
-  const {
-    id, brand, name, ram, storage,
-    rating, reviews, price, oldPrice, discount,
-    stock, badges = [], image,
-  } = product;
+  const { id, brand, name, rating, reviews, badges = [], image, variants = [] } = product;
+
+  if (!variants.length) return '';
+
+  // واریانت پیشفرض: ارزانترین
+  const defaultVariant = [...variants].sort((a, b) => a.price - b.price)[0];
+  const vIndex = variants.indexOf(defaultVariant);
 
   const badgesHTML = badges
     .map((b) => (BADGE_MAP[b] ? BADGE_MAP[b](product) : ''))
     .join('');
 
-  const oldPriceHTML = oldPrice
-    ? `<span class="p-card__price-old">${formatPrice(oldPrice)}</span>`
-    : '';
-
   const imageHTML = image
     ? `<img src="${image}" alt="${name}" loading="lazy" />`
     : `<div class="ph ph--square">تصویر محصول</div>`;
 
-  const ctaDisabled = stock === 0;
-  const ctaAttrs = ctaDisabled
-    ? 'aria-disabled="true" disabled'
-    : `data-add-to-cart="${id}"`;
+  const storagesHTML = variants.map((v, i) => `
+    <button
+      class="p-card__storage ${i === vIndex ? 'is-active' : ''}"
+      data-variant-index="${i}"
+      data-product-id="${id}"
+      ${v.stock === 0 ? 'disabled' : ''}
+      type="button"
+    >${v.storage}</button>
+  `).join('');
+
+  const oldPriceHTML = defaultVariant.oldPrice
+    ? `<span class="p-card__price-old">${formatPrice(defaultVariant.oldPrice)}</span>`
+    : '';
 
   return `
-    <article class="p-card" data-product-id="${id}">
+    <article class="p-card" data-product-id="${id}" data-active-variant="${vIndex}">
+
       <div class="p-card__media">
         ${badgesHTML ? `<div class="p-card__badges">${badgesHTML}</div>` : ''}
 
         <div class="p-card__actions">
-          <button class="p-card__action" aria-label="افزودن به علاقه‌مندی" data-wishlist="${id}">
-            ${ICONS.heart}
-          </button>
-          <button class="p-card__action" aria-label="افزودن به مقایسه" data-compare="${id}">
-            ${ICONS.compare}
-          </button>
-          <button class="p-card__action" aria-label="نمایش سریع" data-quickview="${id}">
-            ${ICONS.eye}
-          </button>
+          <button class="p-card__action" aria-label="علاقه‌مندی" data-wishlist="${id}">${ICONS.heart}</button>
+          <button class="p-card__action" aria-label="مقایسه" data-compare="${id}">${ICONS.compare}</button>
+          <button class="p-card__action" aria-label="نمایش سریع" data-quickview="${id}">${ICONS.eye}</button>
         </div>
 
-        <div class="p-card__img">
-          ${imageHTML}
-        </div>
+        <div class="p-card__img">${imageHTML}</div>
       </div>
 
       <div class="p-card__body">
@@ -94,9 +103,8 @@ export function renderProductCard(product) {
 
         <h3 class="p-card__title" title="${name}">${name}</h3>
 
-        <div class="p-card__specs">
-          ${storage ? `<span class="p-card__spec">${storage}</span>` : ''}
-          ${ram ? `<span class="p-card__spec">${ram} RAM</span>` : ''}
+        <div class="p-card__storages" data-storages="${id}">
+          ${storagesHTML}
         </div>
 
         <div class="p-card__rating">
@@ -107,17 +115,19 @@ export function renderProductCard(product) {
 
         <div class="p-card__divider"></div>
 
-        ${renderStock(stock)}
-
-        <div class="p-card__price">
-          <span class="p-card__price-current">
-            ${formatPrice(price)}
-            <span>تومان</span>
-          </span>
-          ${oldPriceHTML}
+        <div data-stock="${id}">
+          ${renderStock(defaultVariant)}
         </div>
 
-        <button class="p-card__cta" ${ctaAttrs}>
+        <div class="p-card__price">
+          <span class="p-card__price-current" data-price="${id}">
+            ${formatPrice(defaultVariant.price)}
+            <span>تومان</span>
+          </span>
+          <span data-oldprice="${id}">${oldPriceHTML}</span>
+        </div>
+
+        <button class="p-card__cta" data-add-to-cart="${id}" ${defaultVariant.stock === 0 ? 'disabled' : ''}>
           ${ICONS.cart}
           افزودن به سبد
         </button>
