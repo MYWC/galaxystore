@@ -1,7 +1,5 @@
 /* ============================================
    05. QUICK CATEGORIES
-   عنوان: دسته‌بندی‌های محبوب
-   کارت‌ها: ۱۴۰–۱۸۰px | Border #E9EEF1 | Radius 14px
    ============================================ */
 
 .categories {
@@ -38,27 +36,14 @@
   transition: transform var(--t-fast);
 }
 
-.categories__link:hover {
-  color: var(--primary-dark);
-}
-
-.categories__link:hover svg {
-  transform: translateX(-3px);
-}
-
-/* ============================================
-   GRID
-   ============================================ */
+.categories__link:hover { color: var(--primary-dark); }
+.categories__link:hover svg { transform: translateX(-3px); }
 
 .categories__grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: var(--sp-4);
 }
-
-/* ============================================
-   CATEGORY CARD
-   ============================================ */
 
 .category-card {
   position: relative;
@@ -80,7 +65,6 @@
   overflow: hidden;
 }
 
-/* هاله ملایم برند در پایین کارت */
 .category-card::after {
   content: '';
   position: absolute;
@@ -107,10 +91,6 @@
   opacity: 1;
 }
 
-/* ============================================
-   ICON
-   ============================================ */
-
 .category-card__icon {
   width: 56px;
   height: 56px;
@@ -133,10 +113,6 @@
   stroke-width: 1.8;
 }
 
-/* ============================================
-   TEXT
-   ============================================ */
-
 .category-card__title {
   font-size: var(--fs-sm);
   font-weight: var(--fw-semibold);
@@ -150,26 +126,17 @@
   font-weight: var(--fw-regular);
 }
 
-/* ============================================
-   COLOR VARIANTS (برندها)
-   ============================================ */
-
+/* Color Variants */
 .category-card--apple    { --cat-color: #1a1f28; --cat-soft: #F1F3F5; }
 .category-card--samsung  { --cat-color: #2386D7; --cat-soft: #E7F2FB; }
 .category-card--xiaomi   { --cat-color: #F59E0B; --cat-soft: #FFF6E5; }
 .category-card--google   { --cat-color: #EF5350; --cat-soft: #FDECEC; }
-.category-card--oneplus  { --cat-color: #16B5A5; --cat-soft: #E6F7F1; }
-.category-card--honor    { --cat-color: #7C5CFF; --cat-soft: #EFEBFF; }
-.category-card--acc      { --cat-color: #005B59; --cat-soft: #E4F1F0; }
-
-/* ============================================
-   RESPONSIVE
-   ============================================ */
+.category-card--tablet   { --cat-color: #16B5A5; --cat-soft: #E6F7F1; }
+.category-card--flagship { --cat-color: #7C5CFF; --cat-soft: #EFEBFF; }
+.category-card--budget   { --cat-color: #005B59; --cat-soft: #E4F1F0; }
 
 @media (max-width: 1200px) {
-  .categories__grid {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-  }
+  .categories__grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 }
 
 @media (max-width: 1024px) {
@@ -180,23 +147,11 @@
 }
 
 @media (max-width: 640px) {
-  .categories {
-    padding-block: 40px;
-  }
+  .categories { padding-block: 40px; }
+  .categories__head { margin-bottom: 16px; }
+  .categories__title { font-size: var(--fs-lg); }
+  .categories__link { font-size: var(--fs-xs); }
 
-  .categories__head {
-    margin-bottom: 16px;
-  }
-
-  .categories__title {
-    font-size: var(--fs-lg);
-  }
-
-  .categories__link {
-    font-size: var(--fs-xs);
-  }
-
-  /* اسکرول افقی */
   .categories__grid {
     display: flex;
     overflow-x: auto;
@@ -216,22 +171,8 @@
     padding: 16px 8px 14px;
   }
 
-  .category-card__icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
-  }
-
-  .category-card__icon svg {
-    width: 24px;
-    height: 24px;
-  }
-
-  .category-card__title {
-    font-size: var(--fs-xs);
-  }
-
-  .category-card__count {
-    font-size: 10px;
-  }
+  .category-card__icon { width: 48px; height: 48px; border-radius: 14px; }
+  .category-card__icon svg { width: 24px; height: 24px; }
+  .category-card__title { font-size: var(--fs-xs); }
+  .category-card__count { font-size: 10px; }
 }

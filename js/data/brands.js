@@ -1,6 +1,5 @@
 /* ============================================
-   BRANDS DATA
-   لوگوها به صورت SVG inline (بدون نیاز به فایل خارجی)
+   BRANDS DATA — 10 برند تخصصی موبایل و تبلت
    ============================================ */
 
 export const brands = [
@@ -96,6 +95,29 @@ export const brands = [
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M8 6a5 5 0 0 0 0 12h8a5 5 0 0 0 0-12H8z"/>
         <path d="M8 9h8"/>
+      </svg>
+    `,
+  },
+  {
+    id: 'realme',
+    name: 'Realme',
+    count: 42,
+    href: '/brands/realme',
+    svg: `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4 18V6h7a4 4 0 0 1 0 8H4"/>
+        <path d="M11 14l6 4"/>
+      </svg>
+    `,
+  },
+  {
+    id: 'huawei',
+    name: 'Huawei',
+    count: 36,
+    href: '/brands/huawei',
+    svg: `
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 2 8 7l4-2 4 2-4-5zm-6 7L2 14l4-2 4 2-4-5zm12 0-4 5 4-2 4 2-4-5zm-6-1-3 5 3-1.5 3 1.5-3-5zm0 7-3 5 3-1.5 3 1.5-3-5z"/>
       </svg>
     `,
   },

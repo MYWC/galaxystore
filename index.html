@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#2386D7" />
-  <title>فروشگاه موبایل | خرید گوشی و لوازم جانبی</title>
-  <meta name="description" content="خرید جدیدترین گوشی‌های اپل، سامسونگ و شیائومی با ضمانت اصالت و ارسال سریع" />
+  <title>موبایل استور | فروشگاه تخصصی موبایل و تبلت</title>
+  <meta name="description" content="فروشگاه تخصصی موبایل و تبلت — اپل، سامسونگ، شیائومی، گوگل، وان‌پلاس، آنر، ناثینگ، موتورولا، ریلمی، هواوی" />
 
   <!-- CSS -->
   <link rel="stylesheet" href="css/reset.css" />
@@ -47,7 +47,7 @@
 </head>
 <body>
 
-  <!-- 01. ANNOUNCEMENT BAR -->
+  <!-- 01. ANNOUNCEMENT -->
   <div class="announcement">
     <div class="container">
       <div class="announcement__inner">
@@ -82,7 +82,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
 
-        <a href="/" class="header__logo" aria-label="فروشگاه موبایل">
+        <a href="/" class="header__logo" aria-label="موبایل استور">
           <span class="header__logo-mark">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="5" y="2" width="14" height="20" rx="3"/>
@@ -91,7 +91,7 @@
           </span>
           <span class="header__logo-text">
             <span>موبایل استور</span>
-            <span>MOBILE STORE</span>
+            <span>MOBILE & TABLET</span>
           </span>
         </a>
 
@@ -100,7 +100,7 @@
             <circle cx="11" cy="11" r="8"/>
             <line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
-          <input type="search" class="header__search-input" placeholder="جستجوی مدل، برند یا محصول..." aria-label="جستجو" autocomplete="off" />
+          <input type="search" class="header__search-input" placeholder="جستجوی گوشی، تبلت یا برند..." aria-label="جستجو" autocomplete="off" />
         </div>
 
         <div class="header__actions">
@@ -132,7 +132,7 @@
     </div>
   </header>
 
-  <!-- 03. NAVIGATION -->
+  <!-- 03. NAVIGATION (فقط موبایل و تبلت) -->
   <nav class="nav" id="main-nav" aria-label="منوی اصلی">
     <div class="container">
       <div class="nav__inner">
@@ -141,15 +141,17 @@
           پیشنهاد ویژه
         </a>
         <span class="nav__sep"></span>
-        <a href="/mobile" class="nav__link">موبایل</a>
-        <a href="/iphone" class="nav__link">آیفون</a>
-        <a href="/samsung" class="nav__link">سامسونگ</a>
-        <a href="/xiaomi" class="nav__link">شیائومی</a>
-        <a href="/accessories" class="nav__link">لوازم جانبی</a>
-        <a href="/headphones" class="nav__link">هدفون</a>
-        <a href="/smartwatch" class="nav__link">ساعت هوشمند</a>
+        <a href="/mobile" class="nav__link">گوشی موبایل</a>
         <a href="/tablet" class="nav__link">تبلت</a>
-        <a href="/laptop" class="nav__link">لپ‌تاپ</a>
+        <span class="nav__sep"></span>
+        <a href="/brands/apple" class="nav__link">آیفون</a>
+        <a href="/brands/samsung" class="nav__link">سامسونگ</a>
+        <a href="/brands/xiaomi" class="nav__link">شیائومی</a>
+        <a href="/brands/google" class="nav__link">گوگل پیکسل</a>
+        <a href="/brands/oneplus" class="nav__link">وان‌پلاس</a>
+        <a href="/brands/honor" class="nav__link">آنر</a>
+        <a href="/brands/nothing" class="nav__link">ناثینگ</a>
+        <a href="/brands/huawei" class="nav__link">هواوی</a>
         <a href="/discounts" class="nav__link">تخفیف‌ها</a>
       </div>
     </div>
@@ -159,7 +161,7 @@
   <section class="hero" id="hero">
     <div class="container">
       <a href="/special" class="hero__banner">
-        <img src="assets/images/hero/hero-banner.jpg" alt="جدیدترین گوشی‌ها با بهترین قیمت" />
+        <img src="assets/images/hero/hero-banner.jpg" alt="فروشگاه تخصصی موبایل و تبلت" />
       </a>
     </div>
   </section>
@@ -176,40 +178,52 @@
       </div>
 
       <div class="categories__grid">
-        <a href="/iphone" class="category-card category-card--apple">
+        <a href="/brands/apple" class="category-card category-card--apple">
           <span class="category-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span>
           <span class="category-card__title">آیفون</span>
           <span class="category-card__count">۱۸۴ کالا</span>
         </a>
-        <a href="/samsung" class="category-card category-card--samsung">
+
+        <a href="/brands/samsung" class="category-card category-card--samsung">
           <span class="category-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span>
           <span class="category-card__title">سامسونگ</span>
           <span class="category-card__count">۲۴۷ کالا</span>
         </a>
-        <a href="/xiaomi" class="category-card category-card--xiaomi">
+
+        <a href="/brands/xiaomi" class="category-card category-card--xiaomi">
           <span class="category-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span>
           <span class="category-card__title">شیائومی</span>
           <span class="category-card__count">۱۹۶ کالا</span>
         </a>
-        <a href="/google" class="category-card category-card--google">
+
+        <a href="/brands/google" class="category-card category-card--google">
           <span class="category-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span>
           <span class="category-card__title">گوگل پیکسل</span>
           <span class="category-card__count">۴۸ کالا</span>
         </a>
-        <a href="/oneplus" class="category-card category-card--oneplus">
-          <span class="category-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span>
-          <span class="category-card__title">وان‌پلاس</span>
-          <span class="category-card__count">۳۲ کالا</span>
+
+        <a href="/tablet" class="category-card category-card--tablet">
+          <span class="category-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          </span>
+          <span class="category-card__title">تبلت</span>
+          <span class="category-card__count">۸۴ کالا</span>
         </a>
-        <a href="/honor" class="category-card category-card--honor">
-          <span class="category-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span>
-          <span class="category-card__title">آنر</span>
-          <span class="category-card__count">۵۶ کالا</span>
+
+        <a href="/flagship" class="category-card category-card--flagship">
+          <span class="category-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </span>
+          <span class="category-card__title">پرچمدار</span>
+          <span class="category-card__count">۹۲ کالا</span>
         </a>
-        <a href="/accessories" class="category-card category-card--acc">
-          <span class="category-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></span>
-          <span class="category-card__title">لوازم جانبی</span>
-          <span class="category-card__count">۵۲۰+ کالا</span>
+
+        <a href="/budget" class="category-card category-card--budget">
+          <span class="category-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </span>
+          <span class="category-card__title">اقتصادی</span>
+          <span class="category-card__count">۱۴۰ کالا</span>
         </a>
       </div>
     </div>
@@ -224,24 +238,24 @@
           همه
         </a>
         <span class="brand-strip__sep"></span>
-        <a href="/iphone" class="brand-strip__item">آیفون</a>
-        <a href="/samsung" class="brand-strip__item">سامسونگ گلکسی</a>
-        <a href="/xiaomi" class="brand-strip__item">شیائومی</a>
-        <a href="/pixel" class="brand-strip__item">پیکسل</a>
-        <a href="/honor" class="brand-strip__item">آنر</a>
-        <a href="/oneplus" class="brand-strip__item">وان‌پلاس</a>
+        <a href="/brands/apple"    class="brand-strip__item">Apple</a>
+        <a href="/brands/samsung"  class="brand-strip__item">Samsung</a>
+        <a href="/brands/xiaomi"   class="brand-strip__item">Xiaomi</a>
+        <a href="/brands/google"   class="brand-strip__item">Google</a>
+        <a href="/brands/oneplus"  class="brand-strip__item">OnePlus</a>
+        <a href="/brands/honor"    class="brand-strip__item">Honor</a>
+        <a href="/brands/nothing"  class="brand-strip__item">Nothing</a>
+        <a href="/brands/motorola" class="brand-strip__item">Motorola</a>
+        <a href="/brands/realme"   class="brand-strip__item">Realme</a>
+        <a href="/brands/huawei"   class="brand-strip__item">Huawei</a>
         <span class="brand-strip__sep"></span>
-        <a href="/gaming" class="brand-strip__item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="15" y1="13" x2="15.01" y2="13"/><line x1="18" y1="11" x2="18.01" y2="11"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
-          گوشی گیمینگ
+        <a href="/mobile" class="brand-strip__item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          گوشی موبایل
         </a>
-        <a href="/budget" class="brand-strip__item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          اقتصادی
-        </a>
-        <a href="/flagship" class="brand-strip__item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          پرچمدار
+        <a href="/tablet" class="brand-strip__item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          تبلت
         </a>
       </div>
     </div>
@@ -273,7 +287,7 @@
   <section class="section promo-banners" id="promo-banners">
     <div class="container">
       <div class="promo-banners__grid">
-        <a href="/iphone" class="promo-banner promo-banner--iphone">
+        <a href="/brands/apple" class="promo-banner promo-banner--iphone">
           <div class="promo-banner__bg"></div>
           <div class="promo-banner__content">
             <span class="promo-banner__eyebrow"><span class="promo-banner__eyebrow-dot"></span>پیشنهاد ویژه</span>
@@ -283,25 +297,25 @@
           </div>
           <div class="promo-banner__visual"><div class="ph ph--square">iPhone</div></div>
         </a>
-        <a href="/samsung" class="promo-banner promo-banner--samsung">
+        <a href="/brands/samsung" class="promo-banner promo-banner--samsung">
           <div class="promo-banner__bg"></div>
           <div class="promo-banner__content">
             <span class="promo-banner__eyebrow"><span class="promo-banner__eyebrow-dot"></span>پیشنهاد ویژه سامسونگ</span>
             <h3 class="promo-banner__title"><span class="promo-banner__title-accent">Galaxy Series</span><br>با هدیه ویژه</h3>
-            <p class="promo-banner__desc">خرید گلکسی، دریافت ایرپاد هدیه</p>
+            <p class="promo-banner__desc">گوشی و تبلت‌های سامسونگ</p>
             <span class="promo-banner__cta">مشاهده<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></span>
           </div>
           <div class="promo-banner__visual"><div class="ph ph--square">Samsung</div></div>
         </a>
-        <a href="/accessories" class="promo-banner promo-banner--accessories">
+        <a href="/tablet" class="promo-banner promo-banner--accessories">
           <div class="promo-banner__bg"></div>
           <div class="promo-banner__content">
-            <span class="promo-banner__eyebrow"><span class="promo-banner__eyebrow-dot"></span>لوازم جانبی</span>
-            <h3 class="promo-banner__title">تا <span class="promo-banner__title-accent">۳۰٪ تخفیف</span><br>روی تمام لوازم جانبی</h3>
-            <p class="promo-banner__desc">شارژر، قاب، هدفون و ساعت هوشمند</p>
+            <span class="promo-banner__eyebrow"><span class="promo-banner__eyebrow-dot"></span>تبلت‌ها</span>
+            <h3 class="promo-banner__title">تا <span class="promo-banner__title-accent">۲۵٪ تخفیف</span><br>روی تبلت‌های منتخب</h3>
+            <p class="promo-banner__desc">آیپد، گلکسی تب، شیائومی پد و بیشتر</p>
             <span class="promo-banner__cta">مشاهده<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></span>
           </div>
-          <div class="promo-banner__visual"><div class="ph ph--square">Accessories</div></div>
+          <div class="promo-banner__visual"><div class="ph ph--square">Tablet</div></div>
         </a>
       </div>
     </div>
@@ -339,7 +353,7 @@
     <div class="container">
       <div class="trending__head">
         <div class="trending__title-wrap">
-          <h2 class="trending__title">محبوب‌ترین گوشی‌های این هفته</h2>
+          <h2 class="trending__title">محبوب‌ترین‌های این هفته</h2>
           <p class="trending__subtitle">انتخاب کاربران بر اساس بازدید، خرید و امتیاز</p>
         </div>
         <a href="/trending" class="trending__link">مشاهده همه<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></a>
@@ -391,16 +405,16 @@
           <span class="why-us__eyebrow">
             <span class="why-us__eyebrow-dot"></span>چرا ما؟
           </span>
-          <h2 class="why-us__title">خرید مطمئن،<br>تجربه‌ای <span class="why-us__title-accent">متفاوت</span></h2>
+          <h2 class="why-us__title">فروشگاه تخصصی،<br>تجربه‌ای <span class="why-us__title-accent">متفاوت</span></h2>
           <p class="why-us__desc">
-            ما جدیدترین محصولات دیجیتال را با ضمانت اصالت، قیمت رقابتی و
-            خدمات پس از فروش ارائه می‌کنیم. هدف ما این است که تجربه‌ی
-            خرید موبایل برای شما ساده، مطمئن و لذت‌بخش باشد.
+            ما فروشگاه تخصصی موبایل و تبلت هستیم و فقط روی این دو دسته تمرکز داریم.
+            با ۱۰ برند معتبر جهانی، ضمانت اصالت و خدمات پس از فروش مطمئن،
+            تجربه‌ی خریدی ساده و حرفه‌ای برای شما فراهم می‌کنیم.
           </p>
           <div class="why-us__stats">
             <div class="why-us__stat">
               <span class="why-us__stat-value">۱۰<span>+</span></span>
-              <span class="why-us__stat-label">سال تجربه</span>
+              <span class="why-us__stat-label">برند معتبر</span>
             </div>
             <div class="why-us__stat">
               <span class="why-us__stat-value">۵۰<span>K+</span></span>
@@ -504,12 +518,12 @@
             </span>
             <span class="footer__logo-text">
               <span>موبایل استور</span>
-              <span>MOBILE STORE</span>
+              <span>MOBILE & TABLET</span>
             </span>
           </a>
           <p class="footer__desc">
-            فروشگاه تخصصی موبایل و لوازم جانبی با ضمانت اصالت کالا،
-            ارسال سریع و خدمات پس از فروش مطمئن.
+            فروشگاه تخصصی موبایل و تبلت با ۱۰ برند معتبر جهانی،
+            ضمانت اصالت کالا و خدمات پس از فروش مطمئن.
           </p>
           <div class="footer__social">
             <a href="#" class="footer__social-link" aria-label="اینستاگرام">
@@ -527,21 +541,22 @@
         <div class="footer__col">
           <h4 class="footer__col-title">فروشگاه</h4>
           <div class="footer__col-list">
-            <a href="/mobile" class="footer__col-link">موبایل</a>
+            <a href="/mobile" class="footer__col-link">گوشی موبایل</a>
             <a href="/tablet" class="footer__col-link">تبلت</a>
-            <a href="/accessories" class="footer__col-link">لوازم جانبی</a>
-            <a href="/headphones" class="footer__col-link">هدفون</a>
-            <a href="/smartwatch" class="footer__col-link">ساعت هوشمند</a>
+            <a href="/flagship" class="footer__col-link">پرچمدار</a>
+            <a href="/budget" class="footer__col-link">اقتصادی</a>
+            <a href="/discounts" class="footer__col-link">تخفیف‌ها</a>
           </div>
         </div>
 
         <div class="footer__col">
-          <h4 class="footer__col-title">راهنمای خرید</h4>
+          <h4 class="footer__col-title">برندها</h4>
           <div class="footer__col-list">
-            <a href="/guides/phone" class="footer__col-link">راهنمای انتخاب موبایل</a>
-            <a href="/compare" class="footer__col-link">مقایسه محصولات</a>
-            <a href="/faq" class="footer__col-link">سوالات متداول</a>
-            <a href="/magazine" class="footer__col-link">مجله موبایل</a>
+            <a href="/brands/apple" class="footer__col-link">Apple</a>
+            <a href="/brands/samsung" class="footer__col-link">Samsung</a>
+            <a href="/brands/xiaomi" class="footer__col-link">Xiaomi</a>
+            <a href="/brands/google" class="footer__col-link">Google</a>
+            <a href="/brands/huawei" class="footer__col-link">Huawei</a>
           </div>
         </div>
 
@@ -587,7 +602,7 @@
         <span class="drawer__logo-mark">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
         </span>
-        <span class="drawer__logo-text"><span>موبایل استور</span><span>MOBILE STORE</span></span>
+        <span class="drawer__logo-text"><span>موبایل استور</span><span>MOBILE & TABLET</span></span>
       </a>
       <button class="drawer__close" id="drawer-close" aria-label="بستن منو">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -598,31 +613,36 @@
         <div class="drawer__section-title">فروشگاه</div>
         <div class="drawer__list">
           <a href="/special" class="drawer__link drawer__link--accent">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 0.67s0.74 2.65 0.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l0.03-0.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5 0.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-0.36 3.6-1.21 4.62-2.58 0.39 1.29 0.59 2.65 0.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 0.67s0.74 2.65 0.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l0.03-0.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5 0.67z"/></svg>
             پیشنهاد ویژه
             <span class="drawer__link-badge drawer__link-badge--discount">۱۲</span>
           </a>
-          <a href="/mobile" class="drawer__link">موبایل</a>
-          <a href="/iphone" class="drawer__link">آیفون</a>
-          <a href="/samsung" class="drawer__link">سامسونگ</a>
-          <a href="/xiaomi" class="drawer__link">شیائومی</a>
-          <a href="/accessories" class="drawer__link">لوازم جانبی</a>
+          <a href="/mobile" class="drawer__link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+            گوشی موبایل
+          </a>
+          <a href="/tablet" class="drawer__link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+            تبلت
+          </a>
+          <a href="/flagship" class="drawer__link">پرچمدار</a>
+          <a href="/budget" class="drawer__link">اقتصادی</a>
+          <a href="/discounts" class="drawer__link">تخفیف‌ها</a>
         </div>
       </div>
       <div class="drawer__section">
-        <div class="drawer__section-title">دسته‌ها</div>
+        <div class="drawer__section-title">برندها</div>
         <div class="drawer__list">
-          <a href="/headphones" class="drawer__link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
-            هدفون
-          </a>
-          <a href="/smartwatch" class="drawer__link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="6"/><polyline points="12 10 12 12 13 13"/><path d="M16.51 17.35l-.35 3.83a2 2 0 0 1-2 1.82H9.83a2 2 0 0 1-2-1.82l-.35-3.83m.01-10.7l.35-3.83A2 2 0 0 1 9.83 1h4.35a2 2 0 0 1 2 1.82l.35 3.83"/></svg>
-            ساعت هوشمند
-          </a>
-          <a href="/tablet" class="drawer__link">تبلت</a>
-          <a href="/laptop" class="drawer__link">لپ‌تاپ</a>
-          <a href="/discounts" class="drawer__link">تخفیف‌ها</a>
+          <a href="/brands/apple" class="drawer__link">Apple</a>
+          <a href="/brands/samsung" class="drawer__link">Samsung</a>
+          <a href="/brands/xiaomi" class="drawer__link">Xiaomi</a>
+          <a href="/brands/google" class="drawer__link">Google</a>
+          <a href="/brands/oneplus" class="drawer__link">OnePlus</a>
+          <a href="/brands/honor" class="drawer__link">Honor</a>
+          <a href="/brands/nothing" class="drawer__link">Nothing</a>
+          <a href="/brands/motorola" class="drawer__link">Motorola</a>
+          <a href="/brands/realme" class="drawer__link">Realme</a>
+          <a href="/brands/huawei" class="drawer__link">Huawei</a>
         </div>
       </div>
       <div class="drawer__section">
@@ -693,7 +713,7 @@
     </div>
   </div>
 
-  <!-- FLOATING ACTIONS -->
+  <!-- FLOATING -->
   <div class="floating">
     <button class="floating__btn floating__btn--top" id="back-to-top" aria-label="بازگشت به بالا">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>

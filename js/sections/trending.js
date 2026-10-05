@@ -5,24 +5,37 @@
 import { products, trendingTabs } from '../data/products.js';
 import { renderProductList } from '../components/product-card.js';
 
-/* ---------- محدودیت تعداد نمایش ---------- */
 const MAX_ITEMS = 8;
 
-/* ---------- شمارش هر دسته ---------- */
-function countByCategory(catId) {
-  if (catId === 'all') return products.length;
-  return products.filter((p) => p.category === catId).length;
-}
-
-/* ---------- فیلتر بر اساس تب ---------- */
 function filterByCategory(catId) {
-  const list = catId === 'all'
-    ? products
-    : products.filter((p) => p.category === catId);
+  let list;
+
+  if (catId === 'all') {
+    list = products;
+  } else if (catId === 'phone') {
+    list = products.filter((p) => p.type === 'phone');
+  } else if (catId === 'tablet') {
+    list = products.filter((p) => p.type === 'tablet');
+  } else if (catId === 'flagship') {
+    list = products.filter((p) => p.price >= 50000000);
+  } else if (catId === 'budget') {
+    list = products.filter((p) => p.price <= 20000000);
+  } else {
+    list = products.filter((p) => p.category === catId);
+  }
+
   return list.slice(0, MAX_ITEMS);
 }
 
-/* ---------- رندر تب‌ها ---------- */
+function countByCategory(catId) {
+  if (catId === 'all') return products.length;
+  if (catId === 'phone')    return products.filter((p) => p.type === 'phone').length;
+  if (catId === 'tablet')   return products.filter((p) => p.type === 'tablet').length;
+  if (catId === 'flagship') return products.filter((p) => p.price >= 50000000).length;
+  if (catId === 'budget')   return products.filter((p) => p.price <= 20000000).length;
+  return products.filter((p) => p.category === catId).length;
+}
+
 function renderTabs(activeId) {
   const wrap = document.getElementById('trending-tabs');
   if (!wrap) return;
@@ -43,7 +56,6 @@ function renderTabs(activeId) {
   }).join('');
 }
 
-/* ---------- رندر گرید ---------- */
 function renderGrid(catId) {
   const grid = document.getElementById('trending-grid');
   if (!grid) return;
@@ -58,15 +70,10 @@ function renderGrid(catId) {
   renderProductList(grid, items);
 }
 
-/* ---------- فعال‌سازی تب ---------- */
 function activateTab(catId) {
   renderTabs(catId);
   renderGrid(catId);
 }
-
-/* ============================================
-   INIT
-   ============================================ */
 
 export function initTrending() {
   const section = document.getElementById('trending');
@@ -75,14 +82,11 @@ export function initTrending() {
   const wrap = document.getElementById('trending-tabs');
   if (!wrap) return;
 
-  // رندر اولیه با تب "همه"
   activateTab('all');
 
-  // Event Delegation روی تب‌ها (چون دکمه‌ها داینامیک هستند)
   wrap.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-tab]');
     if (!btn) return;
-    const catId = btn.dataset.tab;
-    activateTab(catId);
+    activateTab(btn.dataset.tab);
   });
 }
