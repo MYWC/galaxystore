@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2386D7" />
+  <title>پیگیری سفارش | موبایل استور</title>
+
+  <link rel="stylesheet" href="../css/reset.css" />
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+
+  <link rel="stylesheet" href="../css/components/button.css" />
+  <link rel="stylesheet" href="../css/components/card.css" />
+  <link rel="stylesheet" href="../css/components/badge.css" />
+  <link rel="stylesheet" href="../css/components/placeholder.css" />
+  <link rel="stylesheet" href="../css/components/product-card.css" />
+  <link rel="stylesheet" href="../css/components/floating.css" />
+  <link rel="stylesheet" href="../css/components/drawer.css" />
+  <link rel="stylesheet" href="../css/components/toast.css" />
+  <link rel="stylesheet" href="../css/components/cart-drawer.css" />
+  <link rel="stylesheet" href="../css/components/quick-view.css" />
+  <link rel="stylesheet" href="../css/components/search-dropdown.css" />
+
+  <link rel="stylesheet" href="../css/sections/announcement.css" />
+  <link rel="stylesheet" href="../css/sections/header.css" />
+  <link rel="stylesheet" href="../css/sections/nav.css" />
+  <link rel="stylesheet" href="../css/sections/footer.css" />
+
+  <link rel="stylesheet" href="../css/pages/track.css" />
+
+  <link rel="stylesheet" href="../css/responsive.css" />
+  <link rel="stylesheet" href="../css/animations.css" />
+  <link rel="stylesheet" href="../css/performance.css" />
+  <link rel="stylesheet" href="../css/micro-interactions.css" />
+</head>
+<body>
+
+  <div id="layout-announcement"></div>
+  <div id="layout-header"></div>
+  <div id="layout-nav"></div>
+
+  <main class="track-page" id="track-page">
+    <div class="container">
+
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb reveal">
+        <a href="../index.html">خانه</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        <a href="../support/contact.html">پشتیبانی</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        <span>پیگیری سفارش</span>
+      </nav>
+
+      <!-- Header -->
+      <div class="track-head reveal">
+        <h1 class="track-head__title">پیگیری سفارش</h1>
+        <p class="track-head__subtitle">
+          برای مشاهده وضعیت سفارش، شماره سفارش یا شماره موبایل خود را وارد کنید
+        </p>
+      </div>
+
+      <!-- ============================================
+           SEARCH FORM
+           ============================================ -->
+      <div class="track-search reveal">
+        <div class="track-search__tabs">
+          <button class="track-search__tab is-active" data-track-tab="order">شماره سفارش</button>
+          <button class="track-search__tab" data-track-tab="phone">شماره موبایل</button>
+        </div>
+
+        <form class="track-search__form" id="track-form" autocomplete="off">
+          <div class="track-search__input-wrap">
+            <svg class="track-search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input
+              type="text"
+              id="track-input"
+              class="track-search__input"
+              placeholder="مثلاً MS-12345678"
+              aria-label="شماره سفارش"
+            />
+          </div>
+          <button type="submit" class="track-search__submit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            پیگیری
+          </button>
+        </form>
+
+        <p class="track-search__hint" id="track-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          شماره سفارش در پیام تأیید و ایمیل برای شما ارسال شده است.
+        </p>
+      </div>
+
+      <!-- ============================================
+           NOT FOUND
+           ============================================ -->
+      <div class="track-notfound" id="track-notfound" hidden>
+        <div class="track-notfound__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            <line x1="8" y1="8" x2="14" y2="14"/>
+            <line x1="14" y1="8" x2="8" y2="14"/>
+          </svg>
+        </div>
+        <h2 class="track-notfound__title">سفارشی با این مشخصات یافت نشد</h2>
+        <p class="track-notfound__text">
+          لطفاً شماره سفارش یا شماره موبایل خود را بررسی کنید و دوباره تلاش کنید.
+          در صورت وجود مشکل با <a href="contact.html">پشتیبانی</a> تماس بگیرید.
+        </p>
+        <div class="track-notfound__actions">
+          <button class="btn btn--outline" id="try-again">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            تلاش دوباره
+          </button>
+          <a href="contact.html" class="btn btn--primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            تماس با پشتیبانی
+          </a>
+        </div>
+      </div>
+
+      <!-- ============================================
+           ORDER RESULT
+           ============================================ -->
+      <div class="track-result" id="track-result" hidden>
+
+        <!-- Order Header Card -->
+        <div class="track-card track-card--header reveal">
+          <div class="track-card__head">
+            <div>
+              <span class="track-card__label">شماره سفارش</span>
+              <h2 class="track-card__order" id="order-number">—</h2>
+            </div>
+            <span class="track-status track-status--processing" id="order-status-badge">
+              در حال پردازش
+            </span>
+          </div>
+
+          <div class="track-card__meta">
+            <div class="track-meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <div>
+                <span class="track-meta-item__label">تاریخ ثبت</span>
+                <span class="track-meta-item__value" id="order-date">—</span>
+              </div>
+            </div>
+
+            <div class="track-meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              <div>
+                <span class="track-meta-item__label">روش ارسال</span>
+                <span class="track-meta-item__value" id="order-shipping">—</span>
+              </div>
+            </div>
+
+            <div class="track-meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <div>
+                <span class="track-meta-item__label">مبلغ کل</span>
+                <span class="track-meta-item__value" id="order-total">—</span>
+              </div>
+            </div>
+
+            <div class="track-meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              <div>
+                <span class="track-meta-item__label">روش پرداخت</span>
+                <span class="track-meta-item__value" id="order-payment">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="track-card reveal">
+          <h3 class="track-card__title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            وضعیت سفارش
+          </h3>
+
+          <div class="track-timeline" id="track-timeline">
+            <!-- JS renders -->
+          </div>
+        </div>
+
+        <!-- Items -->
+        <div class="track-card reveal">
+          <h3 class="track-card__title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            محصولات سفارش
+          </h3>
+
+          <div class="track-items" id="track-items"></div>
+        </div>
+
+        <!-- Address + Support -->
+        <div class="track-grid">
+          <div class="track-card reveal">
+            <h3 class="track-card__title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              آدرس تحویل
+            </h3>
+
+            <div class="track-address">
+              <div class="track-address__row">
+                <span class="track-address__label">گیرنده:</span>
+                <span class="track-address__value" id="track-receiver">—</span>
+              </div>
+              <div class="track-address__row">
+                <span class="track-address__label">تلفن:</span>
+                <span class="track-address__value" id="track-phone" dir="ltr">—</span>
+              </div>
+              <div class="track-address__row">
+                <span class="track-address__label">آدرس:</span>
+                <span class="track-address__value" id="track-address">—</span>
+              </div>
+              <div class="track-address__row">
+                <span class="track-address__label">کد پستی:</span>
+                <span class="track-address__value" id="track-postal" dir="ltr">—</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="track-card reveal">
+            <h3 class="track-card__title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              نیاز به کمک دارید؟
+            </h3>
+
+            <p class="track-help__text">
+              اگر سوالی درباره سفارش خود دارید، با پشتیبانی ما در تماس باشید.
+            </p>
+
+            <div class="track-help__actions">
+              <a href="contact.html" class="btn btn--primary btn--sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                تماس با پشتیبانی
+              </a>
+              <a href="returns.html" class="btn btn--outline btn--sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                مرجوعی و بازگشت
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="track-actions reveal">
+          <button class="btn btn--outline" id="new-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            جستجوی سفارش دیگر
+          </button>
+          <a href="../category.html" class="btn btn--primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            ادامه خرید
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <div id="layout-footer"></div>
+  <div id="layout-drawer"></div>
+  <div id="layout-cart-drawer"></div>
+  <div id="layout-quick-view"></div>
+  <div id="layout-floating"></div>
+
+  <script type="module" src="../js/pages/track.js"></script>
+</body>
+</html>
