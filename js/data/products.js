@@ -1,5 +1,5 @@
 /* ============================================
-   MAIN PRODUCTS — ترکیب همه برندها
+   MAIN PRODUCTS — اعمال تخفیف واقعی
    ============================================ */
 
 import { appleProducts }     from './products/apple.js';
@@ -12,7 +12,9 @@ import { vivoProducts }      from './products/vivo.js';
 import { honorProducts }     from './products/honor.js';
 import { huaweiProducts }    from './products/huawei.js';
 import { transsionProducts } from './products/transsion.js';
+import { deals }             from './deals.js';
 
+/* ---------- ترکیب همه محصولات ---------- */
 export const products = [
   ...appleProducts,
   ...samsungProducts,
@@ -27,61 +29,51 @@ export const products = [
 ];
 
 /* ============================================
-   FLASH SALE
+   اعمال تخفیف روی Variants
+   oldPrice محاسبه میشود + Badge تخفیف اضافه
+   ============================================ */
+
+products.forEach((p) => {
+  const discountPercent = deals[p.id];
+  if (!discountPercent || !p.variants?.length) return;
+
+  p.variants.forEach((v) => {
+    v.oldPrice = Math.round(v.price / (1 - discountPercent / 100));
+  });
+
+  p.badges = Array.isArray(p.badges) ? [...p.badges] : [];
+  if (!p.badges.includes('discount')) p.badges.push('discount');
+  p.discount = discountPercent;
+});
+
+/* ============================================
+   FLASH SALE — محصولات واقعی از کاتالوگ
    ============================================ */
 
 export const flashSaleProducts = [
   {
-    id: 'fs-iphone-16',
-    brand: 'Apple',
-    name: 'آیفون 16',
-    ram: '8GB',
-    storage: '128GB',
-    price: 264682000,
-    oldPrice: 299000000,
-    discount: 11,
+    id: 'iphone-16',
+    discountExtra: 8,
     totalStock: 30,
     sold: 23,
-    image: null,
   },
   {
-    id: 'fs-galaxy-s25-ultra',
-    brand: 'Samsung',
-    name: 'گلکسی S25 اولترا',
-    ram: '12GB',
-    storage: '256GB',
-    price: 292760086,
-    oldPrice: 340000000,
-    discount: 14,
+    id: 'galaxy-s24-ultra',
+    discountExtra: 5,
     totalStock: 25,
     sold: 18,
-    image: null,
   },
   {
-    id: 'fs-xiaomi-14',
-    brand: 'Xiaomi',
-    name: 'شیائومی 14',
-    ram: '12GB',
-    storage: '256GB',
-    price: 201270696,
-    oldPrice: 250000000,
-    discount: 19,
+    id: 'xiaomi-14',
+    discountExtra: 6,
     totalStock: 40,
     sold: 33,
-    image: null,
   },
   {
-    id: 'fs-pixel-9',
-    brand: 'Google',
-    name: 'گوگل پیکسل 9',
-    ram: '12GB',
-    storage: '128GB',
-    price: 164015013,
-    oldPrice: 200000000,
-    discount: 18,
+    id: 'pixel-9',
+    discountExtra: 7,
     totalStock: 50,
-    sold: 43,
-    image: null,
+    sold: 41,
   },
 ];
 
@@ -92,7 +84,6 @@ export const flashSaleProducts = [
 export const trendingTabs = [
   { id: 'all',      label: 'همه' },
   { id: 'phone',    label: 'گوشی' },
-  { id: 'tablet',   label: 'تبلت' },
   { id: 'apple',    label: 'Apple' },
   { id: 'samsung',  label: 'Samsung' },
   { id: 'xiaomi',   label: 'Xiaomi' },

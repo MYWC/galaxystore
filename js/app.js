@@ -1,5 +1,5 @@
 /* ============================================
-   App Entry
+   App Entry — Mobile Store
    ============================================ */
 
 import { initHero } from './sections/hero.js';
@@ -14,15 +14,20 @@ import { initMagazine } from './sections/magazine.js';
 import { initFooter } from './sections/footer.js';
 import { initDrawer } from './sections/drawer.js';
 import { initFloating } from './sections/floating.js';
+
 import { initCartDrawer, openCart } from './components/cart-drawer.js';
 import { initQuickView } from './components/quick-view.js';
 import { initSearch } from './components/search.js';
 import { toast } from './components/toast.js';
+
 import { cart, wishlist, compare, onChange, KEYS } from './store/state.js';
 import { products, formatPrice } from './data/products.js';
 import { initAnimations } from './utils/animations.js';
 
-/* ---------- Sticky Header ---------- */
+/* ============================================
+   STICKY HEADER
+   ============================================ */
+
 const header = document.getElementById('site-header');
 if (header) {
   const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 8);
@@ -30,7 +35,10 @@ if (header) {
   onScroll();
 }
 
-/* ---------- Sections ---------- */
+/* ============================================
+   INIT SECTIONS
+   ============================================ */
+
 initHero();
 initBrandStrip();
 initBestDeals();
@@ -47,7 +55,10 @@ initCartDrawer();
 initQuickView();
 initSearch();
 
-/* ---------- Animations ---------- */
+/* ============================================
+   INIT ANIMATIONS
+   ============================================ */
+
 initAnimations();
 
 /* ============================================
@@ -56,10 +67,12 @@ initAnimations();
 
 function syncWishlistBadges() {
   const count = wishlist.count();
-  document.querySelectorAll('.header__action-badge:not(.header__action-badge--cart)').forEach((el) => {
-    el.textContent = count.toLocaleString('fa-IR');
-    el.style.display = count > 0 ? '' : 'none';
-  });
+  document
+    .querySelectorAll('.header__action-badge:not(.header__action-badge--cart)')
+    .forEach((el) => {
+      el.textContent = count.toLocaleString('fa-IR');
+      el.style.display = count > 0 ? '' : 'none';
+    });
 }
 
 function syncWishlistButtons() {
@@ -74,7 +87,11 @@ function syncCompareButtons() {
   });
 }
 
-onChange(KEYS.wishlist, () => { syncWishlistBadges(); syncWishlistButtons(); });
+onChange(KEYS.wishlist, () => {
+  syncWishlistBadges();
+  syncWishlistButtons();
+});
+
 onChange(KEYS.compare, syncCompareButtons);
 
 syncWishlistBadges();
@@ -87,7 +104,9 @@ syncCompareButtons();
 
 document.addEventListener('click', (e) => {
 
-  /* ---------- Storage Pill Click ---------- */
+  /* ============================================
+     STORAGE PILL CLICK
+     ============================================ */
   const storageBtn = e.target.closest('.p-card__storage');
   if (storageBtn && !storageBtn.disabled) {
     e.preventDefault();
@@ -101,15 +120,18 @@ document.addEventListener('click', (e) => {
     const variant = product.variants[variantIndex];
     if (!variant) return;
 
+    // Active state
     card.querySelectorAll('.p-card__storage').forEach((b) => b.classList.remove('is-active'));
     storageBtn.classList.add('is-active');
     card.dataset.activeVariant = variantIndex;
 
+    // Update Price
     const priceEl = card.querySelector('[data-price]');
     if (priceEl) {
       priceEl.innerHTML = `${formatPrice(variant.price)} <span>تومان</span>`;
     }
 
+    // Update Old Price
     const oldEl = card.querySelector('[data-oldprice]');
     if (oldEl) {
       oldEl.innerHTML = variant.oldPrice
@@ -117,6 +139,7 @@ document.addEventListener('click', (e) => {
         : '';
     }
 
+    // Update Stock
     const stockEl = card.querySelector('[data-stock]');
     if (stockEl) {
       if (variant.stock === 0) {
@@ -130,7 +153,60 @@ document.addEventListener('click', (e) => {
     return;
   }
 
-  /* ---------- Wishlist ---------- */
+  /* ============================================
+     FLASH SALE — ADD TO CART
+     ============================================ */
+  const flashAdd = e.target.closest('[data-flash-add]');
+  if (flashAdd) {
+    e.preventDefault();
+    const id = flashAdd.dataset.flashAdd;
+    const product = products.find((p) => p.id === id);
+    if (!product) return;
+
+    const flashPrice = Number(flashAdd.dataset.flashPrice);
+    const storage = flashAdd.dataset.flashStorage;
+    const ram = flashAdd.dataset.flashRam;
+
+    const cartItem = {
+      id: `${product.id}-${storage}-flash`,
+      brand: product.brand,
+      name: product.name,
+      ram,
+      storage,
+      price: flashPrice,
+      oldPrice: null,
+      image: product.image,
+    };
+
+    cart.add(cartItem, 1);
+
+    const original = flashAdd.innerHTML;
+    flashAdd.classList.add('is-added');
+    flashAdd.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      اضافه شد
+    `;
+
+    toast({
+      type: 'success',
+      title: 'به سبد خرید اضافه شد',
+      message: `${product.name} — ${storage}`,
+    });
+
+    setTimeout(() => {
+      flashAdd.classList.remove('is-added');
+      flashAdd.innerHTML = original;
+    }, 1600);
+
+    setTimeout(() => openCart(), 400);
+    return;
+  }
+
+  /* ============================================
+     WISHLIST
+     ============================================ */
   const wish = e.target.closest('[data-wishlist]');
   if (wish) {
     e.preventDefault();
@@ -150,7 +226,9 @@ document.addEventListener('click', (e) => {
     return;
   }
 
-  /* ---------- Compare ---------- */
+  /* ============================================
+     COMPARE
+     ============================================ */
   const cmp = e.target.closest('[data-compare]');
   if (cmp) {
     e.preventDefault();
@@ -170,7 +248,9 @@ document.addEventListener('click', (e) => {
     return;
   }
 
-  /* ---------- Add to Cart ---------- */
+  /* ============================================
+     ADD TO CART (Product Card)
+     ============================================ */
   const add = e.target.closest('[data-add-to-cart]');
   if (add) {
     e.preventDefault();
@@ -204,7 +284,11 @@ document.addEventListener('click', (e) => {
       اضافه شد
     `;
 
-    toast({ type: 'success', title: 'به سبد خرید اضافه شد', message: `${product.name} — ${variant.storage}` });
+    toast({
+      type: 'success',
+      title: 'به سبد خرید اضافه شد',
+      message: `${product.name} — ${variant.storage}`,
+    });
 
     setTimeout(() => {
       add.classList.remove('is-added');
@@ -216,4 +300,7 @@ document.addEventListener('click', (e) => {
   }
 });
 
-console.log('%c✓ Mobile Store loaded — 120fps Ready', 'color:#18B981;font-weight:bold;');
+console.log(
+  '%c✓ Mobile Store loaded — 120fps Ready',
+  'color:#18B981;font-weight:bold;'
+);
