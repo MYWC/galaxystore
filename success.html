@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2386D7" />
+  <title>سفارش با موفقیت ثبت شد | موبایل استور</title>
+  <meta name="robots" content="noindex" />
+
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+
+  <link rel="stylesheet" href="css/components/button.css" />
+  <link rel="stylesheet" href="css/components/card.css" />
+  <link rel="stylesheet" href="css/components/badge.css" />
+  <link rel="stylesheet" href="css/components/placeholder.css" />
+  <link rel="stylesheet" href="css/components/product-card.css" />
+  <link rel="stylesheet" href="css/components/floating.css" />
+  <link rel="stylesheet" href="css/components/drawer.css" />
+  <link rel="stylesheet" href="css/components/toast.css" />
+  <link rel="stylesheet" href="css/components/cart-drawer.css" />
+  <link rel="stylesheet" href="css/components/quick-view.css" />
+  <link rel="stylesheet" href="css/components/search-dropdown.css" />
+
+  <link rel="stylesheet" href="css/sections/announcement.css" />
+  <link rel="stylesheet" href="css/sections/header.css" />
+  <link rel="stylesheet" href="css/sections/nav.css" />
+  <link rel="stylesheet" href="css/sections/footer.css" />
+
+  <link rel="stylesheet" href="css/pages/success.css" />
+
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/performance.css" />
+  <link rel="stylesheet" href="css/micro-interactions.css" />
+</head>
+<body>
+
+  <div id="layout-announcement"></div>
+  <div id="layout-header"></div>
+  <div id="layout-nav"></div>
+
+  <main class="success-page" id="success-page">
+    <div class="container">
+
+      <!-- Steps -->
+      <div class="success-steps reveal">
+        <div class="success-step is-done">
+          <span class="success-step__num">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
+          <span class="success-step__label">سبد خرید</span>
+        </div>
+        <span class="success-step__line is-done"></span>
+        <div class="success-step is-done">
+          <span class="success-step__num">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
+          <span class="success-step__label">تسویه حساب</span>
+        </div>
+        <span class="success-step__line is-done"></span>
+        <div class="success-step is-active is-done">
+          <span class="success-step__num">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
+          <span class="success-step__label">تکمیل</span>
+        </div>
+      </div>
+
+      <!-- ============================================
+           CELEBRATION HERO
+           ============================================ -->
+      <section class="success-hero reveal">
+        <div class="success-hero__confetti" id="confetti"></div>
+
+        <div class="success-hero__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+
+        <h1 class="success-hero__title">سفارش شما با موفقیت ثبت شد! 🎉</h1>
+        <p class="success-hero__subtitle">
+          ممنون از خرید شما. سفارش شما در حال آماده‌سازی است و به‌زودی برای شما ارسال می‌شود.
+        </p>
+
+        <div class="success-hero__order">
+          <span class="success-hero__order-label">شماره سفارش شما:</span>
+          <button class="success-hero__order-code" id="order-code" data-copy>
+            <span id="order-code-text">MS-00000000</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+
+        <div class="success-hero__actions">
+          <a href="support/track.html" class="btn btn--primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            پیگیری سفارش
+          </a>
+          <a href="category.html" class="btn btn--outline">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            ادامه خرید
+          </a>
+        </div>
+      </section>
+
+      <!-- ============================================
+           NEXT STEPS TIMELINE
+           ============================================ -->
+      <section class="success-timeline reveal">
+        <h2 class="success-timeline__title">مراحل بعدی</h2>
+
+        <div class="timeline">
+          <div class="timeline__step is-active">
+            <div class="timeline__dot">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="timeline__content">
+              <h3 class="timeline__step-title">ثبت سفارش</h3>
+              <p class="timeline__step-desc">سفارش شما با موفقیت ثبت شد</p>
+            </div>
+          </div>
+
+          <div class="timeline__step">
+            <div class="timeline__dot"></div>
+            <div class="timeline__content">
+              <h3 class="timeline__step-title">تأیید و بسته‌بندی</h3>
+              <p class="timeline__step-desc">همکاران ما سفارش را بررسی و بسته‌بندی می‌کنند</p>
+            </div>
+          </div>
+
+          <div class="timeline__step">
+            <div class="timeline__dot"></div>
+            <div class="timeline__content">
+              <h3 class="timeline__step-title">تحویل به پست</h3>
+              <p class="timeline__step-desc">سفارش به پست یا پیک تحویل داده می‌شود</p>
+            </div>
+          </div>
+
+          <div class="timeline__step">
+            <div class="timeline__dot"></div>
+            <div class="timeline__content">
+              <h3 class="timeline__step-title">دریافت سفارش</h3>
+              <p class="timeline__step-desc">سفارش شما در زمان مقرر به دستتان می‌رسد</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================
+           ORDER DETAILS
+           ============================================ -->
+      <section class="success-details reveal" id="order-details">
+        <div class="success-details__head">
+          <h2 class="success-details__title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            جزئیات سفارش
+          </h2>
+        </div>
+
+        <div class="success-details__grid">
+          <!-- Left: Items -->
+          <div class="success-details__items-wrap">
+            <h3 class="success-details__subtitle">محصولات سفارش</h3>
+            <div class="success-details__items" id="success-items"></div>
+          </div>
+
+          <!-- Right: Info -->
+          <div class="success-details__info-wrap">
+            <h3 class="success-details__subtitle">اطلاعات ارسال</h3>
+
+            <div class="success-info-card">
+              <div class="success-info-row">
+                <span class="success-info-row__label">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  گیرنده
+                </span>
+                <span class="success-info-row__value" id="info-receiver">—</span>
+              </div>
+
+              <div class="success-info-row">
+                <span class="success-info-row__label">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  تلفن
+                </span>
+                <span class="success-info-row__value" id="info-phone" dir="ltr">—</span>
+              </div>
+
+              <div class="success-info-row">
+                <span class="success-info-row__label">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  آدرس
+                </span>
+                <span class="success-info-row__value success-info-row__value--multiline" id="info-address">—</span>
+              </div>
+
+              <div class="success-info-row">
+                <span class="success-info-row__label">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                  روش ارسال
+                </span>
+                <span class="success-info-row__value" id="info-shipping">—</span>
+              </div>
+
+              <div class="success-info-row">
+                <span class="success-info-row__label">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                  روش پرداخت
+                </span>
+                <span class="success-info-row__value" id="info-payment">—</span>
+              </div>
+
+              <div class="success-info-row success-info-row--total">
+                <span class="success-info-row__label">مبلغ کل</span>
+                <span class="success-info-row__total">
+                  <span id="info-total">۰</span>
+                  <span class="success-info-row__currency">تومان</span>
+                </span>
+              </div>
+            </div>
+
+            <div class="success-note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <span>
+                یک پیام تأیید به شماره <strong id="info-phone-short">شما</strong> ارسال شد.
+                می‌توانید از طریق <a href="support/track.html">پیگیری سفارش</a>، وضعیت سفارش را مشاهده کنید.
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================
+           RECOMMENDED
+           ============================================ -->
+      <section class="success-recommended reveal" id="success-recommended" hidden>
+        <div class="success-recommended__head">
+          <h2 class="success-recommended__title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6L12 2z"/></svg>
+            شاید اینها را هم دوست داشته باشید
+          </h2>
+          <a href="category.html" class="success-recommended__link">
+            مشاهده همه
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          </a>
+        </div>
+        <div class="success-recommended__grid" id="recommended-grid"></div>
+      </section>
+
+      <!-- ============================================
+           HELP SECTION
+           ============================================ -->
+      <section class="success-help reveal">
+        <div class="success-help__card">
+          <div class="success-help__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <h3 class="success-help__title">سوالی دارید؟</h3>
+          <p class="success-help__text">تیم پشتیبانی ما آماده پاسخگویی به شماست.</p>
+          <div class="success-help__actions">
+            <a href="support/contact.html" class="btn btn--primary btn--sm">تماس با ما</a>
+            <a href="tel:02112345678" class="btn btn--outline btn--sm">۰۲۱-۱۲۳۴۵۶۷۸</a>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <div id="layout-footer"></div>
+  <div id="layout-drawer"></div>
+  <div id="layout-cart-drawer"></div>
+  <div id="layout-quick-view"></div>
+  <div id="layout-floating"></div>
+
+  <script type="module" src="js/pages/success.js"></script>
+</body>
+</html>
