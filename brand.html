@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2386D7" />
+  <title>برند | موبایل استور</title>
+
+  <!-- Common CSS -->
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+
+  <link rel="stylesheet" href="css/components/button.css" />
+  <link rel="stylesheet" href="css/components/card.css" />
+  <link rel="stylesheet" href="css/components/badge.css" />
+  <link rel="stylesheet" href="css/components/placeholder.css" />
+  <link rel="stylesheet" href="css/components/product-card.css" />
+  <link rel="stylesheet" href="css/components/floating.css" />
+  <link rel="stylesheet" href="css/components/drawer.css" />
+  <link rel="stylesheet" href="css/components/toast.css" />
+  <link rel="stylesheet" href="css/components/cart-drawer.css" />
+  <link rel="stylesheet" href="css/components/quick-view.css" />
+  <link rel="stylesheet" href="css/components/search-dropdown.css" />
+
+  <link rel="stylesheet" href="css/sections/announcement.css" />
+  <link rel="stylesheet" href="css/sections/header.css" />
+  <link rel="stylesheet" href="css/sections/nav.css" />
+  <link rel="stylesheet" href="css/sections/footer.css" />
+
+  <!-- Brand CSS -->
+  <link rel="stylesheet" href="css/pages/brand.css" />
+
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/performance.css" />
+  <link rel="stylesheet" href="css/micro-interactions.css" />
+</head>
+<body>
+
+  <!-- ============================================
+       LAYOUT (Auto-injected)
+       ============================================ -->
+  <div id="layout-announcement"></div>
+  <div id="layout-header"></div>
+  <div id="layout-nav"></div>
+
+  <!-- ============================================
+       MAIN
+       ============================================ -->
+  <main class="brand-page" id="brand-page">
+    <div class="container">
+
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb reveal">
+        <a href="index.html">خانه</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        <a href="category.html">فروشگاه</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        <span id="breadcrumb-current">برند</span>
+      </nav>
+
+      <!-- ============================================
+           BRAND HERO
+           ============================================ -->
+      <section class="brand-hero reveal" id="brand-hero">
+        <div class="brand-hero__bg" id="brand-hero-bg"></div>
+        <div class="brand-hero__content">
+          <div class="brand-hero__logo" id="brand-logo">
+            <!-- Logo SVG injected -->
+          </div>
+          <div class="brand-hero__info">
+            <h1 class="brand-hero__name" id="brand-name">برند</h1>
+            <p class="brand-hero__tagline" id="brand-tagline">
+              جدیدترین محصولات با ضمانت اصالت
+            </p>
+            <div class="brand-hero__meta">
+              <span class="brand-hero__meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                <strong id="brand-count-phones">۰</strong> گوشی
+              </span>
+              <span class="brand-hero__meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                <strong id="brand-count-tablets">۰</strong> تبلت
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================
+           TYPE TABS
+           ============================================ -->
+      <div class="brand-tabs reveal" id="brand-tabs">
+        <button class="brand-tab is-active" data-brand-tab="all">همه محصولات</button>
+        <button class="brand-tab" data-brand-tab="phone">گوشی موبایل</button>
+        <button class="brand-tab" data-brand-tab="tablet">تبلت</button>
+        <button class="brand-tab" data-brand-tab="discount">تخفیف‌دار</button>
+      </div>
+
+      <!-- ============================================
+           SORT + COUNT
+           ============================================ -->
+      <div class="brand-toolbar reveal">
+        <p class="brand-toolbar__count">
+          <strong id="brand-result-count">۰</strong> محصول
+        </p>
+        <div class="brand-sort">
+          <label for="brand-sort-select" class="brand-sort__label">مرتب‌سازی:</label>
+          <select id="brand-sort-select" class="brand-sort__select">
+            <option value="popular">محبوب‌ترین</option>
+            <option value="newest">جدیدترین</option>
+            <option value="cheapest">ارزان‌ترین</option>
+            <option value="expensive">گران‌ترین</option>
+            <option value="discount">بیشترین تخفیف</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ============================================
+           PRODUCTS GRID
+           ============================================ -->
+      <div class="brand-grid" id="brand-grid"></div>
+
+      <!-- Empty -->
+      <div class="brand-empty" id="brand-empty" hidden>
+        <div class="brand-empty__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <h3 class="brand-empty__title">محصولی یافت نشد</h3>
+        <p class="brand-empty__text">در حال حاضر محصولی در این دسته موجود نیست.</p>
+      </div>
+
+      <!-- ============================================
+           PAGINATION
+           ============================================ -->
+      <div class="brand-pagination" id="brand-pagination"></div>
+
+      <!-- ============================================
+           RELATED BRANDS
+           ============================================ -->
+      <section class="related-brands reveal">
+        <div class="related-brands__head">
+          <h2 class="related-brands__title">برندهای دیگر</h2>
+          <a href="category.html" class="related-brands__link">
+            مشاهده همه
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          </a>
+        </div>
+        <div class="related-brands__grid" id="related-brands-grid"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ============================================
+       LAYOUT
+       ============================================ -->
+  <div id="layout-footer"></div>
+  <div id="layout-drawer"></div>
+  <div id="layout-cart-drawer"></div>
+  <div id="layout-quick-view"></div>
+  <div id="layout-floating"></div>
+
+  <script type="module" src="js/pages/brand.js"></script>
+</body>
+</html>
