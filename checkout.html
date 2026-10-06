@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2386D7" />
+  <title>تسویه حساب | موبایل استور</title>
+
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+
+  <link rel="stylesheet" href="css/components/button.css" />
+  <link rel="stylesheet" href="css/components/card.css" />
+  <link rel="stylesheet" href="css/components/badge.css" />
+  <link rel="stylesheet" href="css/components/placeholder.css" />
+  <link rel="stylesheet" href="css/components/product-card.css" />
+  <link rel="stylesheet" href="css/components/floating.css" />
+  <link rel="stylesheet" href="css/components/drawer.css" />
+  <link rel="stylesheet" href="css/components/toast.css" />
+  <link rel="stylesheet" href="css/components/cart-drawer.css" />
+  <link rel="stylesheet" href="css/components/quick-view.css" />
+  <link rel="stylesheet" href="css/components/search-dropdown.css" />
+
+  <link rel="stylesheet" href="css/sections/announcement.css" />
+  <link rel="stylesheet" href="css/sections/header.css" />
+  <link rel="stylesheet" href="css/sections/nav.css" />
+  <link rel="stylesheet" href="css/sections/footer.css" />
+
+  <link rel="stylesheet" href="css/pages/checkout.css" />
+
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/performance.css" />
+  <link rel="stylesheet" href="css/micro-interactions.css" />
+</head>
+<body>
+
+  <div id="layout-announcement"></div>
+  <div id="layout-header"></div>
+  <div id="layout-nav"></div>
+
+  <main class="checkout-page" id="checkout-page">
+    <div class="container">
+
+      <!-- Steps -->
+      <div class="checkout-steps reveal">
+        <div class="checkout-step is-done">
+          <span class="checkout-step__num">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
+          <span class="checkout-step__label">سبد خرید</span>
+        </div>
+        <span class="checkout-step__line is-done"></span>
+        <div class="checkout-step is-active">
+          <span class="checkout-step__num">۲</span>
+          <span class="checkout-step__label">تسویه حساب</span>
+        </div>
+        <span class="checkout-step__line"></span>
+        <div class="checkout-step">
+          <span class="checkout-step__num">۳</span>
+          <span class="checkout-step__label">پرداخت</span>
+        </div>
+      </div>
+
+      <!-- Header -->
+      <div class="checkout-head reveal">
+        <div>
+          <h1 class="checkout-head__title">تسویه حساب</h1>
+          <p class="checkout-head__subtitle">اطلاعات ارسال و پرداخت خود را تکمیل کنید</p>
+        </div>
+      </div>
+
+      <!-- Empty -->
+      <div class="checkout-empty" id="checkout-empty" hidden>
+        <div class="checkout-empty__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        </div>
+        <h2 class="checkout-empty__title">سبد خرید شما خالی است</h2>
+        <p class="checkout-empty__text">برای تسویه حساب ابتدا محصولی به سبد اضافه کنید.</p>
+        <a href="category.html" class="btn btn--primary">شروع خرید</a>
+      </div>
+
+      <!-- Layout -->
+      <div class="checkout-layout" id="checkout-layout" hidden>
+
+        <!-- ============ Main Form ============ -->
+        <div class="checkout-main">
+
+          <!-- ===== Section 1: Contact ===== -->
+          <section class="checkout-section reveal">
+            <div class="checkout-section__head">
+              <span class="checkout-section__num">۱</span>
+              <div>
+                <h2 class="checkout-section__title">اطلاعات تماس</h2>
+                <p class="checkout-section__subtitle">نام و شماره تماس شما</p>
+              </div>
+            </div>
+
+            <div class="checkout-section__body">
+              <div class="form-grid form-grid--2">
+                <div class="form-field">
+                  <label class="form-field__label" for="firstName">
+                    نام <span class="form-field__required">*</span>
+                  </label>
+                  <input type="text" id="firstName" class="form-field__input" placeholder="مثلاً علی" required />
+                  <span class="form-field__error" data-error="firstName"></span>
+                </div>
+
+                <div class="form-field">
+                  <label class="form-field__label" for="lastName">
+                    نام خانوادگی <span class="form-field__required">*</span>
+                  </label>
+                  <input type="text" id="lastName" class="form-field__input" placeholder="مثلاً رضایی" required />
+                  <span class="form-field__error" data-error="lastName"></span>
+                </div>
+              </div>
+
+              <div class="form-grid form-grid--2">
+                <div class="form-field">
+                  <label class="form-field__label" for="phone">
+                    شماره موبایل <span class="form-field__required">*</span>
+                  </label>
+                  <input type="tel" id="phone" class="form-field__input" placeholder="۰۹۱۲۳۴۵۶۷۸۹" required inputmode="numeric" maxlength="11" />
+                  <span class="form-field__error" data-error="phone"></span>
+                </div>
+
+                <div class="form-field">
+                  <label class="form-field__label" for="email">
+                    ایمیل <span class="form-field__hint">(اختیاری)</span>
+                  </label>
+                  <input type="email" id="email" class="form-field__input" placeholder="example@email.com" />
+                  <span class="form-field__error" data-error="email"></span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ===== Section 2: Address ===== -->
+          <section class="checkout-section reveal">
+            <div class="checkout-section__head">
+              <span class="checkout-section__num">۲</span>
+              <div>
+                <h2 class="checkout-section__title">آدرس ارسال</h2>
+                <p class="checkout-section__subtitle">محل دریافت سفارش</p>
+              </div>
+            </div>
+
+            <div class="checkout-section__body">
+              <div class="form-grid form-grid--2">
+                <div class="form-field">
+                  <label class="form-field__label" for="province">
+                    استان <span class="form-field__required">*</span>
+                  </label>
+                  <select id="province" class="form-field__select" required>
+                    <option value="">انتخاب استان</option>
+                  </select>
+                  <span class="form-field__error" data-error="province"></span>
+                </div>
+
+                <div class="form-field">
+                  <label class="form-field__label" for="city">
+                    شهر <span class="form-field__required">*</span>
+                  </label>
+                  <input type="text" id="city" class="form-field__input" placeholder="مثلاً تهران" required />
+                  <span class="form-field__error" data-error="city"></span>
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label class="form-field__label" for="address">
+                  آدرس کامل <span class="form-field__required">*</span>
+                </label>
+                <textarea id="address" class="form-field__textarea" placeholder="خیابان، کوچه، پلاک..." required rows="3"></textarea>
+                <span class="form-field__error" data-error="address"></span>
+              </div>
+
+              <div class="form-grid form-grid--2">
+                <div class="form-field">
+                  <label class="form-field__label" for="postalCode">
+                    کد پستی <span class="form-field__required">*</span>
+                  </label>
+                  <input type="text" id="postalCode" class="form-field__input" placeholder="۱۰ رقم" required inputmode="numeric" maxlength="10" />
+                  <span class="form-field__error" data-error="postalCode"></span>
+                </div>
+
+                <div class="form-field">
+                  <label class="form-field__label" for="plateNumber">
+                    پلاک / واحد <span class="form-field__hint">(اختیاری)</span>
+                  </label>
+                  <input type="text" id="plateNumber" class="form-field__input" placeholder="مثلاً پلاک ۱۲، واحد ۳" />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ===== Section 3: Shipping ===== -->
+          <section class="checkout-section reveal">
+            <div class="checkout-section__head">
+              <span class="checkout-section__num">۳</span>
+              <div>
+                <h2 class="checkout-section__title">روش ارسال</h2>
+                <p class="checkout-section__subtitle">زمان و نحوه تحویل سفارش</p>
+              </div>
+            </div>
+
+            <div class="checkout-section__body">
+              <div class="shipping-options" id="shipping-options">
+                <label class="shipping-option is-selected">
+                  <input type="radio" name="shipping" value="express" data-price="0" checked />
+                  <span class="shipping-option__box"></span>
+                  <div class="shipping-option__content">
+                    <div class="shipping-option__top">
+                      <span class="shipping-option__title">
+                        ارسال سریع (پست پیشتاز)
+                        <span class="shipping-option__badge">پیشنهاد</span>
+                      </span>
+                      <span class="shipping-option__price is-free">رایگان</span>
+                    </div>
+                    <p class="shipping-option__desc">تحویل ۱ تا ۳ روز کاری</p>
+                  </div>
+                </label>
+
+                <label class="shipping-option">
+                  <input type="radio" name="shipping" value="normal" data-price="250000" />
+                  <span class="shipping-option__box"></span>
+                  <div class="shipping-option__content">
+                    <div class="shipping-option__top">
+                      <span class="shipping-option__title">ارسال عادی (پست سفارشی)</span>
+                      <span class="shipping-option__price">۲۵۰,۰۰۰ تومان</span>
+                    </div>
+                    <p class="shipping-option__desc">تحویل ۳ تا ۵ روز کاری</p>
+                  </div>
+                </label>
+
+                <label class="shipping-option">
+                  <input type="radio" name="shipping" value="sameDay" data-price="500000" />
+                  <span class="shipping-option__box"></span>
+                  <div class="shipping-option__content">
+                    <div class="shipping-option__top">
+                      <span class="shipping-option__title">ارسال همان روز (فقط تهران)</span>
+                      <span class="shipping-option__price">۵۰۰,۰۰۰ تومان</span>
+                    </div>
+                    <p class="shipping-option__desc">تحویل در همان روز قبل از ساعت ۶ عصر</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <!-- ===== Section 4: Payment ===== -->
+          <section class="checkout-section reveal">
+            <div class="checkout-section__head">
+              <span class="checkout-section__num">۴</span>
+              <div>
+                <h2 class="checkout-section__title">روش پرداخت</h2>
+                <p class="checkout-section__subtitle">نحوه پرداخت مبلغ سفارش</p>
+              </div>
+            </div>
+
+            <div class="checkout-section__body">
+              <div class="payment-options" id="payment-options">
+                <label class="payment-option is-selected">
+                  <input type="radio" name="payment" value="online" checked />
+                  <span class="payment-option__box"></span>
+                  <span class="payment-option__icon payment-option__icon--blue">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                  </span>
+                  <div class="payment-option__content">
+                    <span class="payment-option__title">پرداخت آنلاین</span>
+                    <span class="payment-option__desc">پرداخت امن از طریق درگاه زرین‌پال</span>
+                  </div>
+                </label>
+
+                <label class="payment-option">
+                  <input type="radio" name="payment" value="cod" />
+                  <span class="payment-option__box"></span>
+                  <span class="payment-option__icon payment-option__icon--green">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  </span>
+                  <div class="payment-option__content">
+                    <span class="payment-option__title">پرداخت در محل</span>
+                    <span class="payment-option__desc">فقط برای تهران (هنگام تحویل)</span>
+                  </div>
+                </label>
+
+                <label class="payment-option">
+                  <input type="radio" name="payment" value="wallet" />
+                  <span class="payment-option__box"></span>
+                  <span class="payment-option__icon payment-option__icon--purple">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>
+                  </span>
+                  <div class="payment-option__content">
+                    <span class="payment-option__title">کیف پول موبایل استور</span>
+                    <span class="payment-option__desc">موجودی: ۰ تومان (ناکافی)</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <!-- ===== Section 5: Note ===== -->
+          <section class="checkout-section reveal">
+            <div class="checkout-section__head">
+              <span class="checkout-section__num">۵</span>
+              <div>
+                <h2 class="checkout-section__title">یادداشت سفارش</h2>
+                <p class="checkout-section__subtitle">اگر توضیح خاصی برای سفارش خود دارید</p>
+              </div>
+            </div>
+
+            <div class="checkout-section__body">
+              <textarea
+                id="orderNote"
+                class="form-field__textarea"
+                placeholder="مثلاً: اگر ارسال به محل کار است، لطفاً تماس بگیرید..."
+                rows="3"
+              ></textarea>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- ============ Sidebar ============ -->
+        <aside class="checkout-sidebar">
+          <div class="checkout-summary reveal">
+            <div class="checkout-summary__head">
+              <h3 class="checkout-summary__title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                سفارش شما
+                <span class="checkout-summary__count" id="summary-count">۰</span>
+              </h3>
+              <a href="cart.html" class="checkout-summary__edit">ویرایش</a>
+            </div>
+
+            <div class="checkout-items" id="checkout-items"></div>
+
+            <div class="checkout-summary__rows">
+              <div class="checkout-row">
+                <span class="checkout-row__label">قیمت کالاها</span>
+                <span class="checkout-row__value" id="co-subtotal">۰</span>
+              </div>
+
+              <div class="checkout-row checkout-row--discount" id="co-row-discount" hidden>
+                <span class="checkout-row__label">تخفیف کالاها</span>
+                <span class="checkout-row__value" id="co-discount">− ۰</span>
+              </div>
+
+              <div class="checkout-row" id="co-row-shipping">
+                <span class="checkout-row__label">هزینه ارسال</span>
+                <span class="checkout-row__value" id="co-shipping">رایگان</span>
+              </div>
+
+              <div class="checkout-row checkout-row--total">
+                <span class="checkout-row__label">مبلغ قابل پرداخت</span>
+                <span class="checkout-row__total">
+                  <span id="co-total">۰</span>
+                  <span class="checkout-row__currency">تومان</span>
+                </span>
+              </div>
+
+              <div class="checkout-savings" id="co-savings" hidden>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>شما <strong id="co-savings-value">۰</strong> تومان صرفه‌جویی می‌کنید</span>
+              </div>
+            </div>
+
+            <button class="checkout-submit" id="checkout-submit">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              تایید و پرداخت
+            </button>
+
+            <div class="checkout-trust">
+              <div class="checkout-trust__item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v8c0 5 3.5 7.5 8 9 4.5-1.5 8-4 8-9V5l-8-3z"/><polyline points="9 12 11 14 15 10"/></svg>
+                ضمانت اصالت
+              </div>
+              <div class="checkout-trust__item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                پرداخت امن
+              </div>
+              <div class="checkout-trust__item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                ۷ روز بازگشت
+              </div>
+            </div>
+          </div>
+        </aside>
+
+      </div>
+
+    </div>
+  </main>
+
+  <div id="layout-footer"></div>
+  <div id="layout-drawer"></div>
+  <div id="layout-cart-drawer"></div>
+  <div id="layout-quick-view"></div>
+  <div id="layout-floating"></div>
+
+  <script type="module" src="js/pages/checkout.js"></script>
+</body>
+</html>

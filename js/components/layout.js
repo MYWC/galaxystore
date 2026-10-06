@@ -1,6 +1,5 @@
 /* ============================================
    LAYOUT — Header + Nav + Footer + Common UI
-   این فایل، همه چیز مشترک را میسازد
    ============================================ */
 
 import { initDrawer } from '../sections/drawer.js';
@@ -76,7 +75,7 @@ const HEADER_HTML = `
         <a href="account/index.html" class="header__action header__action--optional" aria-label="حساب کاربری">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </a>
-        <a href="cart.html" class="header__action" aria-label="سبد خرید" data-cart-toggle>
+        <a href="cart.html" class="header__action" aria-label="سبد خرید">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
           <span class="header__action-badge header__action-badge--cart">0</span>
         </a>
@@ -182,7 +181,7 @@ const DRAWER_HTML = `
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
           مقایسه
         </a>
-        <a href="cart.html" class="drawer__link" data-cart-toggle>
+        <a href="cart.html" class="drawer__link">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
           سبد خرید
           <span class="drawer__link-badge" data-badge="cart-drawer">0</span>
@@ -350,7 +349,6 @@ function inject(id, html) {
 }
 
 export function initLayout() {
-  // Inject
   inject('layout-announcement', ANNOUNCEMENT_HTML);
   inject('layout-header', HEADER_HTML);
   inject('layout-nav', NAV_HTML);
