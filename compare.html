@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2386D7" />
+  <title>مقایسه محصولات | موبایل استور</title>
+
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+
+  <link rel="stylesheet" href="css/components/button.css" />
+  <link rel="stylesheet" href="css/components/card.css" />
+  <link rel="stylesheet" href="css/components/badge.css" />
+  <link rel="stylesheet" href="css/components/placeholder.css" />
+  <link rel="stylesheet" href="css/components/product-card.css" />
+  <link rel="stylesheet" href="css/components/floating.css" />
+  <link rel="stylesheet" href="css/components/drawer.css" />
+  <link rel="stylesheet" href="css/components/toast.css" />
+  <link rel="stylesheet" href="css/components/cart-drawer.css" />
+  <link rel="stylesheet" href="css/components/quick-view.css" />
+  <link rel="stylesheet" href="css/components/search-dropdown.css" />
+
+  <link rel="stylesheet" href="css/sections/announcement.css" />
+  <link rel="stylesheet" href="css/sections/header.css" />
+  <link rel="stylesheet" href="css/sections/nav.css" />
+  <link rel="stylesheet" href="css/sections/footer.css" />
+
+  <link rel="stylesheet" href="css/pages/compare.css" />
+
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/performance.css" />
+  <link rel="stylesheet" href="css/micro-interactions.css" />
+</head>
+<body>
+
+  <div id="layout-announcement"></div>
+  <div id="layout-header"></div>
+  <div id="layout-nav"></div>
+
+  <main class="compare-page" id="compare-page">
+    <div class="container">
+
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb reveal">
+        <a href="index.html">خانه</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        <span>مقایسه محصولات</span>
+      </nav>
+
+      <!-- Header -->
+      <div class="compare-head reveal">
+        <div>
+          <h1 class="compare-head__title">مقایسه محصولات</h1>
+          <p class="compare-head__subtitle" id="compare-subtitle">
+            محصولات انتخابی خود را کنار هم مقایسه کنید
+          </p>
+        </div>
+        <button class="compare-head__clear" id="clear-compare" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          پاک کردن همه
+        </button>
+      </div>
+
+      <!-- Empty -->
+      <div class="compare-empty" id="compare-empty" hidden>
+        <div class="compare-empty__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+        </div>
+        <h2 class="compare-empty__title">لیست مقایسه خالی است</h2>
+        <p class="compare-empty__text">
+          برای مقایسه، محصولات مورد نظر خود را از فروشگاه انتخاب کنید و روی آیکون مقایسه بزنید.
+        </p>
+        <div class="compare-empty__actions">
+          <a href="category.html" class="btn btn--primary">مشاهده محصولات</a>
+          <a href="index.html" class="btn btn--outline">بازگشت به خانه</a>
+        </div>
+      </div>
+
+      <!-- Compare Table -->
+      <div class="compare-wrapper" id="compare-wrapper" hidden>
+        <div class="compare-scroll" id="compare-scroll">
+          <table class="compare-table" id="compare-table">
+            <!-- JS renders -->
+          </table>
+        </div>
+      </div>
+
+      <!-- Add more hint -->
+      <div class="compare-add-more" id="compare-add-more" hidden>
+        <div class="compare-add-more__inner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <div>
+            <p class="compare-add-more__title">محصول دیگری اضافه کنید</p>
+            <p class="compare-add-more__text">می‌توانید تا ۴ محصول را مقایسه کنید</p>
+          </div>
+          <a href="category.html" class="btn btn--primary btn--sm">افزودن محصول</a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="layout-footer"></div>
+  <div id="layout-drawer"></div>
+  <div id="layout-cart-drawer"></div>
+  <div id="layout-quick-view"></div>
+  <div id="layout-floating"></div>
+
+  <script type="module" src="js/pages/compare.js"></script>
+</body>
+</html>
