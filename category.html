@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2386D7" />
+  <title>فروشگاه | موبایل استور</title>
+
+  <!-- Common CSS -->
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+
+  <link rel="stylesheet" href="css/components/button.css" />
+  <link rel="stylesheet" href="css/components/card.css" />
+  <link rel="stylesheet" href="css/components/badge.css" />
+  <link rel="stylesheet" href="css/components/placeholder.css" />
+  <link rel="stylesheet" href="css/components/product-card.css" />
+  <link rel="stylesheet" href="css/components/floating.css" />
+  <link rel="stylesheet" href="css/components/drawer.css" />
+  <link rel="stylesheet" href="css/components/toast.css" />
+  <link rel="stylesheet" href="css/components/cart-drawer.css" />
+  <link rel="stylesheet" href="css/components/quick-view.css" />
+  <link rel="stylesheet" href="css/components/search-dropdown.css" />
+
+  <link rel="stylesheet" href="css/sections/announcement.css" />
+  <link rel="stylesheet" href="css/sections/header.css" />
+  <link rel="stylesheet" href="css/sections/nav.css" />
+  <link rel="stylesheet" href="css/sections/footer.css" />
+
+  <!-- Category CSS -->
+  <link rel="stylesheet" href="css/pages/category.css" />
+
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/performance.css" />
+  <link rel="stylesheet" href="css/micro-interactions.css" />
+</head>
+<body>
+
+  <!-- ============================================
+       LAYOUT (Auto-injected)
+       ============================================ -->
+  <div id="layout-announcement"></div>
+  <div id="layout-header"></div>
+  <div id="layout-nav"></div>
+
+  <!-- ============================================
+       MAIN
+       ============================================ -->
+  <main class="category-page" id="category-page">
+    <div class="container">
+
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb reveal" id="breadcrumb">
+        <a href="index.html">خانه</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        <span id="breadcrumb-current">فروشگاه</span>
+      </nav>
+
+      <!-- Head -->
+      <div class="category-head reveal">
+        <div class="category-head__left">
+          <h1 class="category-head__title" id="category-title">همه محصولات</h1>
+          <p class="category-head__count" id="category-count">۰ محصول</p>
+        </div>
+
+        <div class="category-head__right">
+          <!-- Mobile Filter Toggle -->
+          <button class="category-filter-toggle" id="filter-toggle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            فیلترها
+            <span class="category-filter-toggle__count" id="filter-count-badge" hidden>0</span>
+          </button>
+
+          <!-- Sort -->
+          <div class="category-sort">
+            <label for="sort-select" class="category-sort__label">مرتب‌سازی:</label>
+            <select id="sort-select" class="category-sort__select">
+              <option value="popular">محبوب‌ترین</option>
+              <option value="newest">جدیدترین</option>
+              <option value="cheapest">ارزان‌ترین</option>
+              <option value="expensive">گران‌ترین</option>
+              <option value="discount">بیشترین تخفیف</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Filters -->
+      <div class="category-active-filters reveal" id="active-filters" hidden></div>
+
+      <!-- Layout -->
+      <div class="category-layout">
+
+        <!-- ============ Sidebar ============ -->
+        <aside class="category-sidebar" id="category-sidebar">
+          <div class="category-sidebar__head">
+            <h2 class="category-sidebar__title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+              فیلترها
+            </h2>
+            <button class="category-sidebar__clear" id="clear-filters">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              پاک کردن
+            </button>
+          </div>
+
+          <div class="category-sidebar__body" id="filter-body">
+
+            <!-- Type -->
+            <div class="filter-group">
+              <button class="filter-group__head" data-toggle="type" aria-expanded="true">
+                <span>نوع محصول</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="filter-group__body" data-body="type">
+                <label class="filter-checkbox">
+                  <input type="checkbox" data-filter="type" value="phone" />
+                  <span class="filter-checkbox__box"></span>
+                  <span class="filter-checkbox__label">گوشی موبایل</span>
+                  <span class="filter-checkbox__count" data-count="type-phone">۰</span>
+                </label>
+                <label class="filter-checkbox">
+                  <input type="checkbox" data-filter="type" value="tablet" />
+                  <span class="filter-checkbox__box"></span>
+                  <span class="filter-checkbox__label">تبلت</span>
+                  <span class="filter-checkbox__count" data-count="type-tablet">۰</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Brand -->
+            <div class="filter-group">
+              <button class="filter-group__head" data-toggle="brand" aria-expanded="true">
+                <span>برند</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="filter-group__body" data-body="brand" id="brand-filters"></div>
+            </div>
+
+            <!-- Price -->
+            <div class="filter-group">
+              <button class="filter-group__head" data-toggle="price" aria-expanded="true">
+                <span>محدوده قیمت</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="filter-group__body" data-body="price">
+                <div class="price-range">
+                  <div class="price-range__inputs">
+                    <input type="number" id="price-min" placeholder="از" class="price-range__input" />
+                    <span class="price-range__sep">تا</span>
+                    <input type="number" id="price-max" placeholder="تا" class="price-range__input" />
+                  </div>
+                  <button class="price-range__apply" id="apply-price">اعمال</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Storage -->
+            <div class="filter-group">
+              <button class="filter-group__head" data-toggle="storage" aria-expanded="true">
+                <span>حافظه داخلی</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="filter-group__body" data-body="storage" id="storage-filters"></div>
+            </div>
+
+            <!-- Status -->
+            <div class="filter-group">
+              <button class="filter-group__head" data-toggle="status" aria-expanded="true">
+                <span>وضعیت</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="filter-group__body" data-body="status">
+                <label class="filter-checkbox">
+                  <input type="checkbox" data-filter="status" value="discount" />
+                  <span class="filter-checkbox__box"></span>
+                  <span class="filter-checkbox__label">فقط تخفیف‌دار</span>
+                </label>
+                <label class="filter-checkbox">
+                  <input type="checkbox" data-filter="status" value="instock" />
+                  <span class="filter-checkbox__box"></span>
+                  <span class="filter-checkbox__label">فقط موجود</span>
+                </label>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Sidebar footer (Mobile) -->
+          <div class="category-sidebar__foot">
+            <button class="category-sidebar__apply" id="apply-filters-mobile">نمایش نتایج</button>
+          </div>
+        </aside>
+
+        <!-- ============ Products ============ -->
+        <div class="category-products">
+          <div class="category-grid" id="category-grid"></div>
+          <div class="category-empty" id="category-empty" hidden>
+            <div class="category-empty__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </div>
+            <h3 class="category-empty__title">محصولی یافت نشد</h3>
+            <p class="category-empty__text">فیلترها را تغییر دهید یا همه را پاک کنید.</p>
+            <button class="btn btn--primary" id="empty-clear">پاک کردن فیلترها</button>
+          </div>
+          <div class="category-pagination" id="category-pagination"></div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ============================================
+       LAYOUT
+       ============================================ -->
+  <div id="layout-footer"></div>
+  <div id="layout-drawer"></div>
+  <div id="layout-cart-drawer"></div>
+  <div id="layout-quick-view"></div>
+  <div id="layout-floating"></div>
+
+  <script type="module" src="js/pages/category.js"></script>
+</body>
+</html>
