@@ -1,0 +1,225 @@
+/* ============================================
+   AUTH REGISTER — Extra Styles
+   ============================================ */
+
+/* ============================================
+   FORM GRID (2 columns)
+   ============================================ */
+
+.form-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.form-grid--2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* ============================================
+   PASSWORD STRENGTH
+   ============================================ */
+
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  padding-inline: 2px;
+}
+
+.password-strength__bars {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.password-strength__bar {
+  flex: 1;
+  height: 4px;
+  border-radius: 4px;
+  background: var(--border);
+  transition: background 0.3s ease;
+}
+
+/* Weak */
+.password-strength[data-level="1"] .password-strength__bar[data-level="1"] {
+  background: #EF5350;
+}
+/* Fair */
+.password-strength[data-level="2"] .password-strength__bar[data-level="1"],
+.password-strength[data-level="2"] .password-strength__bar[data-level="2"] {
+  background: #F59E0B;
+}
+/* Good */
+.password-strength[data-level="3"] .password-strength__bar[data-level="1"],
+.password-strength[data-level="3"] .password-strength__bar[data-level="2"],
+.password-strength[data-level="3"] .password-strength__bar[data-level="3"] {
+  background: #2386D7;
+}
+/* Strong */
+.password-strength[data-level="4"] .password-strength__bar {
+  background: #18B981;
+}
+
+.password-strength__text {
+  font-size: 11px;
+  font-weight: var(--fw-semibold);
+  white-space: nowrap;
+  min-width: 60px;
+  text-align: left;
+  transition: color 0.3s ease;
+}
+
+.password-strength[data-level="1"] .password-strength__text { color: #EF5350; }
+.password-strength[data-level="2"] .password-strength__text { color: #F59E0B; }
+.password-strength[data-level="3"] .password-strength__text { color: #2386D7; }
+.password-strength[data-level="4"] .password-strength__text { color: #18B981; }
+
+/* ============================================
+   CHECKBOX ROW
+   ============================================ */
+
+.auth-form__row--terms {
+  align-items: flex-start;
+  flex-direction: column;
+  margin-top: 4px;
+}
+
+.auth-checkbox--block {
+  align-items: flex-start;
+  gap: 10px;
+  padding: 4px 0;
+  line-height: 1.7;
+}
+
+.auth-checkbox--block .auth-checkbox__box {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.auth-checkbox--block .auth-checkbox__label {
+  font-size: var(--fs-xs);
+  line-height: 1.75;
+}
+
+.auth-checkbox--block .auth-checkbox__label a {
+  color: var(--primary);
+  font-weight: var(--fw-semibold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.auth-checkbox--block .auth-checkbox__label a:hover {
+  color: var(--primary-dark);
+}
+
+/* Error for terms */
+.auth-form__row--terms + .form-field__error {
+  display: block;
+  margin-top: -6px;
+  margin-bottom: 4px;
+}
+
+#field-terms.has-error {
+  border: none;
+}
+
+/* ============================================
+   SUCCESS STATE
+   ============================================ */
+
+.auth-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  padding: 40px 24px;
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 20px;
+}
+
+.auth-success__icon {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--success), #14A16F);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 20px 40px -10px rgba(24, 185, 129, 0.45),
+    0 0 0 8px rgba(24, 185, 129, 0.12);
+  animation: successPop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.auth-success__icon svg {
+  width: 38px;
+  height: 38px;
+  stroke-width: 3;
+  animation: successCheck 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.25s both;
+}
+
+.auth-success__title {
+  font-size: 22px;
+  font-weight: var(--fw-black);
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
+
+.auth-success__text {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  line-height: 1.85;
+  max-width: 360px;
+}
+
+.auth-success__text strong {
+  color: var(--text);
+  font-weight: var(--fw-bold);
+}
+
+.auth-success__actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.auth-success__actions .btn {
+  height: 46px;
+  padding-inline: 22px;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 640px) {
+  .form-grid--2 {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .password-strength__text {
+    min-width: 50px;
+    font-size: 10px;
+  }
+
+  .auth-success__icon {
+    width: 64px;
+    height: 64px;
+  }
+
+  .auth-success__icon svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .auth-success__title {
+    font-size: 18px;
+  }
+}
