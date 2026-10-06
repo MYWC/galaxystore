@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2386D7" />
+  <title>مجله موبایل استور | راهنمای خرید و اخبار تکنولوژی</title>
+  <meta name="description" content="مجله موبایل استور — مقالات تخصصی، راهنمای خرید، اخبار تکنولوژی و بررسی گوشی‌ها و تبلت‌ها" />
+
+  <link rel="stylesheet" href="../css/reset.css" />
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+
+  <link rel="stylesheet" href="../css/components/button.css" />
+  <link rel="stylesheet" href="../css/components/card.css" />
+  <link rel="stylesheet" href="../css/components/badge.css" />
+  <link rel="stylesheet" href="../css/components/placeholder.css" />
+  <link rel="stylesheet" href="../css/components/product-card.css" />
+  <link rel="stylesheet" href="../css/components/floating.css" />
+  <link rel="stylesheet" href="../css/components/drawer.css" />
+  <link rel="stylesheet" href="../css/components/toast.css" />
+  <link rel="stylesheet" href="../css/components/cart-drawer.css" />
+  <link rel="stylesheet" href="../css/components/quick-view.css" />
+  <link rel="stylesheet" href="../css/components/search-dropdown.css" />
+
+  <link rel="stylesheet" href="../css/sections/announcement.css" />
+  <link rel="stylesheet" href="../css/sections/header.css" />
+  <link rel="stylesheet" href="../css/sections/nav.css" />
+  <link rel="stylesheet" href="../css/sections/footer.css" />
+  <link rel="stylesheet" href="../css/sections/magazine.css" />
+
+  <link rel="stylesheet" href="../css/pages/magazine-page.css" />
+
+  <link rel="stylesheet" href="../css/responsive.css" />
+  <link rel="stylesheet" href="../css/animations.css" />
+  <link rel="stylesheet" href="../css/performance.css" />
+  <link rel="stylesheet" href="../css/micro-interactions.css" />
+</head>
+<body>
+
+  <div id="layout-announcement"></div>
+  <div id="layout-header"></div>
+  <div id="layout-nav"></div>
+
+  <main class="mag-page" id="mag-page">
+    <div class="container">
+
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb reveal">
+        <a href="../index.html">خانه</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        <span>مجله موبایل</span>
+      </nav>
+
+      <!-- ============================================
+           HERO
+           ============================================ -->
+      <section class="mag-hero reveal">
+        <div class="mag-hero__bg"></div>
+
+        <div class="mag-hero__content">
+          <span class="mag-hero__eyebrow">
+            <span class="mag-hero__eyebrow-dot"></span>
+            مجله موبایل استور
+          </span>
+
+          <h1 class="mag-hero__title">
+            راهنمای خرید، اخبار و<br>
+            <span class="mag-hero__title-accent">بررسی‌های تخصصی</span>
+          </h1>
+
+          <p class="mag-hero__desc">
+            جدیدترین مقالات درباره‌ی گوشی‌ها، تبلت‌ها، مقایسه‌های حرفه‌ای، راهنمای خرید
+            و اخبار تکنولوژی — همه در یک جا.
+          </p>
+
+          <!-- Search -->
+          <div class="mag-hero__search">
+            <svg class="mag-hero__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" id="mag-search" placeholder="جستجو در مقالات..." autocomplete="off" />
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================
+           CATEGORIES
+           ============================================ -->
+      <section class="mag-categories reveal">
+        <div class="mag-categories__head">
+          <h2 class="mag-categories__title">دسته‌بندی‌ها</h2>
+        </div>
+
+        <div class="mag-categories__grid" id="mag-categories"></div>
+      </section>
+
+      <!-- ============================================
+           FEATURED ARTICLE
+           ============================================ -->
+      <section class="mag-featured reveal" id="mag-featured">
+        <!-- JS renders -->
+      </section>
+
+      <!-- ============================================
+           ARTICLES GRID
+           ============================================ -->
+      <section class="mag-articles reveal">
+        <div class="mag-articles__head">
+          <h2 class="mag-articles__title">
+            <span id="mag-articles-title">آخرین مقالات</span>
+            <span class="mag-articles__count" id="mag-articles-count">۰</span>
+          </h2>
+
+          <div class="mag-articles__controls">
+            <div class="mag-tabs" id="mag-tabs">
+              <button class="mag-tab is-active" data-cat="all">همه</button>
+              <button class="mag-tab" data-cat="guide">راهنمای خرید</button>
+              <button class="mag-tab" data-cat="compare">مقایسه</button>
+              <button class="mag-tab" data-cat="news">اخبار</button>
+              <button class="mag-tab" data-cat="tips">نکات کاربردی</button>
+              <button class="mag-tab" data-cat="review">بررسی</button>
+            </div>
+
+            <div class="mag-sort">
+              <select id="mag-sort-select" class="mag-sort__select">
+                <option value="newest">جدیدترین</option>
+                <option value="oldest">قدیمی‌ترین</option>
+                <option value="popular">محبوب‌ترین</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="mag-articles__grid" id="mag-articles-grid"></div>
+
+        <!-- No Result -->
+        <div class="mag-empty" id="mag-empty" hidden>
+          <div class="mag-empty__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="8" x2="14" y2="14"/><line x1="14" y1="8" x2="8" y2="14"/></svg>
+          </div>
+          <h3 class="mag-empty__title">مقاله‌ای یافت نشد</h3>
+          <p class="mag-empty__text">با این فیلتر یا جستجو، مقاله‌ای پیدا نکردیم.</p>
+          <button class="btn btn--outline" id="mag-reset">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            نمایش همه مقالات
+          </button>
+        </div>
+
+        <!-- Load More -->
+        <div class="mag-load-more" id="mag-load-more" hidden>
+          <button class="btn btn--outline" id="load-more-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            مشاهده مقالات بیشتر
+          </button>
+        </div>
+      </section>
+
+      <!-- ============================================
+           NEWSLETTER
+           ============================================ -->
+      <section class="mag-newsletter reveal">
+        <div class="mag-newsletter__inner">
+          <div class="mag-newsletter__content">
+            <span class="mag-newsletter__eyebrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22 6 12 13 2 6"/></svg>
+              خبرنامه هفتگی
+            </span>
+
+            <h2 class="mag-newsletter__title">
+              جدیدترین مقالات را<br>
+              در <span class="mag-newsletter__title-accent">ایمیل خود</span> دریافت کنید
+            </h2>
+
+            <p class="mag-newsletter__desc">
+              هر هفته بهترین مقالات، راهنماهای خرید و اخبار تکنولوژی را برای شما ارسال می‌کنیم.
+              بدون اسپم، فقط محتوای ارزشمند.
+            </p>
+          </div>
+
+          <form class="mag-newsletter__form" id="mag-newsletter-form">
+            <div class="mag-newsletter__input-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22 6 12 13 2 6"/></svg>
+              <input type="email" id="mag-newsletter-email" placeholder="example@email.com" required autocomplete="email" dir="ltr" />
+            </div>
+            <button type="submit" class="mag-newsletter__btn">
+              <span>عضویت</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </form>
+
+          <p class="mag-newsletter__hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            ایمیل شما پیش ما امن است و هر زمان می‌توانید لغو عضویت کنید.
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <div id="layout-footer"></div>
+  <div id="layout-drawer"></div>
+  <div id="layout-cart-drawer"></div>
+  <div id="layout-quick-view"></div>
+  <div id="layout-floating"></div>
+
+  <script type="module" src="../js/pages/magazine.js"></script>
+</body>
+</html>

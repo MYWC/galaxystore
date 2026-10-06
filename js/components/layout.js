@@ -1,5 +1,6 @@
 /* ============================================
    LAYOUT — Header + Nav + Footer + Common UI
+   با تشخیص خودکار Base Path
    ============================================ */
 
 import { initDrawer } from '../sections/drawer.js';
@@ -11,6 +12,39 @@ import { initFooter } from '../sections/footer.js';
 import { cart, wishlist, compare, onChange, KEYS } from '../store/state.js';
 import { initAnimations } from '../utils/animations.js';
 import { initMicro, bounceCartBadge } from '../utils/micro.js';
+
+/* ============================================
+   BASE PATH DETECTION
+   ============================================ */
+
+function getBasePath() {
+  // پوشه‌های شناخته‌شده پروژه
+  const KNOWN_SUBFOLDERS = ['account', 'auth', 'magazine', 'support', 'legal'];
+
+  const path = window.location.pathname;
+  const cleanPath = path.split(/[?#]/)[0];
+  const parts = cleanPath.split('/').filter(Boolean);
+
+  // حذف نام فایل آخر (اگر هست)
+  if (parts.length && parts[parts.length - 1].includes('.')) {
+    parts.pop();
+  }
+
+  // شمارش عمق داخل پوشه‌های شناخته‌شده
+  let depth = 0;
+  for (let i = parts.length - 1; i >= 0; i--) {
+    if (KNOWN_SUBFOLDERS.includes(parts[i])) {
+      depth++;
+    } else {
+      break;
+    }
+  }
+
+  return depth > 0 ? '../'.repeat(depth) : './';
+}
+
+const BASE = getBasePath();
+const u = (p) => BASE + p;
 
 /* ============================================
    ANNOUNCEMENT + HEADER + NAV
@@ -51,7 +85,7 @@ const HEADER_HTML = `
       <button class="header__menu-btn" aria-label="منو" id="menu-toggle">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
-      <a href="index.html" class="header__logo" aria-label="موبایل استور">
+      <a href="${u('index.html')}" class="header__logo" aria-label="موبایل استور">
         <span class="header__logo-mark">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
         </span>
@@ -65,17 +99,17 @@ const HEADER_HTML = `
         <input type="search" class="header__search-input" placeholder="جستجوی گوشی، تبلت یا برند..." aria-label="جستجو" autocomplete="off" />
       </div>
       <div class="header__actions">
-        <a href="wishlist.html" class="header__action header__action--optional" aria-label="علاقه‌مندی‌ها">
+        <a href="${u('wishlist.html')}" class="header__action header__action--optional" aria-label="علاقه‌مندی‌ها">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           <span class="header__action-badge" data-badge="wishlist">0</span>
         </a>
-        <a href="compare.html" class="header__action header__action--optional" aria-label="مقایسه">
+        <a href="${u('compare.html')}" class="header__action header__action--optional" aria-label="مقایسه">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
         </a>
-        <a href="account/index.html" class="header__action header__action--optional" aria-label="حساب کاربری">
+        <a href="${u('account/index.html')}" class="header__action header__action--optional" aria-label="حساب کاربری">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </a>
-        <a href="cart.html" class="header__action" aria-label="سبد خرید">
+        <a href="${u('cart.html')}" class="header__action" aria-label="سبد خرید">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
           <span class="header__action-badge header__action-badge--cart">0</span>
         </a>
@@ -95,22 +129,22 @@ const NAV_HTML = `
 <nav class="nav" id="main-nav" aria-label="منوی اصلی">
   <div class="container">
     <div class="nav__inner">
-      <a href="index.html#special" class="nav__link nav__link--accent">
+      <a href="${u('index.html')}" class="nav__link nav__link--accent">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 0.67s0.74 2.65 0.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l0.03-0.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5 0.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-0.36 3.6-1.21 4.62-2.58 0.39 1.29 0.59 2.65 0.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/></svg>
         پیشنهاد ویژه
       </a>
       <span class="nav__sep"></span>
-      <a href="category.html?type=phone" class="nav__link">گوشی موبایل</a>
-      <a href="category.html?type=tablet" class="nav__link">تبلت</a>
+      <a href="${u('category.html?type=phone')}" class="nav__link">گوشی موبایل</a>
+      <a href="${u('category.html?type=tablet')}" class="nav__link">تبلت</a>
       <span class="nav__sep"></span>
-      <a href="brand.html?id=apple" class="nav__link">آیفون</a>
-      <a href="brand.html?id=samsung" class="nav__link">سامسونگ</a>
-      <a href="brand.html?id=xiaomi" class="nav__link">شیائومی</a>
-      <a href="brand.html?id=google" class="nav__link">گوگل پیکسل</a>
-      <a href="brand.html?id=oneplus" class="nav__link">وان‌پلاس</a>
-      <a href="brand.html?id=honor" class="nav__link">آنر</a>
-      <a href="brand.html?id=huawei" class="nav__link">هواوی</a>
-      <a href="category.html?filter=discount" class="nav__link">تخفیف‌ها</a>
+      <a href="${u('brand.html?id=apple')}" class="nav__link">آیفون</a>
+      <a href="${u('brand.html?id=samsung')}" class="nav__link">سامسونگ</a>
+      <a href="${u('brand.html?id=xiaomi')}" class="nav__link">شیائومی</a>
+      <a href="${u('brand.html?id=google')}" class="nav__link">گوگل پیکسل</a>
+      <a href="${u('brand.html?id=oneplus')}" class="nav__link">وان‌پلاس</a>
+      <a href="${u('brand.html?id=honor')}" class="nav__link">آنر</a>
+      <a href="${u('brand.html?id=huawei')}" class="nav__link">هواوی</a>
+      <a href="${u('category.html?filter=discount')}" class="nav__link">تخفیف‌ها</a>
     </div>
   </div>
 </nav>
@@ -124,7 +158,7 @@ const DRAWER_HTML = `
 <div class="drawer-overlay" id="drawer-overlay"></div>
 <aside class="drawer" id="mobile-drawer" aria-label="منوی موبایل" aria-hidden="true">
   <div class="drawer__head">
-    <a href="index.html" class="drawer__logo">
+    <a href="${u('index.html')}" class="drawer__logo">
       <span class="drawer__logo-mark">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
       </span>
@@ -138,55 +172,55 @@ const DRAWER_HTML = `
     <div class="drawer__section">
       <div class="drawer__section-title">فروشگاه</div>
       <div class="drawer__list">
-        <a href="category.html?filter=discount" class="drawer__link drawer__link--accent">
+        <a href="${u('category.html?filter=discount')}" class="drawer__link drawer__link--accent">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 0.67s0.74 2.65 0.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l0.03-0.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5 0.67z"/></svg>
           پیشنهاد ویژه
           <span class="drawer__link-badge drawer__link-badge--discount">۱۲</span>
         </a>
-        <a href="category.html?type=phone" class="drawer__link">گوشی موبایل</a>
-        <a href="category.html?type=tablet" class="drawer__link">تبلت</a>
-        <a href="category.html?filter=flagship" class="drawer__link">پرچمدار</a>
-        <a href="category.html?filter=budget" class="drawer__link">اقتصادی</a>
-        <a href="category.html?filter=discount" class="drawer__link">تخفیف‌ها</a>
+        <a href="${u('category.html?type=phone')}" class="drawer__link">گوشی موبایل</a>
+        <a href="${u('category.html?type=tablet')}" class="drawer__link">تبلت</a>
+        <a href="${u('category.html?filter=flagship')}" class="drawer__link">پرچمدار</a>
+        <a href="${u('category.html?filter=budget')}" class="drawer__link">اقتصادی</a>
+        <a href="${u('category.html?filter=discount')}" class="drawer__link">تخفیف‌ها</a>
       </div>
     </div>
     <div class="drawer__section">
       <div class="drawer__section-title">برندها</div>
       <div class="drawer__list">
-        <a href="brand.html?id=apple" class="drawer__link">Apple</a>
-        <a href="brand.html?id=samsung" class="drawer__link">Samsung</a>
-        <a href="brand.html?id=xiaomi" class="drawer__link">Xiaomi</a>
-        <a href="brand.html?id=google" class="drawer__link">Google</a>
-        <a href="brand.html?id=oneplus" class="drawer__link">OnePlus</a>
-        <a href="brand.html?id=honor" class="drawer__link">Honor</a>
-        <a href="brand.html?id=nothing" class="drawer__link">Nothing</a>
-        <a href="brand.html?id=motorola" class="drawer__link">Motorola</a>
-        <a href="brand.html?id=realme" class="drawer__link">Realme</a>
-        <a href="brand.html?id=huawei" class="drawer__link">Huawei</a>
+        <a href="${u('brand.html?id=apple')}" class="drawer__link">Apple</a>
+        <a href="${u('brand.html?id=samsung')}" class="drawer__link">Samsung</a>
+        <a href="${u('brand.html?id=xiaomi')}" class="drawer__link">Xiaomi</a>
+        <a href="${u('brand.html?id=google')}" class="drawer__link">Google</a>
+        <a href="${u('brand.html?id=oneplus')}" class="drawer__link">OnePlus</a>
+        <a href="${u('brand.html?id=honor')}" class="drawer__link">Honor</a>
+        <a href="${u('brand.html?id=nothing')}" class="drawer__link">Nothing</a>
+        <a href="${u('brand.html?id=motorola')}" class="drawer__link">Motorola</a>
+        <a href="${u('brand.html?id=realme')}" class="drawer__link">Realme</a>
+        <a href="${u('brand.html?id=huawei')}" class="drawer__link">Huawei</a>
       </div>
     </div>
     <div class="drawer__section">
       <div class="drawer__section-title">حساب من</div>
       <div class="drawer__list">
-        <a href="account/index.html" class="drawer__link">
+        <a href="${u('account/index.html')}" class="drawer__link">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           حساب کاربری
         </a>
-        <a href="wishlist.html" class="drawer__link">
+        <a href="${u('wishlist.html')}" class="drawer__link">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           علاقه‌مندی‌ها
           <span class="drawer__link-badge" data-badge="wishlist-drawer">0</span>
         </a>
-        <a href="compare.html" class="drawer__link">
+        <a href="${u('compare.html')}" class="drawer__link">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
           مقایسه
         </a>
-        <a href="cart.html" class="drawer__link">
+        <a href="${u('cart.html')}" class="drawer__link">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
           سبد خرید
           <span class="drawer__link-badge" data-badge="cart-drawer">0</span>
         </a>
-        <a href="support/track.html" class="drawer__link">
+        <a href="${u('support/track.html')}" class="drawer__link">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
           پیگیری سفارش
         </a>
@@ -261,7 +295,7 @@ const FOOTER_HTML = `
   <div class="container">
     <div class="footer__grid">
       <div class="footer__brand">
-        <a href="index.html" class="footer__logo">
+        <a href="${u('index.html')}" class="footer__logo">
           <span class="footer__logo-mark">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
           </span>
@@ -289,30 +323,30 @@ const FOOTER_HTML = `
       <div class="footer__col">
         <h4 class="footer__col-title">فروشگاه</h4>
         <div class="footer__col-list">
-          <a href="category.html?type=phone" class="footer__col-link">گوشی موبایل</a>
-          <a href="category.html?type=tablet" class="footer__col-link">تبلت</a>
-          <a href="category.html?filter=flagship" class="footer__col-link">پرچمدار</a>
-          <a href="category.html?filter=budget" class="footer__col-link">اقتصادی</a>
-          <a href="category.html?filter=discount" class="footer__col-link">تخفیف‌ها</a>
+          <a href="${u('category.html?type=phone')}" class="footer__col-link">گوشی موبایل</a>
+          <a href="${u('category.html?type=tablet')}" class="footer__col-link">تبلت</a>
+          <a href="${u('category.html?filter=flagship')}" class="footer__col-link">پرچمدار</a>
+          <a href="${u('category.html?filter=budget')}" class="footer__col-link">اقتصادی</a>
+          <a href="${u('category.html?filter=discount')}" class="footer__col-link">تخفیف‌ها</a>
         </div>
       </div>
       <div class="footer__col">
         <h4 class="footer__col-title">برندها</h4>
         <div class="footer__col-list">
-          <a href="brand.html?id=apple" class="footer__col-link">Apple</a>
-          <a href="brand.html?id=samsung" class="footer__col-link">Samsung</a>
-          <a href="brand.html?id=xiaomi" class="footer__col-link">Xiaomi</a>
-          <a href="brand.html?id=google" class="footer__col-link">Google</a>
-          <a href="brand.html?id=huawei" class="footer__col-link">Huawei</a>
+          <a href="${u('brand.html?id=apple')}" class="footer__col-link">Apple</a>
+          <a href="${u('brand.html?id=samsung')}" class="footer__col-link">Samsung</a>
+          <a href="${u('brand.html?id=xiaomi')}" class="footer__col-link">Xiaomi</a>
+          <a href="${u('brand.html?id=google')}" class="footer__col-link">Google</a>
+          <a href="${u('brand.html?id=huawei')}" class="footer__col-link">Huawei</a>
         </div>
       </div>
       <div class="footer__col">
         <h4 class="footer__col-title">پشتیبانی</h4>
         <div class="footer__col-list">
-          <a href="support/contact.html" class="footer__col-link">تماس با ما</a>
-          <a href="support/track.html" class="footer__col-link">پیگیری سفارش</a>
-          <a href="support/returns.html" class="footer__col-link">بازگشت کالا</a>
-          <a href="legal/terms.html" class="footer__col-link">قوانین و مقررات</a>
+          <a href="${u('support/contact.html')}" class="footer__col-link">تماس با ما</a>
+          <a href="${u('support/track.html')}" class="footer__col-link">پیگیری سفارش</a>
+          <a href="${u('support/returns.html')}" class="footer__col-link">بازگشت کالا</a>
+          <a href="${u('legal/terms.html')}" class="footer__col-link">قوانین و مقررات</a>
         </div>
       </div>
       <div class="footer__newsletter">
