@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#2386D7" />
-  <title>مجله موبایل استور | راهنمای خرید و اخبار تکنولوژی</title>
-  <meta name="description" content="مجله موبایل استور — مقالات تخصصی، راهنمای خرید، اخبار تکنولوژی و بررسی گوشی‌ها و تبلت‌ها" />
+  <title>داشبورد کاربری | موبایل استور</title>
+  <meta name="robots" content="noindex" />
 
   <link rel="stylesheet" href="../css/reset.css" />
   <link rel="stylesheet" href="../css/variables.css" />
@@ -28,9 +28,8 @@
   <link rel="stylesheet" href="../css/sections/header.css" />
   <link rel="stylesheet" href="../css/sections/nav.css" />
   <link rel="stylesheet" href="../css/sections/footer.css" />
-  <link rel="stylesheet" href="../css/sections/magazine.css" />
 
-  <link rel="stylesheet" href="../css/pages/magazine-page.css" />
+  <link rel="stylesheet" href="../css/pages/account.css" />
 
   <link rel="stylesheet" href="../css/responsive.css" />
   <link rel="stylesheet" href="../css/animations.css" />
@@ -43,157 +42,266 @@
   <div id="layout-header"></div>
   <div id="layout-nav"></div>
 
-  <main class="mag-page" id="mag-page">
+  <main class="account-page" id="account-page">
     <div class="container">
 
-      <!-- Breadcrumb -->
       <nav class="breadcrumb reveal">
         <a href="../index.html">خانه</a>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-        <span>مجله موبایل</span>
+        <span>حساب کاربری</span>
       </nav>
 
-      <!-- ============================================
-           HERO
-           ============================================ -->
-      <section class="mag-hero reveal">
-        <div class="mag-hero__bg"></div>
+      <!-- WELCOME HERO -->
+      <section class="account-hero reveal">
+        <div class="account-hero__bg"></div>
 
-        <div class="mag-hero__content">
-          <span class="mag-hero__eyebrow">
-            <span class="mag-hero__eyebrow-dot"></span>
-            مجله موبایل استور
-          </span>
-
-          <h1 class="mag-hero__title">
-            راهنمای خرید، اخبار و<br>
-            <span class="mag-hero__title-accent">بررسی‌های تخصصی</span>
-          </h1>
-
-          <p class="mag-hero__desc">
-            جدیدترین مقالات درباره‌ی گوشی‌ها، تبلت‌ها، مقایسه‌های حرفه‌ای، راهنمای خرید
-            و اخبار تکنولوژی — همه در یک جا.
-          </p>
-
-          <!-- Search -->
-          <div class="mag-hero__search">
-            <svg class="mag-hero__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="search" id="mag-search" placeholder="جستجو در مقالات..." autocomplete="off" />
+        <div class="account-hero__content">
+          <div class="account-hero__avatar" id="user-avatar">
+            <span id="user-initials">؟</span>
           </div>
-        </div>
-      </section>
 
-      <!-- ============================================
-           CATEGORIES
-           ============================================ -->
-      <section class="mag-categories reveal">
-        <div class="mag-categories__head">
-          <h2 class="mag-categories__title">دسته‌بندی‌ها</h2>
-        </div>
-
-        <div class="mag-categories__grid" id="mag-categories"></div>
-      </section>
-
-      <!-- ============================================
-           FEATURED ARTICLE
-           ============================================ -->
-      <section class="mag-featured reveal" id="mag-featured">
-        <!-- JS renders -->
-      </section>
-
-      <!-- ============================================
-           ARTICLES GRID
-           ============================================ -->
-      <section class="mag-articles reveal">
-        <div class="mag-articles__head">
-          <h2 class="mag-articles__title">
-            <span id="mag-articles-title">آخرین مقالات</span>
-            <span class="mag-articles__count" id="mag-articles-count">۰</span>
-          </h2>
-
-          <div class="mag-articles__controls">
-            <div class="mag-tabs" id="mag-tabs">
-              <button class="mag-tab is-active" data-cat="all">همه</button>
-              <button class="mag-tab" data-cat="guide">راهنمای خرید</button>
-              <button class="mag-tab" data-cat="compare">مقایسه</button>
-              <button class="mag-tab" data-cat="news">اخبار</button>
-              <button class="mag-tab" data-cat="tips">نکات کاربردی</button>
-              <button class="mag-tab" data-cat="review">بررسی</button>
-            </div>
-
-            <div class="mag-sort">
-              <select id="mag-sort-select" class="mag-sort__select">
-                <option value="newest">جدیدترین</option>
-                <option value="oldest">قدیمی‌ترین</option>
-                <option value="popular">محبوب‌ترین</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div class="mag-articles__grid" id="mag-articles-grid"></div>
-
-        <!-- No Result -->
-        <div class="mag-empty" id="mag-empty" hidden>
-          <div class="mag-empty__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="8" x2="14" y2="14"/><line x1="14" y1="8" x2="8" y2="14"/></svg>
-          </div>
-          <h3 class="mag-empty__title">مقاله‌ای یافت نشد</h3>
-          <p class="mag-empty__text">با این فیلتر یا جستجو، مقاله‌ای پیدا نکردیم.</p>
-          <button class="btn btn--outline" id="mag-reset">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-            نمایش همه مقالات
-          </button>
-        </div>
-
-        <!-- Load More -->
-        <div class="mag-load-more" id="mag-load-more" hidden>
-          <button class="btn btn--outline" id="load-more-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-            مشاهده مقالات بیشتر
-          </button>
-        </div>
-      </section>
-
-      <!-- ============================================
-           NEWSLETTER
-           ============================================ -->
-      <section class="mag-newsletter reveal">
-        <div class="mag-newsletter__inner">
-          <div class="mag-newsletter__content">
-            <span class="mag-newsletter__eyebrow">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22 6 12 13 2 6"/></svg>
-              خبرنامه هفتگی
-            </span>
-
-            <h2 class="mag-newsletter__title">
-              جدیدترین مقالات را<br>
-              در <span class="mag-newsletter__title-accent">ایمیل خود</span> دریافت کنید
-            </h2>
-
-            <p class="mag-newsletter__desc">
-              هر هفته بهترین مقالات، راهنماهای خرید و اخبار تکنولوژی را برای شما ارسال می‌کنیم.
-              بدون اسپم، فقط محتوای ارزشمند.
+          <div class="account-hero__info">
+            <span class="account-hero__greeting">سلام 👋</span>
+            <h1 class="account-hero__name" id="user-name">کاربر</h1>
+            <p class="account-hero__meta">
+              <span id="user-phone" dir="ltr">—</span>
+              <span class="account-hero__meta-sep">•</span>
+              <span>عضو از <span id="user-joined">—</span></span>
             </p>
           </div>
 
-          <form class="mag-newsletter__form" id="mag-newsletter-form">
-            <div class="mag-newsletter__input-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22 6 12 13 2 6"/></svg>
-              <input type="email" id="mag-newsletter-email" placeholder="example@email.com" required autocomplete="email" dir="ltr" />
-            </div>
-            <button type="submit" class="mag-newsletter__btn">
-              <span>عضویت</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          <div class="account-hero__actions">
+            <a href="profile.html" class="btn btn--outline btn--sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              ویرایش پروفایل
+            </a>
+            <button class="btn btn--ghost btn--sm" id="logout-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              خروج
             </button>
-          </form>
-
-          <p class="mag-newsletter__hint">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            ایمیل شما پیش ما امن است و هر زمان می‌توانید لغو عضویت کنید.
-          </p>
+          </div>
         </div>
       </section>
+
+      <!-- STATS -->
+      <section class="account-stats stagger reveal">
+        <a href="orders.html" class="account-stat">
+          <span class="account-stat__icon account-stat__icon--blue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </span>
+          <div class="account-stat__content">
+            <span class="account-stat__value" id="stat-orders">۰</span>
+            <span class="account-stat__label">سفارش</span>
+          </div>
+          <svg class="account-stat__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </a>
+
+        <a href="../wishlist.html" class="account-stat">
+          <span class="account-stat__icon account-stat__icon--red">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </span>
+          <div class="account-stat__content">
+            <span class="account-stat__value" id="stat-wishlist">۰</span>
+            <span class="account-stat__label">علاقه‌مندی</span>
+          </div>
+          <svg class="account-stat__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </a>
+
+        <a href="addresses.html" class="account-stat">
+          <span class="account-stat__icon account-stat__icon--green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </span>
+          <div class="account-stat__content">
+            <span class="account-stat__value" id="stat-addresses">۰</span>
+            <span class="account-stat__label">آدرس</span>
+          </div>
+          <svg class="account-stat__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </a>
+
+        <a href="../compare.html" class="account-stat">
+          <span class="account-stat__icon account-stat__icon--purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+          </span>
+          <div class="account-stat__content">
+            <span class="account-stat__value" id="stat-compare">۰</span>
+            <span class="account-stat__label">مقایسه</span>
+          </div>
+          <svg class="account-stat__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </a>
+      </section>
+
+      <!-- LAYOUT -->
+      <div class="account-layout">
+
+        <aside class="account-menu reveal">
+          <nav class="account-menu__nav">
+            <a href="index.html" class="account-menu__item is-active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+              داشبورد
+            </a>
+            <a href="orders.html" class="account-menu__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              سفارش‌های من
+            </a>
+            <a href="../wishlist.html" class="account-menu__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              علاقه‌مندی‌ها
+            </a>
+            <a href="addresses.html" class="account-menu__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              آدرس‌های من
+            </a>
+            <a href="profile.html" class="account-menu__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              اطلاعات کاربری
+            </a>
+            <a href="notifications.html" class="account-menu__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              اعلان‌ها
+            </a>
+            <a href="../support/track.html" class="account-menu__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              پیگیری سفارش
+            </a>
+            <a href="../support/contact.html" class="account-menu__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              پشتیبانی
+            </a>
+            <div class="account-menu__divider"></div>
+            <button class="account-menu__item account-menu__item--danger" id="logout-btn-sidebar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              خروج از حساب
+            </button>
+          </nav>
+        </aside>
+
+        <div class="account-content">
+
+          <section class="account-card reveal">
+            <div class="account-card__head">
+              <h2 class="account-card__title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                آخرین سفارش‌ها
+              </h2>
+              <a href="orders.html" class="account-card__link">
+                مشاهده همه
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+              </a>
+            </div>
+
+            <div class="account-card__body">
+              <div class="account-orders" id="recent-orders"></div>
+              <div class="account-empty-state" id="orders-empty" hidden>
+                <div class="account-empty-state__icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+                <p class="account-empty-state__text">هنوز سفارشی ثبت نکرده‌اید</p>
+                <a href="../category.html" class="btn btn--primary btn--sm">شروع خرید</a>
+              </div>
+            </div>
+          </section>
+
+          <div class="account-grid-2">
+
+            <section class="account-card reveal">
+              <div class="account-card__head">
+                <h2 class="account-card__title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                  علاقه‌مندی‌ها
+                </h2>
+                <a href="../wishlist.html" class="account-card__link">
+                  همه
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                </a>
+              </div>
+              <div class="account-card__body">
+                <div class="account-wishlist" id="wishlist-preview"></div>
+                <div class="account-empty-state" id="wishlist-empty" hidden>
+                  <div class="account-empty-state__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                  </div>
+                  <p class="account-empty-state__text">لیست علاقه‌مندی خالی است</p>
+                </div>
+              </div>
+            </section>
+
+            <section class="account-card reveal">
+              <div class="account-card__head">
+                <h2 class="account-card__title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  آدرس‌های من
+                </h2>
+                <a href="addresses.html" class="account-card__link">
+                  مدیریت
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                </a>
+              </div>
+              <div class="account-card__body">
+                <div class="account-addresses" id="addresses-preview"></div>
+                <div class="account-empty-state" id="addresses-empty" hidden>
+                  <div class="account-empty-state__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  </div>
+                  <p class="account-empty-state__text">هنوز آدرسی اضافه نکرده‌اید</p>
+                  <a href="addresses.html" class="btn btn--primary btn--sm">افزودن آدرس</a>
+                </div>
+              </div>
+            </section>
+
+          </div>
+
+          <section class="account-card reveal">
+            <div class="account-card__head">
+              <h2 class="account-card__title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                دسترسی سریع
+              </h2>
+            </div>
+            <div class="account-card__body">
+              <div class="account-quick stagger">
+                <a href="../category.html?filter=discount" class="account-quick__item">
+                  <span class="account-quick__icon account-quick__icon--orange">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                  </span>
+                  <span class="account-quick__label">تخفیف‌های امروز</span>
+                </a>
+                <a href="../support/track.html" class="account-quick__item">
+                  <span class="account-quick__icon account-quick__icon--blue">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                  </span>
+                  <span class="account-quick__label">پیگیری سفارش</span>
+                </a>
+                <a href="returns.html" class="account-quick__item">
+                  <span class="account-quick__icon account-quick__icon--green">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                  </span>
+                  <span class="account-quick__label">مرجوعی</span>
+                </a>
+                <a href="../support/faq.html" class="account-quick__item">
+                  <span class="account-quick__icon account-quick__icon--purple">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  </span>
+                  <span class="account-quick__label">سوالات متداول</span>
+                </a>
+                <a href="../support/contact.html" class="account-quick__item">
+                  <span class="account-quick__icon account-quick__icon--red">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  </span>
+                  <span class="account-quick__label">تماس با ما</span>
+                </a>
+                <a href="notifications.html" class="account-quick__item">
+                  <span class="account-quick__icon account-quick__icon--teal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                  </span>
+                  <span class="account-quick__label">اعلان‌ها</span>
+                </a>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+      </div>
 
     </div>
   </main>
@@ -204,6 +312,6 @@
   <div id="layout-quick-view"></div>
   <div id="layout-floating"></div>
 
-  <script type="module" src="../js/pages/magazine.js"></script>
+  <script type="module" src="../js/pages/account.js"></script>
 </body>
 </html>
