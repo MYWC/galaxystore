@@ -1,13 +1,15 @@
 /* ============================================
-   13. TRUST / WHY US
+   13. TRUST / WHY US — نسخه ارتقاء یافته
    ============================================ */
 
 .why-us {
   position: relative;
-  background: #005B59;
+  background: linear-gradient(135deg, #003D3B 0%, #005B59 50%, #003D3B 100%);
+  background-size: 200% 200%;
+  animation: gradientMove 18s ease infinite;
   color: #EAF6F6;
   overflow: hidden;
-  padding-block: 90px;
+  padding-block: 100px;
 }
 
 .why-us::before,
@@ -17,22 +19,25 @@
   border-radius: 50%;
   filter: blur(100px);
   pointer-events: none;
+  z-index: 0;
 }
 
 .why-us::before {
-  width: 420px;
-  height: 420px;
-  background: rgba(22, 181, 165, 0.22);
-  top: -140px;
-  right: -100px;
+  width: 500px;
+  height: 500px;
+  background: rgba(22, 181, 165, 0.25);
+  top: -160px;
+  right: -120px;
+  animation: floatY 10s ease-in-out infinite;
 }
 
 .why-us::after {
-  width: 360px;
-  height: 360px;
-  background: rgba(35, 134, 215, 0.16);
-  bottom: -140px;
-  left: -80px;
+  width: 420px;
+  height: 420px;
+  background: rgba(35, 134, 215, 0.18);
+  bottom: -160px;
+  left: -100px;
+  animation: floatY 12s ease-in-out infinite reverse;
 }
 
 .why-us > .container {
@@ -44,13 +49,17 @@
   display: grid;
   grid-template-columns: 1fr 1.05fr;
   align-items: center;
-  gap: 60px;
+  gap: 70px;
 }
+
+/* ============================================
+   VISUAL
+   ============================================ */
 
 .why-us__visual {
   position: relative;
   aspect-ratio: 5 / 4;
-  border-radius: 22px;
+  border-radius: 24px;
   overflow: hidden;
   background:
     linear-gradient(135deg,
@@ -60,6 +69,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.4);
 }
 
 .why-us__visual img {
@@ -84,10 +94,11 @@
   opacity: 0.7;
 }
 
+/* Badge شناور */
 .why-us__badge {
   position: absolute;
-  bottom: 20px;
-  right: 20px;
+  bottom: 22px;
+  right: 22px;
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -95,14 +106,15 @@
   background: rgba(255, 255, 255, 0.96);
   border-radius: 14px;
   color: var(--text);
-  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 15px 40px -12px rgba(0, 0, 0, 0.45);
   z-index: 2;
+  animation: floatY 5s ease-in-out infinite;
 }
 
 .why-us__badge-icon {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
   background: linear-gradient(135deg, #16B5A5, #2386D7);
   display: flex;
   align-items: center;
@@ -135,7 +147,13 @@
   font-weight: var(--fw-medium);
 }
 
-.why-us__content { max-width: 560px; }
+/* ============================================
+   CONTENT
+   ============================================ */
+
+.why-us__content {
+  max-width: 580px;
+}
 
 .why-us__eyebrow {
   display: inline-flex;
@@ -148,7 +166,7 @@
   font-size: var(--fs-xs);
   font-weight: var(--fw-semibold);
   color: #A8E4DC;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .why-us__eyebrow-dot {
@@ -160,40 +178,52 @@
 }
 
 .why-us__title {
-  font-size: clamp(28px, 3.4vw, 42px);
+  font-size: clamp(28px, 3.4vw, 44px);
   font-weight: var(--fw-black);
   line-height: 1.2;
   letter-spacing: -0.8px;
   color: #fff;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
-.why-us__title-accent { color: #6FE0CE; }
+.why-us__title-accent {
+  background: linear-gradient(120deg, #6FE0CE, #A8E4DC, #6FE0CE);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradientMove 5s ease infinite;
+}
 
 .why-us__desc {
   font-size: var(--fs-md);
   line-height: 1.9;
   color: rgba(234, 246, 246, 0.78);
-  margin-bottom: 32px;
+  margin-bottom: 36px;
   max-width: 520px;
 }
+
+/* ============================================
+   STATS با Counter
+   ============================================ */
 
 .why-us__stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
-  padding-top: 28px;
+  gap: 24px;
+  padding-top: 32px;
   border-top: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 .why-us__stat {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  position: relative;
 }
 
 .why-us__stat-value {
-  font-size: clamp(24px, 2.6vw, 32px);
+  font-size: clamp(26px, 2.8vw, 36px);
   font-weight: var(--fw-black);
   color: #fff;
   letter-spacing: -0.6px;
@@ -201,10 +231,11 @@
   display: inline-flex;
   align-items: baseline;
   gap: 2px;
+  font-variant-numeric: tabular-nums;
 }
 
 .why-us__stat-value span {
-  font-size: 0.65em;
+  font-size: 0.6em;
   color: #6FE0CE;
   font-weight: var(--fw-bold);
 }
@@ -214,6 +245,10 @@
   color: rgba(234, 246, 246, 0.7);
   font-weight: var(--fw-medium);
 }
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 
 @media (max-width: 1024px) {
   .why-us { padding-block: 70px; }

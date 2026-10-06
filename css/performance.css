@@ -1,0 +1,193 @@
+/* ============================================
+   PERFORMANCE — 120fps Ready
+   GPU Acceleration + Smooth Animations
+   ============================================ */
+
+/* ============================================
+   1. GPU ACCELERATION BASE
+   ============================================ */
+
+*,
+*::before,
+*::after {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ============================================
+   2. ELEMENT با will-change
+   فقط روی چیزهایی که واقعاً انیمیت میشوند
+   ============================================ */
+
+.reveal,
+.stagger > *,
+.p-card,
+.f-card,
+.hero__phone,
+.tilt,
+.hover-lift,
+[data-parallax] {
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+/* بعد از انیمیشن، will-change را پاک کن (بهینه) */
+.reveal.is-visible,
+.stagger.is-visible > * {
+  will-change: auto;
+}
+
+/* ============================================
+   3. SMOOTH TRANSITIONS — فقط GPU Props
+   ============================================ */
+
+.p-card,
+.f-card,
+.guide-card,
+.article-card,
+.brand-card,
+.category-card,
+.promo-banner,
+.review-card {
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.3s ease;
+  transform: translate3d(0, 0, 0);
+}
+
+/* ============================================
+   4. BUTTONS — 120fps feedback
+   ============================================ */
+
+button,
+.btn,
+a.header__action,
+.p-card__cta,
+.f-card__cta,
+.floating__btn {
+  transition:
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+  transform: translate3d(0, 0, 0);
+}
+
+button:active,
+.btn:active {
+  transform: scale3d(0.97, 0.97, 1);
+}
+
+/* ============================================
+   5. CONTAINMENT — جلوگیری از Reflow
+   ============================================ */
+
+.p-card,
+.f-card,
+.guide-card,
+.article-card,
+.brand-card,
+.category-card,
+.promo-banner,
+.review-card,
+.hero__banner,
+.why-us__visual {
+  contain: layout style paint;
+}
+
+/* ============================================
+   6. IMAGE RENDERING
+   ============================================ */
+
+img {
+  image-rendering: -webkit-optimize-contrast;
+  content-visibility: auto;
+  contain-intrinsic-size: 300px;
+}
+
+/* ============================================
+   7. BACKDROP-FILTER محدود
+   ============================================ */
+
+/* فقط روی عناصر ضروری */
+.hero__eyebrow,
+.header.is-scrolled,
+.drawer,
+.cart-drawer,
+.qv-modal {
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+/* بقیه بدون backdrop-filter برای کارایی */
+.search-dropdown,
+.toast {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* ============================================
+   8. SCROLL SNAP SMOOTH
+   ============================================ */
+
+.categories__grid,
+.best-deals__grid,
+.flash-sale__grid,
+.shop-by-brand__grid {
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+}
+
+/* ============================================
+   9. NATIVE SCROLLBAR — بهینه
+   ============================================ */
+
+.categories__grid,
+.best-deals__grid,
+.flash-sale__grid,
+.shop-by-brand__grid,
+.trending__tabs,
+.nav__inner,
+.brand-strip__inner {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.categories__grid::-webkit-scrollbar,
+.best-deals__grid::-webkit-scrollbar,
+.flash-sale__grid::-webkit-scrollbar,
+.shop-by-brand__grid::-webkit-scrollbar,
+.trending__tabs::-webkit-scrollbar,
+.nav__inner::-webkit-scrollbar,
+.brand-strip__inner::-webkit-scrollbar {
+  display: none;
+}
+
+/* ============================================
+   10. FONT SMOOTHING
+   ============================================ */
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ============================================
+   11. PAINT CONTAINMENT — برای بخشهای دور از دید
+   ============================================ */
+
+.footer,
+.magazine,
+.reviews,
+.why-us {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 600px;
+}

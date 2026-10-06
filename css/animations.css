@@ -1,0 +1,241 @@
+/* ============================================
+   ANIMATION SYSTEM — 120fps Ready
+   ============================================ */
+
+/* ============================================
+   1. SCROLL REVEAL
+   ============================================ */
+
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 40px, 0);
+  transition:
+    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal--left {
+  transform: translate3d(50px, 0, 0);
+}
+
+.reveal--right {
+  transform: translate3d(-50px, 0, 0);
+}
+
+.reveal--scale {
+  transform: scale3d(0.92, 0.92, 1);
+}
+
+.reveal--blur {
+  filter: blur(10px);
+  transform: translate3d(0, 25px, 0);
+  transition:
+    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  filter: none;
+}
+
+/* ============================================
+   2. STAGGER
+   ============================================ */
+
+.stagger > * {
+  opacity: 0;
+  transform: translate3d(0, 30px, 0);
+  transition:
+    opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.stagger.is-visible > * {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.stagger.is-visible > *:nth-child(1)  { transition-delay: 0.04s; }
+.stagger.is-visible > *:nth-child(2)  { transition-delay: 0.08s; }
+.stagger.is-visible > *:nth-child(3)  { transition-delay: 0.12s; }
+.stagger.is-visible > *:nth-child(4)  { transition-delay: 0.16s; }
+.stagger.is-visible > *:nth-child(5)  { transition-delay: 0.20s; }
+.stagger.is-visible > *:nth-child(6)  { transition-delay: 0.24s; }
+.stagger.is-visible > *:nth-child(7)  { transition-delay: 0.28s; }
+.stagger.is-visible > *:nth-child(8)  { transition-delay: 0.32s; }
+.stagger.is-visible > *:nth-child(9)  { transition-delay: 0.36s; }
+.stagger.is-visible > *:nth-child(10) { transition-delay: 0.40s; }
+
+/* ============================================
+   3. FLOAT / PULSE
+   ============================================ */
+
+@keyframes floatY {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50%      { transform: translate3d(0, -10px, 0); }
+}
+
+@keyframes pulseRing {
+  0%   { box-shadow: 0 0 0 0 rgba(35, 134, 215, 0.45); }
+  100% { box-shadow: 0 0 0 14px rgba(35, 134, 215, 0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+@keyframes gradientMove {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes rotateSlow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.float { animation: floatY 6s ease-in-out infinite; }
+.pulse { animation: pulseRing 2s ease-out infinite; }
+
+/* ============================================
+   4. GRADIENT TEXT
+   ============================================ */
+
+.gradient-text {
+  background: linear-gradient(120deg, #2386D7, #16B5A5, #7C5CFF, #2386D7);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradientMove 6s ease infinite;
+}
+
+/* ============================================
+   5. SHIMMER SKELETON
+   ============================================ */
+
+.skeleton {
+  background: linear-gradient(90deg, #EFF3F7 25%, #F7FAFC 50%, #EFF3F7 75%);
+  background-size: 1000px 100%;
+  animation: shimmer 1.8s infinite;
+  border-radius: 8px;
+}
+
+/* ============================================
+   6. HOVER LIFT
+   ============================================ */
+
+.hover-lift {
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hover-lift:hover {
+  transform: translate3d(0, -6px, 0);
+  box-shadow: 0 25px 50px -20px rgba(23, 32, 42, 0.20);
+}
+
+/* ============================================
+   7. MARQUEE
+   ============================================ */
+
+@keyframes marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+.marquee {
+  display: flex;
+  overflow: hidden;
+  gap: 40px;
+  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+
+.marquee__inner {
+  display: flex;
+  gap: 40px;
+  animation: marquee 30s linear infinite;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   8. PULSE DOT (Live indicator)
+   ============================================ */
+
+.live-dot {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #18B981;
+}
+
+.live-dot::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: #18B981;
+  opacity: 0.4;
+  animation: pulseRing 1.8s ease-out infinite;
+}
+
+/* ============================================
+   9. SKELETON STAGGER
+   ============================================ */
+
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 0.6; }
+  50%      { opacity: 1; }
+}
+
+.skeleton-pulse {
+  animation: skeletonPulse 1.6s ease-in-out infinite;
+}
+
+/* ============================================
+   10. REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .stagger > * {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+
+  .float,
+  .pulse,
+  .marquee__inner,
+  .gradient-text,
+  .live-dot::before {
+    animation: none !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ============================================
+   11. GPU HINTS — برای همه انیمیشنها
+   ============================================ */
+
+.float,
+.pulse,
+.marquee__inner,
+.hover-lift,
+.tilt {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}

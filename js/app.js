@@ -20,6 +20,7 @@ import { initSearch } from './components/search.js';
 import { toast } from './components/toast.js';
 import { cart, wishlist, compare, onChange, KEYS } from './store/state.js';
 import { products, formatPrice } from './data/products.js';
+import { initAnimations } from './utils/animations.js';
 
 /* ---------- Sticky Header ---------- */
 const header = document.getElementById('site-header');
@@ -45,6 +46,9 @@ initFloating();
 initCartDrawer();
 initQuickView();
 initSearch();
+
+/* ---------- Animations ---------- */
+initAnimations();
 
 /* ============================================
    BADGES SYNC
@@ -97,18 +101,15 @@ document.addEventListener('click', (e) => {
     const variant = product.variants[variantIndex];
     if (!variant) return;
 
-    // Active state
     card.querySelectorAll('.p-card__storage').forEach((b) => b.classList.remove('is-active'));
     storageBtn.classList.add('is-active');
     card.dataset.activeVariant = variantIndex;
 
-    // Update Price
     const priceEl = card.querySelector('[data-price]');
     if (priceEl) {
       priceEl.innerHTML = `${formatPrice(variant.price)} <span>تومان</span>`;
     }
 
-    // Update Old Price
     const oldEl = card.querySelector('[data-oldprice]');
     if (oldEl) {
       oldEl.innerHTML = variant.oldPrice
@@ -116,7 +117,6 @@ document.addEventListener('click', (e) => {
         : '';
     }
 
-    // Update Stock
     const stockEl = card.querySelector('[data-stock]');
     if (stockEl) {
       if (variant.stock === 0) {
@@ -178,12 +178,10 @@ document.addEventListener('click', (e) => {
     const product = products.find((p) => p.id === id);
     if (!product) return;
 
-    // پیدا کردن واریانت فعال
     const card = add.closest('.p-card');
     const variantIndex = card ? Number(card.dataset.activeVariant || 0) : 0;
     const variant = product.variants[variantIndex] || product.variants[0];
 
-    // ساخت آبجکت برای Cart
     const cartItem = {
       id: `${product.id}-${variant.storage}`,
       brand: product.brand,
@@ -218,4 +216,4 @@ document.addEventListener('click', (e) => {
   }
 });
 
-console.log('%c✓ Mobile Store loaded', 'color:#18B981;font-weight:bold;');
+console.log('%c✓ Mobile Store loaded — 120fps Ready', 'color:#18B981;font-weight:bold;');

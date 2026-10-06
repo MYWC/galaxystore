@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#2386D7" />
   <title>موبایل استور | فروشگاه تخصصی موبایل و تبلت</title>
-  <meta name="description" content="فروشگاه تخصصی موبایل و تبلت — اپل، سامسونگ، شیائومی، گوگل، وان‌پلاس، آنر، ناثینگ، موتورولا، ریلمی، هواوی" />
+  <meta name="description" content="فروشگاه تخصصی موبایل و تبلت — اپل، سامسونگ، شیائومی، گوگل، وان‌پلاس، آنر، هواوی، اوپو، ویوو و ترنسیون" />
 
   <!-- CSS -->
   <link rel="stylesheet" href="css/reset.css" />
@@ -39,15 +39,18 @@
   <link rel="stylesheet" href="css/sections/shop-by-brand.css" />
   <link rel="stylesheet" href="css/sections/why-us.css" />
   <link rel="stylesheet" href="css/sections/reviews.css" />
-  <link rel="stylesheet" href="css/sections/app-banner.css" />
   <link rel="stylesheet" href="css/sections/magazine.css" />
   <link rel="stylesheet" href="css/sections/footer.css" />
 
   <link rel="stylesheet" href="css/responsive.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/performance.css" />
 </head>
 <body>
 
-  <!-- 01. ANNOUNCEMENT -->
+  <!-- ============================================
+       01. ANNOUNCEMENT BAR
+       ============================================ -->
   <div class="announcement">
     <div class="container">
       <div class="announcement__inner">
@@ -74,7 +77,9 @@
     </div>
   </div>
 
-  <!-- 02. HEADER -->
+  <!-- ============================================
+       02. HEADER
+       ============================================ -->
   <header class="header" id="site-header">
     <div class="container">
       <div class="header__inner">
@@ -132,7 +137,9 @@
     </div>
   </header>
 
-  <!-- 03. NAVIGATION (فقط موبایل و تبلت) -->
+  <!-- ============================================
+       03. NAVIGATION
+       ============================================ -->
   <nav class="nav" id="main-nav" aria-label="منوی اصلی">
     <div class="container">
       <div class="nav__inner">
@@ -150,26 +157,29 @@
         <a href="/brands/google" class="nav__link">گوگل پیکسل</a>
         <a href="/brands/oneplus" class="nav__link">وان‌پلاس</a>
         <a href="/brands/honor" class="nav__link">آنر</a>
-        <a href="/brands/nothing" class="nav__link">ناثینگ</a>
         <a href="/brands/huawei" class="nav__link">هواوی</a>
         <a href="/discounts" class="nav__link">تخفیف‌ها</a>
       </div>
     </div>
   </nav>
 
-  <!-- 04. HERO BANNER -->
+  <!-- ============================================
+       04. HERO BANNER
+       ============================================ -->
   <section class="hero" id="hero">
     <div class="container">
-      <a href="/special" class="hero__banner">
+      <a href="/special" class="hero__banner reveal reveal--scale">
         <img src="assets/images/hero/hero-banner.jpg" alt="فروشگاه تخصصی موبایل و تبلت" />
       </a>
     </div>
   </section>
 
-  <!-- 05. QUICK CATEGORIES -->
+  <!-- ============================================
+       05. QUICK CATEGORIES
+       ============================================ -->
   <section class="section categories" id="quick-categories">
     <div class="container">
-      <div class="categories__head">
+      <div class="categories__head reveal">
         <h2 class="categories__title">دسته‌بندی‌های محبوب</h2>
         <a href="/categories" class="categories__link">
           مشاهده همه
@@ -177,7 +187,7 @@
         </a>
       </div>
 
-      <div class="categories__grid">
+      <div class="categories__grid stagger">
         <a href="/brands/apple" class="category-card category-card--apple">
           <span class="category-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span>
           <span class="category-card__title">آیفون</span>
@@ -229,7 +239,9 @@
     </div>
   </section>
 
-  <!-- 06. BRAND STRIP -->
+  <!-- ============================================
+       06. BRAND STRIP
+       ============================================ -->
   <div class="brand-strip" id="brand-strip">
     <div class="container">
       <div class="brand-strip__inner">
@@ -261,10 +273,12 @@
     </div>
   </div>
 
-  <!-- 07. BEST DEALS -->
+  <!-- ============================================
+       07. BEST DEALS
+       ============================================ -->
   <section class="section best-deals" id="best-deals">
     <div class="container">
-      <div class="best-deals__head">
+      <div class="best-deals__head reveal">
         <div class="best-deals__title-wrap">
           <span class="best-deals__icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 0.67s0.74 2.65 0.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l0.03-0.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5 0.67z"/></svg>
@@ -283,10 +297,12 @@
     </div>
   </section>
 
-  <!-- 08. PROMO BANNERS -->
+  <!-- ============================================
+       08. PROMO BANNERS
+       ============================================ -->
   <section class="section promo-banners" id="promo-banners">
     <div class="container">
-      <div class="promo-banners__grid">
+      <div class="promo-banners__grid stagger">
         <a href="/brands/apple" class="promo-banner promo-banner--iphone">
           <div class="promo-banner__bg"></div>
           <div class="promo-banner__content">
@@ -321,10 +337,12 @@
     </div>
   </section>
 
-  <!-- 09. FLASH SALE -->
+  <!-- ============================================
+       09. FLASH SALE
+       ============================================ -->
   <section class="section flash-sale" id="flash-sale">
     <div class="container">
-      <div class="flash-sale__head">
+      <div class="flash-sale__head reveal">
         <div class="flash-sale__title-wrap">
           <span class="flash-sale__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
           <div>
@@ -348,10 +366,12 @@
     </div>
   </section>
 
-  <!-- 10. TRENDING -->
+  <!-- ============================================
+       10. TRENDING
+       ============================================ -->
   <section class="section trending" id="trending">
     <div class="container">
-      <div class="trending__head">
+      <div class="trending__head reveal">
         <div class="trending__title-wrap">
           <h2 class="trending__title">محبوب‌ترین‌های این هفته</h2>
           <p class="trending__subtitle">انتخاب کاربران بر اساس بازدید، خرید و امتیاز</p>
@@ -363,10 +383,12 @@
     </div>
   </section>
 
-  <!-- 11. BUYING GUIDES -->
+  <!-- ============================================
+       11. BUYING GUIDES
+       ============================================ -->
   <section class="section buying-guides" id="buying-guides">
     <div class="container">
-      <div class="buying-guides__head">
+      <div class="buying-guides__head reveal">
         <h2 class="buying-guides__title">راهنمای خرید</h2>
         <a href="/guides" class="buying-guides__link">همه راهنماها<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></a>
       </div>
@@ -374,10 +396,12 @@
     </div>
   </section>
 
-  <!-- 12. SHOP BY BRAND -->
+  <!-- ============================================
+       12. SHOP BY BRAND
+       ============================================ -->
   <section class="section shop-by-brand" id="shop-by-brand">
     <div class="container">
-      <div class="shop-by-brand__head">
+      <div class="shop-by-brand__head reveal">
         <h2 class="shop-by-brand__title">خرید بر اساس برند</h2>
         <a href="/brands" class="shop-by-brand__link">همه برندها<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></a>
       </div>
@@ -385,12 +409,15 @@
     </div>
   </section>
 
-  <!-- 13. WHY US -->
+  <!-- ============================================
+       13. WHY US
+       ============================================ -->
   <section class="why-us" id="why-us">
     <div class="container">
       <div class="why-us__inner">
-        <div class="why-us__visual">
-          <div class="ph">تصویر برند / فروشگاه</div>
+
+        <div class="why-us__visual reveal reveal--left">
+          <div class="ph">تصویر فروشگاه</div>
           <div class="why-us__badge">
             <span class="why-us__badge-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v8c0 5 3.5 7.5 8 9 4.5-1.5 8-4 8-9V5l-8-3z"/><polyline points="9 12 11 14 15 10"/></svg>
@@ -401,39 +428,61 @@
             </span>
           </div>
         </div>
-        <div class="why-us__content">
+
+        <div class="why-us__content reveal reveal--right">
           <span class="why-us__eyebrow">
-            <span class="why-us__eyebrow-dot"></span>چرا ما؟
+            <span class="why-us__eyebrow-dot"></span>
+            چرا ما؟
           </span>
-          <h2 class="why-us__title">فروشگاه تخصصی،<br>تجربه‌ای <span class="why-us__title-accent">متفاوت</span></h2>
+
+          <h2 class="why-us__title">
+            فروشگاه تخصصی،<br>
+            تجربه‌ای <span class="why-us__title-accent">متفاوت</span>
+          </h2>
+
           <p class="why-us__desc">
-            ما فروشگاه تخصصی موبایل و تبلت هستیم و فقط روی این دو دسته تمرکز داریم.
-            با ۱۰ برند معتبر جهانی، ضمانت اصالت و خدمات پس از فروش مطمئن،
-            تجربه‌ی خریدی ساده و حرفه‌ای برای شما فراهم می‌کنیم.
+            ما فروشگاه تخصصی موبایل و تبلت هستیم. با ۱۰ برند معتبر جهانی،
+            ضمانت اصالت، قیمت رقابتی و خدمات پس از فروش مطمئن، تجربه‌ای
+            ساده و حرفه‌ای برای شما فراهم می‌کنیم.
           </p>
-          <div class="why-us__stats">
+
+          <div class="why-us__stats stagger">
             <div class="why-us__stat">
-              <span class="why-us__stat-value">۱۰<span>+</span></span>
-              <span class="why-us__stat-label">برند معتبر</span>
+              <span class="why-us__stat-value">
+                <span class="counter" data-count="10">۰</span>
+                <span>+</span>
+              </span>
+              <span class="why-us__stat-label">برند معتبر جهانی</span>
             </div>
+
             <div class="why-us__stat">
-              <span class="why-us__stat-value">۵۰<span>K+</span></span>
-              <span class="why-us__stat-label">مشتری راضی</span>
+              <span class="why-us__stat-value">
+                <span class="counter" data-count="2500">۰</span>
+                <span>+</span>
+              </span>
+              <span class="why-us__stat-label">مدل گوشی و تبلت</span>
             </div>
+
             <div class="why-us__stat">
-              <span class="why-us__stat-value">۲۵۰<span>K+</span></span>
-              <span class="why-us__stat-label">سفارش موفق</span>
+              <span class="why-us__stat-value">
+                <span class="counter" data-count="98">۰</span>
+                <span>٪</span>
+              </span>
+              <span class="why-us__stat-label">رضایت مشتریان</span>
             </div>
           </div>
         </div>
+
       </div>
     </div>
   </section>
 
-  <!-- 14. REVIEWS -->
+  <!-- ============================================
+       14. REVIEWS
+       ============================================ -->
   <section class="section reviews" id="reviews">
     <div class="container">
-      <div class="reviews__head">
+      <div class="reviews__head reveal">
         <div class="reviews__title-wrap">
           <h2 class="reviews__title">نظر مشتریان ما</h2>
           <p class="reviews__subtitle">تجربه‌ی خرید واقعی از نگاه مشتریان</p>
@@ -444,59 +493,12 @@
     </div>
   </section>
 
-  <!-- 15. APP BANNER -->
-  <section class="section app-banner" id="app-banner">
-    <div class="container">
-      <div class="app-banner__inner">
-        <div class="app-banner__content">
-          <span class="app-banner__eyebrow">
-            <span class="app-banner__eyebrow-dot"></span>اپلیکیشن موبایل استور
-          </span>
-          <h2 class="app-banner__title">تخفیف‌های اختصاصی،<br>فقط در <span class="app-banner__title-accent">اپلیکیشن</span></h2>
-          <p class="app-banner__desc">
-            اپلیکیشن ما را دانلود کنید و از پیشنهادهای شخصی‌سازی‌شده،
-            پیگیری لحظه‌ای سفارش و تخفیف‌های ویژه اعضا بهره‌مند شوید.
-          </p>
-          <div class="app-banner__features">
-            <span class="app-banner__feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>تخفیف‌های اختصاصی</span>
-            <span class="app-banner__feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>پیشنهادهای شخصی</span>
-            <span class="app-banner__feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>پیگیری سفارش</span>
-          </div>
-          <div class="app-banner__cta-row">
-            <a href="/app" class="app-banner__btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              دانلود اپلیکیشن
-            </a>
-            <div class="app-banner__qr">
-              <div class="app-banner__qr-code">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v1M20 17v1M20 20h1M17 20h1M14 20v1"/></svg>
-              </div>
-              <span class="app-banner__qr-text">اسکن کنید و نصب کنید</span>
-            </div>
-          </div>
-        </div>
-        <div class="app-banner__visual">
-          <div class="app-banner__phone">
-            <div class="app-banner__phone-screen">
-              <span class="app-banner__phone-logo">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
-              </span>
-              <span class="app-banner__phone-text">موبایل استور<span>اپلیکیشن رسمی</span></span>
-            </div>
-          </div>
-          <span class="app-banner__badge">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6L12 2z"/></svg>
-            تخفیف ویژه اعضا
-          </span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 16. MAGAZINE -->
+  <!-- ============================================
+       15. MAGAZINE
+       ============================================ -->
   <section class="section magazine" id="magazine">
     <div class="container">
-      <div class="magazine__head">
+      <div class="magazine__head reveal">
         <div class="magazine__title-wrap">
           <h2 class="magazine__title">مجله موبایل</h2>
           <p class="magazine__subtitle">راهنمای خرید و اخبار تکنولوژی</p>
@@ -507,7 +509,9 @@
     </div>
   </section>
 
-  <!-- 17. FOOTER -->
+  <!-- ============================================
+       16. FOOTER
+       ============================================ -->
   <footer class="footer" id="site-footer">
     <div class="container">
       <div class="footer__grid">
@@ -594,7 +598,9 @@
     </div>
   </footer>
 
-  <!-- MOBILE DRAWER -->
+  <!-- ============================================
+       MOBILE DRAWER
+       ============================================ -->
   <div class="drawer-overlay" id="drawer-overlay"></div>
   <aside class="drawer" id="mobile-drawer" aria-label="منوی موبایل" aria-hidden="true">
     <div class="drawer__head">
@@ -686,7 +692,9 @@
     </div>
   </aside>
 
-  <!-- CART DRAWER -->
+  <!-- ============================================
+       CART DRAWER
+       ============================================ -->
   <div class="cart-overlay" id="cart-overlay"></div>
   <aside class="cart-drawer" id="cart-drawer" aria-label="سبد خرید" aria-hidden="true">
     <div class="cart-drawer__head">
@@ -703,7 +711,9 @@
     <div class="cart-drawer__foot" id="cart-drawer-foot"></div>
   </aside>
 
-  <!-- QUICK VIEW MODAL -->
+  <!-- ============================================
+       QUICK VIEW MODAL
+       ============================================ -->
   <div class="qv-overlay" id="qv-overlay" role="dialog" aria-modal="true">
     <div class="qv-modal">
       <button class="qv-modal__close" id="qv-close" aria-label="بستن">
@@ -713,7 +723,9 @@
     </div>
   </div>
 
-  <!-- FLOATING -->
+  <!-- ============================================
+       FLOATING ACTIONS
+       ============================================ -->
   <div class="floating">
     <button class="floating__btn floating__btn--top" id="back-to-top" aria-label="بازگشت به بالا">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
