@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2386D7" />
+  <title>قوانین و مقررات | موبایل استور</title>
+  <meta name="description" content="قوانین و مقررات استفاده از فروشگاه موبایل استور" />
+
+  <link rel="stylesheet" href="../css/reset.css" />
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+
+  <link rel="stylesheet" href="../css/components/button.css" />
+  <link rel="stylesheet" href="../css/components/card.css" />
+  <link rel="stylesheet" href="../css/components/badge.css" />
+  <link rel="stylesheet" href="../css/components/placeholder.css" />
+  <link rel="stylesheet" href="../css/components/product-card.css" />
+  <link rel="stylesheet" href="../css/components/floating.css" />
+  <link rel="stylesheet" href="../css/components/drawer.css" />
+  <link rel="stylesheet" href="../css/components/toast.css" />
+  <link rel="stylesheet" href="../css/components/cart-drawer.css" />
+  <link rel="stylesheet" href="../css/components/quick-view.css" />
+  <link rel="stylesheet" href="../css/components/search-dropdown.css" />
+
+  <link rel="stylesheet" href="../css/sections/announcement.css" />
+  <link rel="stylesheet" href="../css/sections/header.css" />
+  <link rel="stylesheet" href="../css/sections/nav.css" />
+  <link rel="stylesheet" href="../css/sections/footer.css" />
+
+  <link rel="stylesheet" href="../css/pages/legal.css" />
+
+  <link rel="stylesheet" href="../css/responsive.css" />
+  <link rel="stylesheet" href="../css/animations.css" />
+  <link rel="stylesheet" href="../css/performance.css" />
+  <link rel="stylesheet" href="../css/micro-interactions.css" />
+</head>
+<body>
+
+  <div id="layout-announcement"></div>
+  <div id="layout-header"></div>
+  <div id="layout-nav"></div>
+
+  <main class="legal-page" id="legal-page">
+    <div class="container">
+
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb reveal">
+        <a href="../index.html">خانه</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        <a href="../legal/terms.html">حقوقی</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        <span>قوانین و مقررات</span>
+      </nav>
+
+      <!-- Hero -->
+      <section class="legal-hero reveal">
+        <div class="legal-hero__icon legal-hero__icon--blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="9" y1="15" x2="15" y2="15"/>
+          </svg>
+        </div>
+
+        <h1 class="legal-hero__title">قوانین و مقررات</h1>
+
+        <p class="legal-hero__desc">
+          استفاده از خدمات فروشگاه موبایل استور به معنای پذیرش کامل قوانین زیر است.
+          لطفاً پیش از خرید، این قوانین را به‌دقت مطالعه کنید.
+        </p>
+
+        <div class="legal-hero__meta">
+          <span class="legal-hero__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            آخرین بروزرسانی: ۱۵ مهر ۱۴۰۴
+          </span>
+          <span class="legal-hero__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            زمان مطالعه: ۸ دقیقه
+          </span>
+        </div>
+      </section>
+
+      <!-- Layout -->
+      <div class="legal-layout">
+
+        <!-- Sidebar (TOC) -->
+        <aside class="legal-toc">
+          <h3 class="legal-toc__title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            در این صفحه می‌خوانید
+          </h3>
+
+          <nav class="legal-toc__nav" id="terms-toc">
+            <!-- JS پر می‌کند -->
+          </nav>
+
+          <div class="legal-toc__switch">
+            <p>صفحه مرتبط:</p>
+            <a href="privacy.html" class="legal-toc__switch-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              حریم خصوصی
+            </a>
+          </div>
+        </aside>
+
+        <!-- Content -->
+        <article class="legal-content reveal">
+
+          <section class="legal-section" id="section-intro">
+            <h2 class="legal-section__title">
+              <span class="legal-section__num">۱</span>
+              مقدمه
+            </h2>
+            <p>
+              به فروشگاه اینترنتی <strong>موبایل استور</strong> خوش آمدید. استفاده از این
+              وب‌سایت و خدمات آن، به معنای پذیرش کامل و بدون قید و شرط قوانین و مقررات
+              زیر است. لطفاً پیش از هرگونه خرید، این قوانین را به‌دقت مطالعه کنید.
+            </p>
+            <p>
+              در صورت عدم موافقت با هر یک از این شرایط، لطفاً از خدمات ما استفاده نکنید.
+              موبایل استور این حق را برای خود محفوظ می‌دارد که این قوانین را در هر زمان
+              بروزرسانی کند. ادامه‌ی استفاده از سایت پس از هر بروزرسانی، به‌منزله‌ی
+              پذیرش شرایط جدید است.
+            </p>
+          </section>
+
+          <section class="legal-section" id="section-account">
+            <h2 class="legal-section__title">
+              <span class="legal-section__num">۲</span>
+              حساب کاربری
+            </h2>
+            <p>
+              برای استفاده از برخی خدمات فروشگاه، لازم است یک حساب کاربری بسازید.
+              در این مورد:
+            </p>
+            <ul>
+              <li>اطلاعات وارد شده باید صحیح، کامل و به‌روز باشد.</li>
+              <li>مسئولیت حفظ رمز عبور و اطلاعات حساب کاربری به عهده‌ی شماست.</li>
+              <li>هرگونه فعالیتی که از طریق حساب شما انجام شود، به عهده‌ی خودتان است.</li>
+              <li>در صورت مشاهده‌ی هر فعالیت مشکوک، باید بلافاصله به ما اطلاع دهید.</li>
+              <li>استفاده از اطلاعات جعلی یا هویت غیرواقعی، موجب مسدود شدن حساب خواهد شد.</li>
+            </ul>
+          </section>
+
+          <section class="legal-section" id="section-order">
+            <h2 class="legal-section__title">
+              <span class="legal-section__num">۳</span>
+              ثبت سفارش و خرید
+            </h2>
+            <p>
+              با ثبت سفارش در موبایل استور، شما تایید می‌کنید که:
+            </p>
+            <ul>
+              <li>اطلاعات وارد شده (نام، آدرس، شماره تماس) صحیح و معتبر است.</li>
+              <li>شما بالای ۱۸ سال سن دارید یا با اجازه‌ی والدین خرید می‌کنید.</li>
+              <li>اطلاعات محصولات را قبل از خرید مطالعه کرده‌اید.</li>
+              <li>با قیمت‌ها و شرایط فروش موافقت کرده‌اید.</li>
+            </ul>
+            <p>
+              <strong>موبایل استور</strong> حق دارد هر سفارشی را در صورت وجود مشکل
+              در اطلاعات، عدم موجودی یا هر دلیل منطقی دیگر لغو کند و در این صورت
+              مبلغ پرداختی به‌طور کامل بازگردانده می‌شود.
+            </p>
+          </section>
+
+          <section class="legal-section" id="section-pricing">
+            <h2 class="legal-section__title">
+              <span class="legal-section__num">۴</span>
+              قیمت‌ها و پرداخت
+            </h2>
+            <p>
+              تمام قیمت‌های درج‌شده در سایت به <strong>تومان</strong> و شامل مالیات
+              بر ارزش افزوده است. توجه به نکات زیر ضروری است:
+            </p>
+            <ul>
+              <li>قیمت‌ها ممکن است بدون اطلاع قبلی تغییر کنند.</li>
+              <li>قیمت نهایی در صفحه‌ی تسویه حساب و قبل از پرداخت نمایش داده می‌شود.</li>
+              <li>پرداخت‌ها از طریق درگاه‌های امن بانکی انجام می‌شود.</li>
+              <li>در صورت انصراف از خرید قبل از ارسال، مبلغ به‌طور کامل بازگردانده می‌شود.</li>
+            </ul>
+            <div class="legal-highlight">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.66 0 3.22.45 4.56 1.24"/></svg>
+              <span>همه‌ی تراکنش‌ها از طریق درگاه امن زرین‌پال انجام می‌شود و اطلاعات کارت بانکی شما در سیستم ما ذخیره نمی‌گردد.</span>
+            </div>
+          </section>
+
+          <section class="legal-section" id="section-shipping">
+            <h2 class="legal-section__title">
+              <span class="legal-section__num">۵</span>
+              ارسال و تحویل
+            </h2>
+            <p>
+              زمان و روش ارسال، هنگام ثبت سفارش توسط شما انتخاب می‌شود. در این مورد:
+            </p>
+            <ul>
+              <li>مدت زمان تحویل، از زمان پردازش سفارش محاسبه می‌شود.</li>
+              <li>در موارد خاص مانند تعطیلات رسمی یا بحران‌های غیرمنتظره، ممکن است تاخیر رخ دهد.</li>
+              <li>در صورت عدم تحویل سفارش به هر دلیل، مبلغ به شما بازگردانده می‌شود.</li>
+              <li>لطفاً هنگام تحویل، بسته را باز کنید و در صورت آسیب‌دیدگی مرسوله را نپذیرید.</li>
+            </ul>
+          </section>
+
+          <section class="legal-section" id="section-warranty">
+            <h2 class="legal-section__title">
+              <span class="legal-section__num">۶</span>
+              گارانتی و ضمانت
+            </h2>
+            <p>
+              تمام محصولات موبایل استور با <strong>گارانتی رسمی</strong> و
+              <strong>ضمانت اصالت</strong> عرضه می‌شوند:
+            </p>
+            <ul>
+              <li>ضمانت اصالت به مدت نامحدود از تاریخ خرید معتبر است.</li>
+              <li>مدت گارانتی رسمی بسته به برند و محصول بین ۱۲ تا ۲۴ ماه است.</li>
+              <li>گارانتی شامل خرابی‌های سخت‌افزاری می‌شود، اما آسیب‌های فیزیکی و نفوذ آب را پوشش نمی‌دهد.</li>
+              <li>در صورت اثبات غیراصل بودن کالا، تمام مبلغ خرید به شما بازگردانده می‌شود.</li>
+            </ul>
+          </section>
+
+          <section class="legal-section" id="section-return">
+            <h2 class="legal-section__title">
+              <span class="legal-section__num">۷</span>
+              بازگشت و مرجوعی
+            </h2>
+            <p>
+              شما تا <strong>۷ روز</strong> پس از دریافت محصول، حق بازگشت کالا را دارید
+              به شرطی که:
+            </p>
+            <ul>
+              <li>بسته‌بندی اصلی کالا باز نشده باشد.</li>
+              <li>تمام لوازم همراه و هدایای محصول کامل باشد.</li>
+              <li>کالا آسیب فیزیکی ندیده باشد.</li>
+              <li>فاکتور رسمی خرید ارائه شود.</li>
+            </ul>
+            <p>
+              <strong>هزینه ارسال مرجوعی:</strong> در صورت سالم بودن کالا، بر عهده‌ی
+              مشتری و در صورت معیوب بودن کالا، بر عهده‌ی موبایل استور است.
+            </p>
+          </section>
+
+          <section class="legal-section" id="section-privacy-ref">
+            <h2 class="legal-section__title">
+              <span class="legal-section__num">۸</span>
+              حریم خصوصی
+            </h2>
+            <p>
+              حریم خصوصی شما برای ما بسیار مهم است. برای اطلاعات کامل در این مورد،
+              لطفاً صفحه‌ی <a href="privacy.html">حریم خصوصی</a> ما را مطالعه کنید.
+            </p>
+          </section>
+
+          <section class="legal-section" id="section-ip">
+            <h2 class="legal-section__title">
+              <span class="legal-section__num">۹</span>
+              مالکیت معنوی
+            </h2>
+            <p>
+              تمام محتوای این وب‌سایت شامل متن، تصاویر، لوگو، طراحی و کد برنامه‌نویسی،
+              متعلق به موبایل استور است و تحت قوانین مالکیت معنوی ایران و بین‌المللی
+              حمایت می‌شود. هرگونه کپی‌برداری بدون اجازه‌ی کتبی، پیگرد قانونی خواهد داشت.
+            </p>
+          </section>
+
+          <section class="legal-section" id="section-liability">
+            <h2 class="legal-section__title">
+              <span class="legal-section__num">۱۰</span>
+              محدودیت مسئولیت
+            </h2>
+            <p>
+              موبایل استور نهایت تلاش خود را برای صحت اطلاعات و عملکرد صحیح سایت به کار
+              می‌گیرد، اما در قبال موارد زیر مسئولیتی نمی‌پذیرد:
+            </p>
+            <ul>
+              <li>قطع سرویس در اثر مسائل فنی، شبکه یا نیروی قهری.</li>
+              <li>خسارات ناشی از استفاده‌ی نادرست از محصولات.</li>
+              <li>محتوای وب‌سایت‌های خارجی که از طریق سایت ما لینک داده شده‌اند.</li>
+            </ul>
+          </section>
+
+          <section class="legal-section" id="section-changes">
+            <h2 class="legal-section__title">
+              <span class="legal-section__num">۱۱</span>
+              تغییرات در قوانین
+            </h2>
+            <p>
+              موبایل استور حق تغییر این قوانین را در هر زمان برای خود محفوظ می‌دارد.
+              تغییرات عمده از طریق ایمیل یا اعلان در سایت به اطلاع کاربران خواهد رسید.
+              ادامه‌ی استفاده از سایت پس از اعمال تغییرات، به‌معنای پذیرش قوانین جدید است.
+            </p>
+          </section>
+
+          <section class="legal-section" id="section-contact">
+            <h2 class="legal-section__title">
+              <span class="legal-section__num">۱۲</span>
+              تماس با ما
+            </h2>
+            <p>
+              اگر در مورد این قوانین سوال یا ابهامی دارید، می‌توانید از طریق راه‌های زیر
+              با ما در تماس باشید:
+            </p>
+            <div class="legal-contact">
+              <a href="tel:09362582236" class="legal-contact__item">
+                <span class="legal-contact__icon legal-contact__icon--blue">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                </span>
+                <div>
+                  <span class="legal-contact__label">تلفن</span>
+                  <span class="legal-contact__value" dir="ltr">۰۹۳۶۲۵۸۲۲۳۶</span>
+                </div>
+              </a>
+
+              <a href="../support/contact.html" class="legal-contact__item">
+                <span class="legal-contact__icon legal-contact__icon--green">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </span>
+                <div>
+                  <span class="legal-contact__label">پشتیبانی</span>
+                  <span class="legal-contact__value">ارسال پیام</span>
+                </div>
+              </a>
+            </div>
+          </section>
+
+          <!-- Footer note -->
+          <div class="legal-footer reveal">
+            <p>
+              <strong>آخرین بروزرسانی:</strong> این قوانین در تاریخ ۱۵ مهر ۱۴۰۴ بروزرسانی شده است.
+            </p>
+            <p>
+              با استفاده از موبایل استور، شما تایید می‌کنید که این قوانین را خوانده
+              و پذیرفته‌اید.
+            </p>
+          </div>
+
+        </article>
+
+      </div>
+
+    </div>
+  </main>
+
+  <div id="layout-footer"></div>
+  <div id="layout-drawer"></div>
+  <div id="layout-cart-drawer"></div>
+  <div id="layout-quick-view"></div>
+  <div id="layout-floating"></div>
+
+  <script type="module" src="../js/pages/terms.js"></script>
+</body>
+</html>
