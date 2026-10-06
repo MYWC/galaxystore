@@ -1,0 +1,358 @@
+/* ============================================
+   MICRO-INTERACTIONS — 120fps Polish
+   ============================================ */
+
+/* ============================================
+   1. SCROLL PROGRESS BAR
+   ============================================ */
+
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  z-index: 9999;
+  background: transparent;
+  pointer-events: none;
+}
+
+.scroll-progress__bar {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #2386D7, #16B5A5, #7C5CFF);
+  background-size: 200% 100%;
+  animation: gradientMove 3s ease infinite;
+  transform-origin: right;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 12px rgba(35, 134, 215, 0.5);
+}
+
+/* ============================================
+   2. RIPPLE EFFECT
+   ============================================ */
+
+.ripple-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-btn .ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transform: scale(0);
+  animation: rippleExpand 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.ripple-btn--dark .ripple {
+  background: rgba(35, 134, 215, 0.25);
+}
+
+@keyframes rippleExpand {
+  to {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   3. ICON MICRO-ANIMATIONS
+   ============================================ */
+
+/* Header action icons */
+.header__action svg {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.header__action:hover svg {
+  transform: scale(1.15) rotate(-4deg);
+}
+
+/* Floating button icons */
+.floating__btn svg {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.floating__btn:hover svg {
+  transform: scale(1.15);
+}
+
+.floating__btn--chat:hover svg {
+  animation: chatWiggle 0.6s ease;
+}
+
+@keyframes chatWiggle {
+  0%, 100% { transform: scale(1.15) rotate(0); }
+  25%      { transform: scale(1.15) rotate(-8deg); }
+  75%      { transform: scale(1.15) rotate(8deg); }
+}
+
+/* Product card action icons */
+.p-card__action svg {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.p-card__action:hover svg {
+  transform: scale(1.2);
+}
+
+/* Wishlist heart pulse */
+.p-card__action.is-active svg,
+.f-card__wish.is-active svg {
+  animation: heartBeat 0.6s ease;
+}
+
+@keyframes heartBeat {
+  0%   { transform: scale(1); }
+  25%  { transform: scale(1.4); }
+  50%  { transform: scale(0.9); }
+  75%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+/* ============================================
+   4. CART BADGE BOUNCE
+   ============================================ */
+
+.header__action-badge--cart.is-bouncing {
+  animation: badgeBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes badgeBounce {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.5); }
+  60%  { transform: scale(0.85); }
+  100% { transform: scale(1); }
+}
+
+/* ============================================
+   5. CARD SHINE EFFECT
+   ============================================ */
+
+.p-card,
+.f-card {
+  position: relative;
+}
+
+.p-card::before,
+.f-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 60%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+  z-index: 3;
+  border-radius: inherit;
+}
+
+.p-card:hover::before,
+.f-card:hover::before {
+  transform: translateX(100%);
+}
+
+/* ============================================
+   6. CART FLY ANIMATION
+   ============================================ */
+
+.fly-item {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  object-fit: cover;
+  z-index: 10000;
+  pointer-events: none;
+  box-shadow: 0 20px 40px -10px rgba(23, 32, 42, 0.4);
+  border: 2px solid #fff;
+  transition: none;
+}
+
+/* ============================================
+   7. NUMBER POP
+   ============================================ */
+
+.counter.is-popped {
+  animation: numberPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes numberPop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.15); color: #6FE0CE; }
+  100% { transform: scale(1); }
+}
+
+/* ============================================
+   8. TOAST IMPROVEMENTS
+   ============================================ */
+
+.toast {
+  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.toast__icon {
+  animation: iconPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes iconPop {
+  0%   { transform: scale(0) rotate(-180deg); }
+  60%  { transform: scale(1.15) rotate(10deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+/* ============================================
+   9. BETTER FOCUS STATES
+   ============================================ */
+
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: 6px;
+  transition: outline-offset 0.2s ease;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline-offset: 3px;
+}
+
+/* ============================================
+   10. SKELETON LOADING
+   ============================================ */
+
+.skeleton-card {
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  overflow: hidden;
+  padding: 20px;
+}
+
+.skeleton-card__media {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  margin-bottom: 14px;
+}
+
+.skeleton-card__line {
+  height: 12px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.skeleton-card__line--short {
+  width: 40%;
+}
+
+.skeleton-card__line--medium {
+  width: 70%;
+}
+
+.skeleton-card__line--full {
+  width: 100%;
+}
+
+/* ============================================
+   11. LINK HOVER ARROW
+   ============================================ */
+
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+}
+
+.link-arrow svg {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.link-arrow:hover svg {
+  transform: translateX(-6px);
+}
+
+/* ============================================
+   12. SECTION SEPARATOR SHIMMER
+   ============================================ */
+
+.section-title {
+  position: relative;
+  display: inline-block;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  right: 0;
+  height: 3px;
+  width: 0;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border-radius: 3px;
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.section-head:hover .section-title::after {
+  width: 40px;
+}
+
+/* ============================================
+   13. LOGO MICRO-ANIMATION
+   ============================================ */
+
+.header__logo-mark {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.header__logo:hover .header__logo-mark {
+  transform: rotate(-8deg) scale(1.08);
+}
+
+/* ============================================
+   14. REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .p-card::before,
+  .f-card::before {
+    display: none;
+  }
+
+  .ripple-btn .ripple,
+  .fly-item {
+    display: none;
+  }
+
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   15. MOBILE OPTIMIZATION
+   ============================================ */
+
+@media (max-width: 640px) {
+  .header__action:hover svg {
+    transform: none;
+  }
+
+  .ripple-btn .ripple {
+    display: none;
+  }
+
+  .scroll-progress {
+    height: 2px;
+  }
+}

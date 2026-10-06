@@ -23,6 +23,14 @@ import { toast } from './components/toast.js';
 import { cart, wishlist, compare, onChange, KEYS } from './store/state.js';
 import { products, formatPrice } from './data/products.js';
 import { initAnimations } from './utils/animations.js';
+import { initMicro, flyToCart, bounceCartBadge } from './utils/micro.js';
+import { initSkeletons } from './utils/skeleton.js';
+
+/* ============================================
+   SKELETON (قبل از رندر)
+   ============================================ */
+
+initSkeletons();
 
 /* ============================================
    STICKY HEADER
@@ -56,10 +64,11 @@ initQuickView();
 initSearch();
 
 /* ============================================
-   INIT ANIMATIONS
+   INIT ANIMATIONS + MICRO
    ============================================ */
 
 initAnimations();
+initMicro();
 
 /* ============================================
    BADGES SYNC
@@ -120,18 +129,15 @@ document.addEventListener('click', (e) => {
     const variant = product.variants[variantIndex];
     if (!variant) return;
 
-    // Active state
     card.querySelectorAll('.p-card__storage').forEach((b) => b.classList.remove('is-active'));
     storageBtn.classList.add('is-active');
     card.dataset.activeVariant = variantIndex;
 
-    // Update Price
     const priceEl = card.querySelector('[data-price]');
     if (priceEl) {
       priceEl.innerHTML = `${formatPrice(variant.price)} <span>تومان</span>`;
     }
 
-    // Update Old Price
     const oldEl = card.querySelector('[data-oldprice]');
     if (oldEl) {
       oldEl.innerHTML = variant.oldPrice
@@ -139,7 +145,6 @@ document.addEventListener('click', (e) => {
         : '';
     }
 
-    // Update Stock
     const stockEl = card.querySelector('[data-stock]');
     if (stockEl) {
       if (variant.stock === 0) {
@@ -180,6 +185,9 @@ document.addEventListener('click', (e) => {
 
     cart.add(cartItem, 1);
 
+    // Fly animation
+    flyToCart(flashAdd);
+
     const original = flashAdd.innerHTML;
     flashAdd.classList.add('is-added');
     flashAdd.innerHTML = `
@@ -200,7 +208,7 @@ document.addEventListener('click', (e) => {
       flashAdd.innerHTML = original;
     }, 1600);
 
-    setTimeout(() => openCart(), 400);
+    setTimeout(() => openCart(), 700);
     return;
   }
 
@@ -275,6 +283,9 @@ document.addEventListener('click', (e) => {
 
     cart.add(cartItem, 1);
 
+    // Fly animation
+    flyToCart(add);
+
     const original = add.innerHTML;
     add.classList.add('is-added');
     add.innerHTML = `
@@ -295,12 +306,24 @@ document.addEventListener('click', (e) => {
       add.innerHTML = original;
     }, 1600);
 
-    setTimeout(() => openCart(), 400);
+    setTimeout(() => openCart(), 700);
     return;
   }
 });
 
+/* ============================================
+   CART BADGE BOUNCE (on cart change)
+   ============================================ */
+
+onChange(KEYS.cart, () => {
+  bounceCartBadge();
+});
+
+/* ============================================
+   LOG
+   ============================================ */
+
 console.log(
-  '%c✓ Mobile Store loaded — 120fps Ready',
+  '%c✓ Mobile Store loaded — 120fps Ready + Micro-interactions',
   'color:#18B981;font-weight:bold;'
 );
