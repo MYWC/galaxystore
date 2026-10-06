@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2386D7" />
+  <title>جستجو | موبایل استور</title>
+
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+
+  <link rel="stylesheet" href="css/components/button.css" />
+  <link rel="stylesheet" href="css/components/card.css" />
+  <link rel="stylesheet" href="css/components/badge.css" />
+  <link rel="stylesheet" href="css/components/placeholder.css" />
+  <link rel="stylesheet" href="css/components/product-card.css" />
+  <link rel="stylesheet" href="css/components/floating.css" />
+  <link rel="stylesheet" href="css/components/drawer.css" />
+  <link rel="stylesheet" href="css/components/toast.css" />
+  <link rel="stylesheet" href="css/components/cart-drawer.css" />
+  <link rel="stylesheet" href="css/components/quick-view.css" />
+  <link rel="stylesheet" href="css/components/search-dropdown.css" />
+
+  <link rel="stylesheet" href="css/sections/announcement.css" />
+  <link rel="stylesheet" href="css/sections/header.css" />
+  <link rel="stylesheet" href="css/sections/nav.css" />
+  <link rel="stylesheet" href="css/sections/footer.css" />
+
+  <link rel="stylesheet" href="css/pages/search.css" />
+
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/performance.css" />
+  <link rel="stylesheet" href="css/micro-interactions.css" />
+</head>
+<body>
+
+  <div id="layout-announcement"></div>
+  <div id="layout-header"></div>
+  <div id="layout-nav"></div>
+
+  <main class="search-page" id="search-page">
+    <div class="container">
+
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb reveal">
+        <a href="index.html">خانه</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        <span>جستجو</span>
+      </nav>
+
+      <!-- Search Box -->
+      <div class="search-hero reveal">
+        <form class="search-box" id="search-form" autocomplete="off">
+          <svg class="search-box__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            type="search"
+            class="search-box__input"
+            id="search-input"
+            placeholder="گوشی، تبلت، برند یا مدل..."
+            aria-label="جستجو"
+            autocomplete="off"
+            autofocus
+          />
+          <button type="button" class="search-box__clear" id="search-clear" aria-label="پاک کردن" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <button type="submit" class="search-box__submit">جستجو</button>
+        </form>
+
+        <!-- Recent searches -->
+        <div class="recent-searches" id="recent-searches" hidden>
+          <div class="recent-searches__head">
+            <span class="recent-searches__title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              جستجوهای اخیر
+            </span>
+            <button class="recent-searches__clear" id="clear-recent">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              پاک کردن
+            </button>
+          </div>
+          <div class="recent-searches__list" id="recent-list"></div>
+        </div>
+
+        <!-- Popular searches -->
+        <div class="popular-searches" id="popular-searches">
+          <span class="popular-searches__title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            جستجوهای محبوب
+          </span>
+          <div class="popular-searches__list" id="popular-list"></div>
+        </div>
+      </div>
+
+      <!-- Results Info -->
+      <div class="search-info reveal" id="search-info" hidden>
+        <div class="search-info__head">
+          <h1 class="search-info__title">
+            نتایج جستجو برای: <strong id="search-query">—</strong>
+          </h1>
+          <p class="search-info__count">
+            <strong id="search-count">۰</strong> محصول یافت شد
+          </p>
+        </div>
+
+        <div class="search-toolbar">
+          <div class="search-tabs" id="search-tabs">
+            <button class="search-tab is-active" data-search-tab="all">همه</button>
+            <button class="search-tab" data-search-tab="phone">گوشی</button>
+            <button class="search-tab" data-search-tab="tablet">تبلت</button>
+            <button class="search-tab" data-search-tab="discount">تخفیف‌دار</button>
+          </div>
+
+          <div class="search-sort">
+            <label for="search-sort-select" class="search-sort__label">مرتب‌سازی:</label>
+            <select id="search-sort-select" class="search-sort__select">
+              <option value="relevance">مرتبط‌ترین</option>
+              <option value="cheapest">ارزان‌ترین</option>
+              <option value="expensive">گران‌ترین</option>
+              <option value="newest">جدیدترین</option>
+              <option value="popular">محبوب‌ترین</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Grid -->
+      <div class="search-grid" id="search-grid"></div>
+
+      <!-- Empty State -->
+      <div class="search-empty" id="search-empty" hidden>
+        <div class="search-empty__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            <line x1="8" y1="8" x2="14" y2="14"/>
+            <line x1="14" y1="8" x2="8" y2="14"/>
+          </svg>
+        </div>
+        <h2 class="search-empty__title">نتیجه‌ای یافت نشد</h2>
+        <p class="search-empty__text">
+          متأسفانه برای «<strong id="empty-query">—</strong>» محصولی پیدا نکردیم.
+          لطفاً کلمه دیگری امتحان کنید یا دسته‌بندی‌ها را مرور کنید.
+        </p>
+        <div class="search-empty__actions">
+          <a href="category.html" class="btn btn--primary">مشاهده همه محصولات</a>
+          <a href="index.html" class="btn btn--outline">بازگشت به خانه</a>
+        </div>
+      </div>
+
+      <!-- Start State (before search) -->
+      <div class="search-start" id="search-start">
+        <div class="search-start__suggestions">
+          <h3 class="search-start__title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            پیشنهادهای ویژه
+          </h3>
+          <div class="search-start__grid" id="suggested-grid"></div>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="search-pagination" id="search-pagination"></div>
+
+    </div>
+  </main>
+
+  <div id="layout-footer"></div>
+  <div id="layout-drawer"></div>
+  <div id="layout-cart-drawer"></div>
+  <div id="layout-quick-view"></div>
+  <div id="layout-floating"></div>
+
+  <script type="module" src="js/pages/search.js"></script>
+</body>
+</html>
