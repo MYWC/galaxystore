@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2386D7" />
+  <title>اطلاعات کاربری | موبایل استور</title>
+  <meta name="robots" content="noindex" />
+
+  <link rel="stylesheet" href="../css/reset.css" />
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+
+  <link rel="stylesheet" href="../css/components/button.css" />
+  <link rel="stylesheet" href="../css/components/card.css" />
+  <link rel="stylesheet" href="../css/components/badge.css" />
+  <link rel="stylesheet" href="../css/components/placeholder.css" />
+  <link rel="stylesheet" href="../css/components/product-card.css" />
+  <link rel="stylesheet" href="../css/components/floating.css" />
+  <link rel="stylesheet" href="../css/components/drawer.css" />
+  <link rel="stylesheet" href="../css/components/toast.css" />
+  <link rel="stylesheet" href="../css/components/cart-drawer.css" />
+  <link rel="stylesheet" href="../css/components/quick-view.css" />
+  <link rel="stylesheet" href="../css/components/search-dropdown.css" />
+
+  <link rel="stylesheet" href="../css/sections/announcement.css" />
+  <link rel="stylesheet" href="../css/sections/header.css" />
+  <link rel="stylesheet" href="../css/sections/nav.css" />
+  <link rel="stylesheet" href="../css/sections/footer.css" />
+
+  <link rel="stylesheet" href="../css/pages/account.css" />
+  <link rel="stylesheet" href="../css/pages/account-profile.css" />
+
+  <link rel="stylesheet" href="../css/responsive.css" />
+  <link rel="stylesheet" href="../css/animations.css" />
+  <link rel="stylesheet" href="../css/performance.css" />
+  <link rel="stylesheet" href="../css/micro-interactions.css" />
+</head>
+<body>
+
+  <div id="layout-announcement"></div>
+  <div id="layout-header"></div>
+  <div id="layout-nav"></div>
+
+  <main class="account-page" id="account-page">
+    <div class="container">
+
+      <nav class="breadcrumb reveal">
+        <a href="../index.html">خانه</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        <a href="index.html">حساب کاربری</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        <span>اطلاعات کاربری</span>
+      </nav>
+
+      <div class="page-head reveal">
+        <div>
+          <h1 class="page-head__title">اطلاعات کاربری</h1>
+          <p class="page-head__subtitle">ویرایش اطلاعات حساب و تنظیمات امنیتی</p>
+        </div>
+      </div>
+
+      <div class="account-layout">
+
+        <!-- Sidebar -->
+        <aside class="account-menu reveal">
+          <nav class="account-menu__nav">
+            <a href="index.html" class="account-menu__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+              داشبورد
+            </a>
+            <a href="orders.html" class="account-menu__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              سفارش‌های من
+            </a>
+            <a href="../wishlist.html" class="account-menu__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              علاقه‌مندی‌ها
+            </a>
+            <a href="addresses.html" class="account-menu__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              آدرس‌های من
+            </a>
+            <a href="profile.html" class="account-menu__item is-active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              اطلاعات کاربری
+            </a>
+            <a href="notifications.html" class="account-menu__item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              اعلان‌ها
+            </a>
+            <div class="account-menu__divider"></div>
+            <button class="account-menu__item account-menu__item--danger" id="logout-btn-sidebar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              خروج از حساب
+            </button>
+          </nav>
+        </aside>
+
+        <!-- Main -->
+        <div class="account-content">
+
+          <!-- Profile Header Card -->
+          <div class="profile-hero reveal">
+            <div class="profile-hero__avatar" id="profile-avatar">
+              <span id="avatar-initials">؟</span>
+              <button class="profile-hero__avatar-edit" id="avatar-edit" aria-label="ویرایش آواتار">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              </button>
+            </div>
+
+            <div class="profile-hero__info">
+              <h2 class="profile-hero__name" id="profile-name">کاربر</h2>
+              <p class="profile-hero__meta">
+                <span class="profile-hero__meta-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  عضو از <strong id="member-since">—</strong>
+                </span>
+                <span class="profile-hero__meta-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  آخرین ورود: <strong id="last-login">—</strong>
+                </span>
+              </p>
+            </div>
+
+            <div class="profile-hero__badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v8c0 5 3.5 7.5 8 9 4.5-1.5 8-4 8-9V5l-8-3z"/><polyline points="9 12 11 14 15 10"/></svg>
+              <div>
+                <strong>حساب تأیید شده</strong>
+                <span>اطلاعات شما امن است</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============ Tabs ============ -->
+          <div class="profile-tabs reveal">
+            <button class="profile-tab is-active" data-profile-tab="info">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              اطلاعات شخصی
+            </button>
+            <button class="profile-tab" data-profile-tab="security">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              امنیت
+            </button>
+            <button class="profile-tab" data-profile-tab="preferences">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+              تنظیمات
+            </button>
+          </div>
+
+          <!-- ============================================
+               TAB: INFO
+               ============================================ -->
+          <div class="profile-panel is-active" data-panel="info">
+            <div class="profile-card reveal">
+              <div class="profile-card__head">
+                <h3 class="profile-card__title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  اطلاعات شخصی
+                </h3>
+                <p class="profile-card__subtitle">اطلاعات پایه حساب کاربری شما</p>
+              </div>
+
+              <form class="profile-card__body" id="info-form" novalidate>
+
+                <div class="form-grid form-grid--2">
+                  <div class="form-field" id="field-firstName">
+                    <label class="form-field__label" for="info-firstName">
+                      نام <span class="form-field__required">*</span>
+                    </label>
+                    <input type="text" id="info-firstName" class="form-field__input" placeholder="مثلاً علی" required />
+                    <span class="form-field__error" data-error="firstName"></span>
+                  </div>
+
+                  <div class="form-field" id="field-lastName">
+                    <label class="form-field__label" for="info-lastName">
+                      نام خانوادگی <span class="form-field__required">*</span>
+                    </label>
+                    <input type="text" id="info-lastName" class="form-field__input" placeholder="مثلاً رضایی" required />
+                    <span class="form-field__error" data-error="lastName"></span>
+                  </div>
+                </div>
+
+                <div class="form-grid form-grid--2">
+                  <div class="form-field" id="field-phone">
+                    <label class="form-field__label" for="info-phone">
+                      شماره موبایل
+                      <span class="profile-verified" id="phone-verified">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        تأیید شده
+                      </span>
+                    </label>
+                    <div class="form-field__input-wrap">
+                      <input type="tel" id="info-phone" class="form-field__input form-field__input--with-action" placeholder="۰۹۱۲۳۴۵۶۷۸۹" inputmode="numeric" maxlength="11" disabled />
+                      <button type="button" class="form-field__action form-field__action--text" id="change-phone">
+                        تغییر
+                      </button>
+                    </div>
+                    <span class="form-field__help">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                      شماره موبایل قابل تغییر نیست. برای تغییر با پشتیبانی تماس بگیرید.
+                    </span>
+                  </div>
+
+                  <div class="form-field" id="field-email">
+                    <label class="form-field__label" for="info-email">
+                      ایمیل
+                      <span class="profile-verified" id="email-verified" hidden>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        تأیید شده
+                      </span>
+                    </label>
+                    <input type="email" id="info-email" class="form-field__input" placeholder="example@email.com" dir="ltr" />
+                    <span class="form-field__error" data-error="email"></span>
+                  </div>
+                </div>
+
+                <div class="form-field" id="field-birthDate">
+                  <label class="form-field__label" for="info-birthDate">
+                    تاریخ تولد <span class="form-field__hint">(اختیاری — برای تخفیف تولد)</span>
+                  </label>
+                  <input type="text" id="info-birthDate" class="form-field__input" placeholder="۱۳۷۰/۰۵/۱۵" />
+                  <span class="form-field__error" data-error="birthDate"></span>
+                </div>
+
+                <div class="profile-card__actions">
+                  <button type="submit" class="btn btn--primary" id="save-info">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    ذخیره تغییرات
+                  </button>
+                  <button type="reset" class="btn btn--outline" id="reset-info">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                    بازنشانی
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- ============================================
+               TAB: SECURITY
+               ============================================ -->
+          <div class="profile-panel" data-panel="security">
+
+            <!-- Change Password -->
+            <div class="profile-card reveal">
+              <div class="profile-card__head">
+                <h3 class="profile-card__title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  تغییر رمز عبور
+                </h3>
+                <p class="profile-card__subtitle">برای امنیت بیشتر، رمز عبور خود را به‌طور دوره‌ای تغییر دهید</p>
+              </div>
+
+              <form class="profile-card__body" id="password-form" novalidate>
+
+                <div class="form-field" id="field-currentPassword">
+                  <label class="form-field__label" for="pw-current">
+                    رمز عبور فعلی <span class="form-field__required">*</span>
+                  </label>
+                  <div class="form-field__input-wrap">
+                    <input type="password" id="pw-current" class="form-field__input form-field__input--with-action" placeholder="رمز عبور فعلی" required autocomplete="current-password" />
+                    <button type="button" class="form-field__action" data-toggle-password="pw-current" aria-label="نمایش رمز">
+                      <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                      <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                    </button>
+                  </div>
+                  <span class="form-field__error" data-error="currentPassword"></span>
+                </div>
+
+                <div class="form-field" id="field-newPassword">
+                  <label class="form-field__label" for="pw-new">
+                    رمز عبور جدید <span class="form-field__required">*</span>
+                  </label>
+                  <div class="form-field__input-wrap">
+                    <input type="password" id="pw-new" class="form-field__input form-field__input--with-action" placeholder="حداقل ۸ کاراکتر شامل حرف و عدد" required autocomplete="new-password" />
+                    <button type="button" class="form-field__action" data-toggle-password="pw-new" aria-label="نمایش رمز">
+                      <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                      <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                    </button>
+                  </div>
+
+                  <div class="password-strength" id="pw-strength" hidden>
+                    <div class="password-strength__bars">
+                      <span class="password-strength__bar"></span>
+                      <span class="password-strength__bar"></span>
+                      <span class="password-strength__bar"></span>
+                      <span class="password-strength__bar"></span>
+                    </div>
+                    <span class="password-strength__text" id="pw-strength-text">—</span>
+                  </div>
+
+                  <span class="form-field__error" data-error="newPassword"></span>
+                </div>
+
+                <div class="form-field" id="field-confirmPassword">
+                  <label class="form-field__label" for="pw-confirm">
+                    تکرار رمز عبور جدید <span class="form-field__required">*</span>
+                  </label>
+                  <div class="form-field__input-wrap">
+                    <input type="password" id="pw-confirm" class="form-field__input form-field__input--with-action" placeholder="رمز را دوباره وارد کنید" required autocomplete="new-password" />
+                    <button type="button" class="form-field__action" data-toggle-password="pw-confirm" aria-label="نمایش رمز">
+                      <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                      <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                    </button>
+                  </div>
+                  <span class="form-field__error" data-error="confirmPassword"></span>
+                </div>
+
+                <div class="profile-card__actions">
+                  <button type="submit" class="btn btn--primary" id="save-password">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    تغییر رمز عبور
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Active Sessions -->
+            <div class="profile-card reveal">
+              <div class="profile-card__head">
+                <h3 class="profile-card__title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                  دستگاه‌های فعال
+                </h3>
+                <p class="profile-card__subtitle">دستگاه‌هایی که به حساب شما وارد شده‌اند</p>
+              </div>
+
+              <div class="profile-card__body">
+                <div class="session-list" id="session-list">
+                  <div class="session-item">
+                    <div class="session-item__icon session-item__icon--current">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    </div>
+                    <div class="session-item__info">
+                      <span class="session-item__title">
+                        دستگاه فعلی
+                        <span class="session-item__badge">در حال استفاده</span>
+                      </span>
+                      <span class="session-item__meta" id="current-device">—</span>
+                    </div>
+                  </div>
+                </div>
+
+                <button class="btn btn--outline btn--full" id="logout-all" style="margin-top: 14px; color: var(--discount); border-color: var(--discount);">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                  خروج از همه دستگاه‌ها
+                </button>
+              </div>
+            </div>
+
+            <!-- Delete Account -->
+            <div class="profile-card profile-card--danger reveal">
+              <div class="profile-card__head">
+                <h3 class="profile-card__title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  حذف حساب کاربری
+                </h3>
+                <p class="profile-card__subtitle">پس از حذف، امکان بازیابی اطلاعات وجود ندارد</p>
+              </div>
+
+              <div class="profile-card__body">
+                <button class="btn btn--outline btn--full" id="delete-account" style="color: var(--discount); border-color: var(--discount);">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  حذف حساب کاربری
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ============================================
+               TAB: PREFERENCES
+               ============================================ -->
+          <div class="profile-panel" data-panel="preferences">
+            <div class="profile-card reveal">
+              <div class="profile-card__head">
+                <h3 class="profile-card__title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                  اعلان‌ها
+                </h3>
+                <p class="profile-card__subtitle">انتخاب کنید چه اعلان‌هایی دریافت کنید</p>
+              </div>
+
+              <div class="profile-card__body">
+                <div class="pref-list">
+
+                  <label class="pref-item">
+                    <div class="pref-item__info">
+                      <span class="pref-item__title">اعلان سفارش‌ها</span>
+                      <span class="pref-item__desc">اطلاع‌رسانی وضعیت سفارش و ارسال</span>
+                    </div>
+                    <span class="pref-toggle">
+                      <input type="checkbox" id="pref-orders" checked />
+                      <span class="pref-toggle__track"></span>
+                    </span>
+                  </label>
+
+                  <label class="pref-item">
+                    <div class="pref-item__info">
+                      <span class="pref-item__title">تخفیف‌ها و پیشنهادهای ویژه</span>
+                      <span class="pref-item__desc">اطلاع از حراج‌ها و کمپین‌ها</span>
+                    </div>
+                    <span class="pref-toggle">
+                      <input type="checkbox" id="pref-offers" checked />
+                      <span class="pref-toggle__track"></span>
+                    </span>
+                  </label>
+
+                  <label class="pref-item">
+                    <div class="pref-item__info">
+                      <span class="pref-item__title">خبرنامه هفتگی</span>
+                      <span class="pref-item__desc">اخبار تکنولوژی و راهنمای خرید</span>
+                    </div>
+                    <span class="pref-toggle">
+                      <input type="checkbox" id="pref-news" />
+                      <span class="pref-toggle__track"></span>
+                    </span>
+                  </label>
+
+                  <label class="pref-item">
+                    <div class="pref-item__info">
+                      <span class="pref-item__title">پیامک اطلاع‌رسانی</span>
+                      <span class="pref-item__desc">دریافت پیامک برای سفارش‌های مهم</span>
+                    </div>
+                    <span class="pref-toggle">
+                      <input type="checkbox" id="pref-sms" checked />
+                      <span class="pref-toggle__track"></span>
+                    </span>
+                  </label>
+
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-card reveal">
+              <div class="profile-card__head">
+                <h3 class="profile-card__title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                  سایر تنظیمات
+                </h3>
+              </div>
+
+              <div class="profile-card__body">
+                <div class="pref-list">
+
+                  <div class="pref-item">
+                    <div class="pref-item__info">
+                      <span class="pref-item__title">زبان پیش‌فرض</span>
+                      <span class="pref-item__desc">زبان رابط کاربری</span>
+                    </div>
+                    <div class="pref-item__value">فارسی</div>
+                  </div>
+
+                  <div class="pref-item">
+                    <div class="pref-item__info">
+                      <span class="pref-item__title">واحد پول</span>
+                      <span class="pref-item__desc">واحد نمایش قیمت‌ها</span>
+                    </div>
+                    <div class="pref-item__value">تومان</div>
+                  </div>
+
+                  <div class="pref-item">
+                    <div class="pref-item__info">
+                      <span class="pref-item__title">حالت نمایش</span>
+                      <span class="pref-item__desc">روشن یا تاریک</span>
+                    </div>
+                    <div class="pref-theme" id="pref-theme">
+                      <button class="pref-theme__btn is-active" data-theme="light">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                      </button>
+                      <button class="pref-theme__btn" data-theme="dark">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <div id="layout-footer"></div>
+  <div id="layout-drawer"></div>
+  <div id="layout-cart-drawer"></div>
+  <div id="layout-quick-view"></div>
+  <div id="layout-floating"></div>
+
+  <script type="module" src="../js/pages/profile.js"></script>
+</body>
+</html>
