@@ -18,7 +18,6 @@ import { initMicro, bounceCartBadge } from '../utils/micro.js';
    ============================================ */
 
 function getBasePath() {
-  // پوشه‌های شناخته‌شده پروژه
   const KNOWN_SUBFOLDERS = ['account', 'auth', 'magazine', 'support', 'legal'];
 
   const path = window.location.pathname;
@@ -392,7 +391,6 @@ export function initLayout() {
   inject('layout-floating', FLOATING_HTML);
   inject('layout-footer', FOOTER_HTML);
 
-  // Sticky header
   const header = document.getElementById('site-header');
   if (header) {
     const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 8);
@@ -400,19 +398,15 @@ export function initLayout() {
     onScroll();
   }
 
-  // Init common components
   initDrawer();
   initFloating();
   initCartDrawer();
   initQuickView();
   initSearch();
   initFooter();
-
-  // Init animations
   initAnimations();
   initMicro();
 
-  // Badge sync
   syncBadges();
   onChange(KEYS.wishlist, syncBadges);
   onChange(KEYS.cart, () => {
