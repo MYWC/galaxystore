@@ -1,11 +1,12 @@
 /* ============================================
-   ARTICLE PAGE
+   ARTICLE PAGE — با SEO
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
 import { magazineArticles, magazineCategories } from '../data/magazine-articles.js';
 import { articleContents, getDefaultContent } from '../data/article-content.js';
 import { toast } from '../components/toast.js';
+import { injectArticleSchema, setPageMeta, SITE_URL } from '../utils/seo.js';
 
 /* ============================================
    INIT LAYOUT
@@ -81,7 +82,6 @@ function renderTOC() {
   const body = document.getElementById('article-body');
   if (!nav || !body) return;
 
-  // پیدا کردن همه h2 داخل بدنه
   const headings = body.querySelectorAll('h2[id]');
 
   if (!headings.length) {
@@ -95,7 +95,6 @@ function renderTOC() {
     </a>
   `).join('');
 
-  // Smooth scroll
   nav.addEventListener('click', (e) => {
     const link = e.target.closest('[data-toc-target]');
     if (!link) return;
@@ -111,7 +110,6 @@ function renderTOC() {
     setTimeout(() => updateActiveTOC(), 400);
   });
 
-  // Active state on scroll
   const links = nav.querySelectorAll('.article-toc__link');
   const updateActiveTOC = () => {
     let current = '';
@@ -293,6 +291,21 @@ function init() {
     return;
   }
 
+  // ===== SEO — Meta + Schema =====
+  setPageMeta({
+    title: `${article.title} | مجله موبایل استور`,
+    description: article.desc,
+    image: article.image,
+    url: `${SITE_URL}/magazine/article.html?id=${article.id}`,
+    type: 'article',
+    publishedTime: article.dateRaw,
+    modifiedTime: article.dateRaw,
+    author: 'تیم موبایل استور',
+  });
+
+  injectArticleSchema(article);
+
+  // ===== Render =====
   renderHero(article);
   renderBody(article);
   renderTOC();

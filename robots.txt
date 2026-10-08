@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Disallow private pages
+Disallow: /account/
+Disallow: /auth/login.html
+Disallow: /auth/register.html
+Disallow: /checkout.html
+Disallow: /success.html
+Disallow: /cart.html
+Disallow: /wishlist.html
+Disallow: /compare.html
+
+# Sitemap
+Sitemap: https://mywc.github.io/galaxystore/sitemap.xml

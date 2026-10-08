@@ -1,6 +1,6 @@
 /* ============================================
    LAYOUT — Header + Nav + Footer + Common UI
-   با تشخیص خودکار Base Path
+   با تشخیص خودکار Base Path + SEO
    ============================================ */
 
 import { initDrawer } from '../sections/drawer.js';
@@ -12,6 +12,7 @@ import { initFooter } from '../sections/footer.js';
 import { cart, wishlist, compare, onChange, KEYS } from '../store/state.js';
 import { initAnimations } from '../utils/animations.js';
 import { initMicro, bounceCartBadge } from '../utils/micro.js';
+import { injectSiteSchema } from '../utils/seo.js';
 
 /* ============================================
    BASE PATH DETECTION
@@ -393,6 +394,20 @@ export function initLayout() {
   inject('layout-quick-view', QUICK_VIEW_HTML);
   inject('layout-floating', FLOATING_HTML);
   inject('layout-footer', FOOTER_HTML);
+
+  // SEO — Organization + Website schema
+  injectSiteSchema();
+
+  // Preconnect برای performance
+  const preconnect = document.createElement('link');
+  preconnect.rel = 'preconnect';
+  preconnect.href = 'https://rogjalyqfpwgdtahfqdn.supabase.co';
+  document.head.appendChild(preconnect);
+
+  const preconnect2 = document.createElement('link');
+  preconnect2.rel = 'dns-prefetch';
+  preconnect2.href = 'https://cdn.jsdelivr.net';
+  document.head.appendChild(preconnect2);
 
   const header = document.getElementById('site-header');
   if (header) {

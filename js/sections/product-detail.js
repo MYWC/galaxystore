@@ -1,5 +1,5 @@
 /* ============================================
-   PRODUCT DETAIL PAGE
+   PRODUCT DETAIL PAGE — با SEO
    ============================================ */
 
 import { products, formatPrice } from '../data/products.js';
@@ -8,6 +8,7 @@ import { toast } from '../components/toast.js';
 import { openCart } from '../components/cart-drawer.js';
 import { renderProductCard } from '../components/product-card.js';
 import { reviews } from '../data/reviews.js';
+import { injectProductSchema, setPageMeta, injectBreadcrumbSchema, SITE_URL } from '../utils/seo.js';
 
 const ICONS = {
   cart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`,
@@ -109,12 +110,19 @@ function renderBreadcrumb(p) {
   const el = document.getElementById('breadcrumb-current');
   if (el) el.textContent = p.name;
 
-  // Update parent link
   const parentLink = document.querySelector('.breadcrumb a:nth-child(3)');
   if (parentLink) {
     parentLink.textContent = p.brand;
     parentLink.href = `brand.html?id=${p.category}`;
   }
+
+  // SEO Breadcrumb Schema
+  injectBreadcrumbSchema([
+    { name: 'خانه', url: SITE_URL + '/' },
+    { name: 'گوشی موبایل', url: SITE_URL + '/category.html?type=phone' },
+    { name: p.brand, url: `${SITE_URL}/brand.html?id=${p.category}` },
+    { name: p.name, url: `${SITE_URL}/product.html?id=${p.id}` },
+  ]);
 }
 
 /* ============================================
@@ -128,7 +136,6 @@ function renderGallery(p) {
 
   if (!mainEl || !thumbsEl) return;
 
-  // شبیه‌سازی گالری با ۴ تصویر (product + 3 variations)
   const baseSrc = `assets/images/products/${p.id}.jpg`;
 
   const images = [
@@ -139,12 +146,10 @@ function renderGallery(p) {
     { src: `assets/images/products/${p.id}-5.jpg`, label: 'جزئیات' },
   ];
 
-  // Main image
   mainEl.innerHTML = `
     <img src="${images[0].src}" alt="${p.name}" loading="eager" onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='<div class=\'ph ph--square\'>تصویر محصول</div>';" />
   `;
 
-  // Badges
   if (badgeEl) {
     const badges = [];
     if (p.badges?.includes('new')) badges.push('<span class="badge badge--new">جدید</span>');
@@ -155,14 +160,12 @@ function renderGallery(p) {
     badgeEl.innerHTML = badges.join('');
   }
 
-  // Thumbs
   thumbsEl.innerHTML = images.map((img, i) => `
     <button class="product-gallery__thumb ${i === 0 ? 'is-active' : ''}" data-thumb-index="${i}">
       <img src="${img.src}" alt="${img.label}" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'ph ph--xs\'>${img.label}</div>';" />
     </button>
   `).join('');
 
-  // Thumb click
   thumbsEl.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-thumb-index]');
     if (!btn) return;
@@ -185,11 +188,9 @@ function renderInfo(p) {
   const el = document.getElementById('product-info');
   if (!el) return;
 
-  // Set default color & variant
   currentColor = p.colors?.[0] || null;
   currentVariantIndex = 0;
 
-  // Find cheapest variant
   const cheapestIndex = p.variants.reduce(
     (minIdx, v, idx, arr) => (v.price < arr[minIdx].price ? idx : minIdx),
     0
@@ -202,7 +203,6 @@ function renderInfo(p) {
   const isInStock = v.stock > 0;
 
   el.innerHTML = `
-    <!-- Brand + Rating -->
     <div class="product-info__brand-row">
       <span class="product-info__brand">
         <span class="product-info__brand-dot"></span>
@@ -215,11 +215,9 @@ function renderInfo(p) {
       </span>
     </div>
 
-    <!-- Title -->
     <h1 class="product-info__title">${p.name}</h1>
     <div class="product-info__model">${p.model || ''}</div>
 
-    <!-- Colors -->
     ${p.colors?.length ? `
       <div class="product-info__section">
         <div class="product-info__section-head">
@@ -237,7 +235,6 @@ function renderInfo(p) {
       </div>
     ` : ''}
 
-    <!-- Storage -->
     <div class="product-info__section">
       <div class="product-info__section-head">
         <span class="product-info__label">حافظه و رم</span>
@@ -253,7 +250,6 @@ function renderInfo(p) {
       </div>
     </div>
 
-    <!-- Price Box -->
     <div class="product-info__price-box">
       <div class="product-info__stock-row">
         <span class="product-info__stock ${getStockClass(v.stock)}" data-stock>
@@ -278,7 +274,6 @@ function renderInfo(p) {
       </div>
     </div>
 
-    <!-- CTA -->
     <div class="product-info__cta">
       <button class="product-info__add-cart" id="add-to-cart-btn" ${!isInStock ? 'disabled' : ''}>
         ${ICONS.cart}
@@ -289,7 +284,6 @@ function renderInfo(p) {
       </button>
     </div>
 
-    <!-- Benefits -->
     <div class="product-info__benefits">
       <div class="product-benefit">
         <span class="product-benefit__icon">${ICONS.shield}</span>
@@ -309,7 +303,6 @@ function renderInfo(p) {
     </div>
   `;
 
-  // Events
   bindInfoEvents(p);
 }
 
@@ -441,6 +434,11 @@ function updatePriceAndStock(p) {
   if (addBtn) {
     addBtn.disabled = v.stock === 0;
   }
+
+  // Update SEO price dynamically
+  if (currentProduct) {
+    injectProductSchema(currentProduct, v.price);
+  }
 }
 
 /* ============================================
@@ -448,11 +446,9 @@ function updatePriceAndStock(p) {
    ============================================ */
 
 function renderTabs(p) {
-  const content = document.getElementById('product-tabs-content');
   const nav = document.querySelector('.product-tabs__nav');
-  if (!content || !nav) return;
+  if (!nav) return;
 
-  // Set initial
   renderTabContent(p, currentTab);
 
   nav.addEventListener('click', (e) => {
@@ -526,7 +522,6 @@ function renderTabContent(p, tab) {
       </div>
     `;
   } else if (tab === 'reviews') {
-    // استفاده از reviews واقعی (فقط ۴-۵ تای اول)
     const productReviews = reviews.slice(0, 5);
 
     if (!productReviews.length) {
@@ -564,7 +559,6 @@ function renderSimilar(p) {
   const grid = document.getElementById('similar-grid');
   if (!grid) return;
 
-  // فیلتر: هم‌برند یا هم‌قیمت‌محدوده
   const similar = products
     .filter((x) => x.id !== p.id)
     .filter((x) => x.category === p.category || x.type === p.type)
@@ -597,9 +591,20 @@ export function initProductDetail() {
 
   currentProduct = p;
 
-  // Update page title
-  document.title = `${p.name} | موبایل استور`;
+  // ===== SEO — Meta + Schema =====
+  const v = p.variants[currentVariantIndex] || p.variants[0];
 
+  setPageMeta({
+    title: `${p.name} | خرید با بهترین قیمت | موبایل استور`,
+    description: `خرید ${p.name} با ضمانت اصالت، گارانتی رسمی و ارسال سریع. قیمت از ${formatPrice(v.price)} تومان.`,
+    image: p.image,
+    url: `${SITE_URL}/product.html?id=${p.id}`,
+    type: 'product',
+  });
+
+  injectProductSchema(p, v.price);
+
+  // ===== Render =====
   renderBreadcrumb(p);
   renderGallery(p);
   renderInfo(p);
