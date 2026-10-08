@@ -45,6 +45,9 @@ function getBasePath() {
 const BASE = getBasePath();
 const u = (p) => BASE + p;
 
+// Expose base path globally for other modules (search.js, etc.)
+window.MS_BASE_PATH = BASE;
+
 /* ============================================
    ANNOUNCEMENT + HEADER + NAV
    ============================================ */

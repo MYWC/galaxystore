@@ -16,10 +16,8 @@ const ICONS = {
    ============================================ */
 
 function getBasePath() {
-  // از layout.js استفاده کن اگه تنظیم شده
   if (window.MS_BASE_PATH) return window.MS_BASE_PATH;
 
-  // Fallback: تشخیص دستی
   const KNOWN_SUBFOLDERS = ['account', 'auth', 'magazine', 'support', 'legal'];
   const path = window.location.pathname;
   const cleanPath = path.split(/[?#]/)[0];
