@@ -22,6 +22,14 @@
       background: #F6F9FB; padding: 2px 8px; border-radius: 6px;
       font-family: monospace; font-size: 13px; color: #2386D7;
     }
+    .brands-list {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px;
+    }
+    .brand-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; background: #EAF4FD; color: #2386D7;
+      border-radius: 999px; font-size: 12px; font-weight: 700;
+    }
     .stat {
       display: grid; grid-template-columns: repeat(2, 1fr);
       gap: 16px; margin-bottom: 24px;
@@ -64,9 +72,17 @@
   <div class="box">
     <h1>🚀 درون‌ریزی محصولات</h1>
     <p class="sub">
-      همه محصولات از <code>js/data/products/*.js</code> خوانده و به جدول
-      <code>products</code> در Supabase فرستاده می‌شوند.
+      فقط محصولات این ۶ برند به Supabase فرستاده می‌شوند:
     </p>
+
+    <div class="brands-list">
+      <span class="brand-chip">Apple</span>
+      <span class="brand-chip">Samsung</span>
+      <span class="brand-chip">Xiaomi</span>
+      <span class="brand-chip">Google</span>
+      <span class="brand-chip">Honor</span>
+      <span class="brand-chip">Nothing</span>
+    </div>
 
     <div class="stat">
       <div>
@@ -89,22 +105,24 @@
 
   <script type="module">
     import { supabase, isSupabaseConfigured } from '../js/services/supabase.js';
+
+    /* ============================================
+       فقط ۶ برند
+       ============================================ */
     import { appleProducts } from '../js/data/products/apple.js';
     import { samsungProducts } from '../js/data/products/samsung.js';
     import { xiaomiProducts } from '../js/data/products/xiaomi.js';
     import { googleProducts } from '../js/data/products/google.js';
-    import { oneplusProducts } from '../js/data/products/oneplus.js';
     import { honorProducts } from '../js/data/products/honor.js';
-    import { huaweiProducts } from '../js/data/products/huawei.js';
-    import { oppoProducts } from '../js/data/products/oppo.js';
-    import { vivoProducts } from '../js/data/products/vivo.js';
-    import { transsionProducts } from '../js/data/products/transsion.js';
+    import { nothingProducts } from '../js/data/products/nothing.js';
 
     const allProducts = [
-      ...appleProducts, ...samsungProducts, ...xiaomiProducts,
-      ...googleProducts, ...oneplusProducts, ...honorProducts,
-      ...huaweiProducts, ...oppoProducts, ...vivoProducts,
-      ...transsionProducts,
+      ...appleProducts,
+      ...samsungProducts,
+      ...xiaomiProducts,
+      ...googleProducts,
+      ...honorProducts,
+      ...nothingProducts,
     ];
 
     const unique = Object.values(
@@ -133,7 +151,7 @@
     } else {
       btn.disabled = false;
       log(`✓ Supabase آماده است`, 'success');
-      log(`✓ ${unique.length} محصول (${brands.size} برند) آماده`, 'success');
+      log(`✓ ${unique.length} محصول از ${brands.size} برند آماده`, 'success');
     }
 
     btn.addEventListener('click', async () => {
