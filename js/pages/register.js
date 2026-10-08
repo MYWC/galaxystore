@@ -1,16 +1,32 @@
 /* ============================================
-   REGISTER PAGE — Refactored with Auth Service
+   REGISTER PAGE — Fixed Redirect
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
 import { toast } from '../components/toast.js';
 import { signUp, isSupabaseConfigured } from '../services/auth.js';
 
+initLayout();
+
 /* ============================================
-   INIT LAYOUT
+   REDIRECT RESOLVER
    ============================================ */
 
-initLayout();
+function getRedirectUrl() {
+  const params = new URLSearchParams(window.location.search);
+  let redirect = params.get('redirect');
+
+  if (!redirect) {
+    redirect = 'account/index.html';
+  }
+
+  if (redirect.startsWith('/') || redirect.startsWith('http')) {
+    return redirect;
+  }
+
+  const base = window.MS_BASE_PATH || '../';
+  return base + redirect;
+}
 
 /* ============================================
    VALIDATORS
@@ -27,12 +43,10 @@ function isPhone(str) {
 function checkPasswordStrength(password) {
   let level = 0;
   if (!password) return { level: 0, label: '—' };
-
   if (password.length >= 6) level++;
   if (password.length >= 8) level++;
   if (/[A-Za-z]/.test(password) && /\d/.test(password)) level++;
   if (/[^A-Za-z0-9]/.test(password) || password.length >= 12) level++;
-
   level = Math.min(level, 4);
   const labels = ['—', 'ضعیف', 'متوسط', 'خوب', 'قوی'];
   return { level, label: labels[level] };
@@ -73,13 +87,11 @@ function bindPasswordStrength() {
 
   input.addEventListener('input', () => {
     const { level, label } = checkPasswordStrength(input.value);
-
     if (!input.value) {
       wrap.hidden = true;
       wrap.removeAttribute('data-level');
       return;
     }
-
     wrap.hidden = false;
     wrap.setAttribute('data-level', level);
     text.textContent = label;
@@ -102,7 +114,6 @@ function bindInputs() {
 
   Object.entries(inputs).forEach(([key, el]) => {
     if (!el) return;
-
     el.addEventListener('input', () => {
       clearError(key);
       if (key === 'phone') {
@@ -198,9 +209,7 @@ async function handleSubmit(e) {
 
   if (!validate()) {
     const firstError = document.querySelector('.form-field.has-error, .auth-form__row--terms.has-error');
-    if (firstError) {
-      firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
     toast({
       type: 'error',
       title: 'اطلاعات ناقص است',
@@ -227,14 +236,9 @@ async function handleSubmit(e) {
   btn.disabled = false;
 
   if (result.error) {
-    // خطا را زیر فیلد مربوطه نشون بده (بهتره)
     const msg = result.error.message;
-
-    if (msg.includes('ایمیل')) {
-      setError('email', msg);
-    } else if (msg.includes('موبایل') || msg.includes('شماره')) {
-      setError('phone', msg);
-    }
+    if (msg.includes('ایمیل')) setError('email', msg);
+    else if (msg.includes('موبایل') || msg.includes('شماره')) setError('phone', msg);
 
     toast({
       type: 'error',
@@ -245,13 +249,11 @@ async function handleSubmit(e) {
     return;
   }
 
-  // حالت نیاز به تأیید ایمیل
   if (result.needsEmailConfirmation) {
     showEmailConfirmation(result.user);
     return;
   }
 
-  // ثبت‌نام موفق + ورود خودکار
   showSuccess(result.user);
 
   toast({
@@ -262,14 +264,12 @@ async function handleSubmit(e) {
   });
 
   setTimeout(() => {
-    const params = new URLSearchParams(window.location.search);
-    const redirect = params.get('redirect') || '../account/index.html';
-    window.location.href = redirect;
-  }, 2500);
+    window.location.href = getRedirectUrl();
+  }, 2000);
 }
 
 /* ============================================
-   SUCCESS STATE
+   SUCCESS
    ============================================ */
 
 function showSuccess(user) {
@@ -284,21 +284,18 @@ function showSuccess(user) {
             <polyline points="20 6 9 17 4 12"/>
           </svg>
         </div>
-
         <h1 class="auth-success__title">ثبت‌نام با موفقیت انجام شد! 🎉</h1>
-
         <p class="auth-success__text">
           <strong>${user?.firstName || ''} ${user?.lastName || ''}</strong> عزیز،
           حساب شما با موفقیت ایجاد شد.<br>
           در حال انتقال به پنل کاربری...
         </p>
-
         <div class="auth-success__actions">
-          <a href="../account/index.html" class="btn btn--primary">
+          <a href="${(window.MS_BASE_PATH || '../')}account/index.html" class="btn btn--primary">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             رفتن به پنل کاربری
           </a>
-          <a href="../index.html" class="btn btn--outline">
+          <a href="${(window.MS_BASE_PATH || '../')}index.html" class="btn btn--outline">
             صفحه اصلی
           </a>
         </div>
@@ -309,10 +306,6 @@ function showSuccess(user) {
   launchConfetti();
 }
 
-/* ============================================
-   EMAIL CONFIRMATION STATE
-   ============================================ */
-
 function showEmailConfirmation(user) {
   const formSide = document.querySelector('.auth-form-wrap');
   if (!formSide) return;
@@ -320,25 +313,19 @@ function showEmailConfirmation(user) {
   formSide.innerHTML = `
     <div class="auth-form">
       <div class="auth-success">
-        <div class="auth-success__icon" style="background: linear-gradient(135deg, #2386D7, #1B6FB5); box-shadow: 0 20px 40px -10px rgba(35,134,215,0.45), 0 0 0 8px rgba(35,134,215,0.12);">
+        <div class="auth-success__icon" style="background: linear-gradient(135deg, #2386D7, #1B6FB5);">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="width:38px;height:38px;stroke-width:2.4;">
             <rect x="2" y="4" width="20" height="16" rx="2"/>
             <polyline points="22 6 12 13 2 6"/>
           </svg>
         </div>
-
         <h1 class="auth-success__title">ایمیل خود را تأیید کنید</h1>
-
         <p class="auth-success__text">
           یک ایمیل تأیید به <strong>${user?.email || ''}</strong> ارسال شد.
-          لطفاً روی لینک داخل ایمیل کلیک کنید تا حساب شما فعال شود.
+          لطفاً روی لینک داخل ایمیل کلیک کنید.
         </p>
-
         <div class="auth-success__actions">
-          <a href="login.html" class="btn btn--primary">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-            بازگشت به صفحه ورود
-          </a>
+          <a href="login.html" class="btn btn--primary">بازگشت به ورود</a>
         </div>
       </div>
     </div>
@@ -354,13 +341,11 @@ function launchConfetti() {
   if (reduce) return;
 
   const colors = ['#18B981', '#2386D7', '#16B5A5', '#F59E0B', '#7C5CFF'];
-  const count = 30;
-
   const wrap = document.createElement('div');
   wrap.style.cssText = 'position:fixed; inset:0; pointer-events:none; z-index:9999; overflow:hidden;';
   document.body.appendChild(wrap);
 
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < 30; i++) {
     const piece = document.createElement('span');
     piece.style.cssText = `
       position: absolute;
@@ -402,21 +387,18 @@ function bindSocial() {
    ============================================ */
 
 function init() {
-  // اگر قبلاً وارد شده
   try {
     const session = JSON.parse(localStorage.getItem('ms_session') || 'null');
     if (session?.user) {
-      const params = new URLSearchParams(window.location.search);
-      const redirect = params.get('redirect') || '../account/index.html';
-
       toast({
         type: 'info',
         title: 'قبلاً وارد شده‌اید',
         message: 'در حال انتقال...',
-        duration: 1500,
+        duration: 1200,
       });
-
-      setTimeout(() => { window.location.href = redirect; }, 800);
+      setTimeout(() => {
+        window.location.href = getRedirectUrl();
+      }, 600);
       return;
     }
   } catch {}
@@ -432,7 +414,7 @@ function init() {
 
   if (!isSupabaseConfigured()) {
     console.log(
-      '%c⚠️  Supabase not configured — Register در حالت Local Fallback کار می‌کند',
+      '%c⚠️  Supabase not configured — Register در حالت Local Fallback',
       'color:#F59E0B;font-weight:bold;'
     );
   }

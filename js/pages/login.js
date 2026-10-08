@@ -1,16 +1,34 @@
 /* ============================================
-   LOGIN PAGE — Only Email/Password (no OTP)
+   LOGIN PAGE — Only Email/Password + Fixed Redirect
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
 import { toast } from '../components/toast.js';
 import { signIn, isSupabaseConfigured } from '../services/auth.js';
 
+initLayout();
+
 /* ============================================
-   INIT LAYOUT
+   REDIRECT RESOLVER
    ============================================ */
 
-initLayout();
+function getRedirectUrl() {
+  const params = new URLSearchParams(window.location.search);
+  let redirect = params.get('redirect');
+
+  if (!redirect) {
+    redirect = 'account/index.html';
+  }
+
+  // Absolute path or full URL → use as is
+  if (redirect.startsWith('/') || redirect.startsWith('http')) {
+    return redirect;
+  }
+
+  // Resolve relative to site root
+  const base = window.MS_BASE_PATH || '../';
+  return base + redirect;
+}
 
 /* ============================================
    VALIDATORS
@@ -102,10 +120,8 @@ async function handleLogin(e) {
   });
 
   setTimeout(() => {
-    const params = new URLSearchParams(window.location.search);
-    const redirect = params.get('redirect') || '../account/index.html';
-    window.location.href = redirect;
-  }, 1000);
+    window.location.href = getRedirectUrl();
+  }, 800);
 }
 
 /* ============================================
@@ -131,7 +147,7 @@ function bindPasswordToggle() {
 }
 
 /* ============================================
-   BIND INPUTS
+   INPUTS
    ============================================ */
 
 function bindInputs() {
@@ -165,23 +181,18 @@ function bindSocial() {
    ============================================ */
 
 function init() {
-  // اگه قبلاً وارد شده
   try {
     const session = JSON.parse(localStorage.getItem('ms_session') || 'null');
     if (session?.user) {
-      const params = new URLSearchParams(window.location.search);
-      const redirect = params.get('redirect') || '../account/index.html';
-
       toast({
         type: 'info',
         title: 'قبلاً وارد شده‌اید',
         message: 'در حال انتقال...',
-        duration: 1500,
+        duration: 1200,
       });
-
       setTimeout(() => {
-        window.location.href = redirect;
-      }, 800);
+        window.location.href = getRedirectUrl();
+      }, 600);
       return;
     }
   } catch {}
