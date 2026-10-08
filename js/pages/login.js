@@ -1,10 +1,10 @@
 /* ============================================
-   LOGIN PAGE — Only Email/Password + Fixed Redirect
+   LOGIN PAGE — Email/Password only (no OTP)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
 import { toast } from '../components/toast.js';
-import { signIn, isSupabaseConfigured } from '../services/auth.js';
+import { signIn, resetPassword, isSupabaseConfigured } from '../services/auth.js';
 
 initLayout();
 
@@ -16,16 +16,9 @@ function getRedirectUrl() {
   const params = new URLSearchParams(window.location.search);
   let redirect = params.get('redirect');
 
-  if (!redirect) {
-    redirect = 'account/index.html';
-  }
+  if (!redirect) redirect = 'account/index.html';
+  if (redirect.startsWith('/') || redirect.startsWith('http')) return redirect;
 
-  // Absolute path or full URL → use as is
-  if (redirect.startsWith('/') || redirect.startsWith('http')) {
-    return redirect;
-  }
-
-  // Resolve relative to site root
   const base = window.MS_BASE_PATH || '../';
   return base + redirect;
 }
@@ -125,6 +118,40 @@ async function handleLogin(e) {
 }
 
 /* ============================================
+   FORGOT PASSWORD
+   ============================================ */
+
+async function handleForgotPassword() {
+  const emailEl = document.getElementById('login-identifier');
+  const email = emailEl.value.trim().toLowerCase();
+
+  if (!isEmail(email)) {
+    setError('identifier', 'اول ایمیل خود را وارد کنید');
+    emailEl.focus();
+    return;
+  }
+
+  const result = await resetPassword(email);
+
+  if (result.error) {
+    toast({
+      type: 'error',
+      title: 'خطا',
+      message: result.error.message,
+      duration: 3500,
+    });
+    return;
+  }
+
+  toast({
+    type: 'success',
+    title: 'لینک بازیابی ارسال شد',
+    message: 'ایمیل خود را چک کنید',
+    duration: 4000,
+  });
+}
+
+/* ============================================
    PASSWORD TOGGLE
    ============================================ */
 
@@ -159,28 +186,11 @@ function bindInputs() {
 }
 
 /* ============================================
-   SOCIAL
-   ============================================ */
-
-function bindSocial() {
-  document.querySelectorAll('[data-social]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const provider = btn.dataset.social;
-      toast({
-        type: 'info',
-        title: 'ورود با ' + (provider === 'google' ? 'Google' : 'Apple'),
-        message: 'این ویژگی به‌زودی فعال می‌شود',
-        duration: 3000,
-      });
-    });
-  });
-}
-
-/* ============================================
    INIT
    ============================================ */
 
 function init() {
+  // اگه قبلاً وارد شده
   try {
     const session = JSON.parse(localStorage.getItem('ms_session') || 'null');
     if (session?.user) {
@@ -199,10 +209,17 @@ function init() {
 
   bindPasswordToggle();
   bindInputs();
-  bindSocial();
 
   const form = document.getElementById('password-form');
   if (form) form.addEventListener('submit', handleLogin);
+
+  const forgotLink = document.getElementById('forgot-link');
+  if (forgotLink) {
+    forgotLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      handleForgotPassword();
+    });
+  }
 
   if (!isSupabaseConfigured()) {
     console.log(

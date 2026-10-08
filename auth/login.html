@@ -48,7 +48,6 @@
     <div class="container">
       <div class="auth-layout">
 
-        <!-- ============ Visual Side ============ -->
         <aside class="auth-visual">
           <div class="auth-visual__inner">
             <div class="auth-visual__logo">
@@ -113,7 +112,6 @@
           <span class="auth-visual__orb auth-visual__orb--2"></span>
         </aside>
 
-        <!-- ============ Form Side ============ -->
         <section class="auth-form-wrap">
           <div class="auth-form">
 
@@ -124,7 +122,6 @@
               </p>
             </div>
 
-            <!-- ===== Password Form ===== -->
             <form class="auth-form-body" id="password-form" novalidate>
               <div class="form-field" id="field-identifier">
                 <label class="form-field__label" for="login-identifier">
@@ -177,10 +174,7 @@
                   <span class="auth-checkbox__box"></span>
                   <span class="auth-checkbox__label">مرا به خاطر بسپار</span>
                 </label>
-
-                <a href="forgot-password.html" class="auth-form__link">
-                  فراموشی رمز عبور؟
-                </a>
+                <a href="#" class="auth-form__link" id="forgot-link">فراموشی رمز عبور؟</a>
               </div>
 
               <button type="submit" class="auth-submit" id="submit-password">
@@ -189,32 +183,6 @@
               </button>
             </form>
 
-            <!-- ===== Divider ===== -->
-            <div class="auth-divider">
-              <span>یا ورود با</span>
-            </div>
-
-            <!-- ===== Social ===== -->
-            <div class="auth-social">
-              <button type="button" class="auth-social__btn auth-social__btn--google" data-social="google">
-                <svg viewBox="0 0 24 24">
-                  <path d="M22 12.2c0-.7-.1-1.4-.2-2H12v3.8h5.6c-.2 1.3-1 2.4-2 3.1v2.6h3.3c1.9-1.8 3.1-4.4 3.1-7.5z" fill="#4285F4"/>
-                  <path d="M12 22c2.7 0 5-.9 6.6-2.4l-3.3-2.6c-.9.6-2 .9-3.3.9-2.6 0-4.8-1.7-5.6-4.1H3v2.7c1.6 3.3 5 5.5 9 5.5z" fill="#34A853"/>
-                  <path d="M6.4 13.8c-.2-.6-.3-1.2-.3-1.8s.1-1.3.3-1.8V7.5H3A10 10 0 0 0 2 12c0 1.6.4 3.2 1 4.5l3.4-2.7z" fill="#FBBC04"/>
-                  <path d="M12 5.9c1.5 0 2.8.5 3.9 1.5l2.9-2.9C17 2.9 14.7 2 12 2 8 2 4.6 4.3 3 7.5l3.4 2.7c.8-2.5 3-4.3 5.6-4.3z" fill="#EA4335"/>
-                </svg>
-                <span>Google</span>
-              </button>
-
-              <button type="button" class="auth-social__btn auth-social__btn--apple" data-social="apple">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-                </svg>
-                <span>Apple</span>
-              </button>
-            </div>
-
-            <!-- ===== Switch ===== -->
             <div class="auth-switch">
               <span>حساب کاربری ندارید؟</span>
               <a href="register.html" class="auth-switch__link">

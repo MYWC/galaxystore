@@ -16,13 +16,8 @@ function getRedirectUrl() {
   const params = new URLSearchParams(window.location.search);
   let redirect = params.get('redirect');
 
-  if (!redirect) {
-    redirect = 'account/index.html';
-  }
-
-  if (redirect.startsWith('/') || redirect.startsWith('http')) {
-    return redirect;
-  }
+  if (!redirect) redirect = 'account/index.html';
+  if (redirect.startsWith('/') || redirect.startsWith('http')) return redirect;
 
   const base = window.MS_BASE_PATH || '../';
   return base + redirect;
@@ -276,6 +271,8 @@ function showSuccess(user) {
   const formSide = document.querySelector('.auth-form-wrap');
   if (!formSide) return;
 
+  const base = window.MS_BASE_PATH || '../';
+
   formSide.innerHTML = `
     <div class="auth-form">
       <div class="auth-success">
@@ -291,11 +288,10 @@ function showSuccess(user) {
           در حال انتقال به پنل کاربری...
         </p>
         <div class="auth-success__actions">
-          <a href="${(window.MS_BASE_PATH || '../')}account/index.html" class="btn btn--primary">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          <a href="${base}account/index.html" class="btn btn--primary">
             رفتن به پنل کاربری
           </a>
-          <a href="${(window.MS_BASE_PATH || '../')}index.html" class="btn btn--outline">
+          <a href="${base}index.html" class="btn btn--outline">
             صفحه اصلی
           </a>
         </div>
@@ -322,7 +318,6 @@ function showEmailConfirmation(user) {
         <h1 class="auth-success__title">ایمیل خود را تأیید کنید</h1>
         <p class="auth-success__text">
           یک ایمیل تأیید به <strong>${user?.email || ''}</strong> ارسال شد.
-          لطفاً روی لینک داخل ایمیل کلیک کنید.
         </p>
         <div class="auth-success__actions">
           <a href="login.html" class="btn btn--primary">بازگشت به ورود</a>
@@ -365,24 +360,6 @@ function launchConfetti() {
 }
 
 /* ============================================
-   SOCIAL
-   ============================================ */
-
-function bindSocial() {
-  document.querySelectorAll('[data-social]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const provider = btn.dataset.social;
-      toast({
-        type: 'info',
-        title: 'ثبت‌نام با ' + (provider === 'google' ? 'Google' : 'Apple'),
-        message: 'این ویژگی به‌زودی فعال می‌شود',
-        duration: 3000,
-      });
-    });
-  });
-}
-
-/* ============================================
    INIT
    ============================================ */
 
@@ -407,7 +384,6 @@ function init() {
   bindPasswordStrength();
   bindPasswordToggle('toggle-reg-password', 'reg-password');
   bindPasswordToggle('toggle-reg-confirm', 'reg-confirmPassword');
-  bindSocial();
 
   const form = document.getElementById('register-form');
   if (form) form.addEventListener('submit', handleSubmit);
