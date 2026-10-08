@@ -15,7 +15,7 @@ const guides = [
     title: 'راهنمای خرید آیفون؛ کدام مدل برای شما مناسب است؟',
     desc: 'مقایسه کامل مدل‌های آیفون ۱۵ تا ۱۷ پرو از نظر دوربین، باتری و قیمت — برای انتخابی مطمئن.',
     readTime: '۸ دقیقه',
-    href: '/guides/iphone-buying-guide',
+    href: 'magazine/article.html?id=art-1',
     image: null,
   },
   {
@@ -25,7 +25,7 @@ const guides = [
     title: 'بهترین گوشی‌های سامسونگ در سال ۲۰۲۶',
     desc: 'از سری گلکسی S تا Z — بررسی دقیق پرچمداران سامسونگ و انتخاب بهترین گزینه برای شما.',
     readTime: '۱۰ دقیقه',
-    href: '/guides/best-samsung-2026',
+    href: 'magazine/article.html?id=art-2',
     image: null,
   },
   {
@@ -35,7 +35,7 @@ const guides = [
     title: 'بهترین تبلت‌های ۲۰۲۶ برای کار و سرگرمی',
     desc: 'مقایسه آیپد، گلکسی تب، شیائومی پد و سایر تبلت‌های محبوب — برای انتخاب هوشمندانه.',
     readTime: '۷ دقیقه',
-    href: '/guides/best-tablets-2026',
+    href: 'magazine/article.html?id=art-3',
     image: null,
   },
 ];

@@ -1,6 +1,5 @@
 /* ============================================
-   LIVE SEARCH
-   جستجوی زنده با Dropdown
+   LIVE SEARCH — با Base Path
    ============================================ */
 
 import { products, formatPrice } from '../data/products.js';
@@ -12,7 +11,40 @@ const ICONS = {
   phone:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`,
 };
 
-/* ---------- Normalize ---------- */
+/* ============================================
+   BASE PATH
+   ============================================ */
+
+function getBasePath() {
+  // از layout.js استفاده کن اگه تنظیم شده
+  if (window.MS_BASE_PATH) return window.MS_BASE_PATH;
+
+  // Fallback: تشخیص دستی
+  const KNOWN_SUBFOLDERS = ['account', 'auth', 'magazine', 'support', 'legal'];
+  const path = window.location.pathname;
+  const cleanPath = path.split(/[?#]/)[0];
+  const parts = cleanPath.split('/').filter(Boolean);
+
+  if (parts.length && parts[parts.length - 1].includes('.')) {
+    parts.pop();
+  }
+
+  let depth = 0;
+  for (let i = parts.length - 1; i >= 0; i--) {
+    if (KNOWN_SUBFOLDERS.includes(parts[i])) {
+      depth++;
+    } else {
+      break;
+    }
+  }
+
+  return depth > 0 ? '../'.repeat(depth) : './';
+}
+
+/* ============================================
+   NORMALIZE
+   ============================================ */
+
 function normalize(str) {
   return (str || '')
     .toLowerCase()
@@ -21,7 +53,10 @@ function normalize(str) {
     .trim();
 }
 
-/* ---------- Search ---------- */
+/* ============================================
+   SEARCH
+   ============================================ */
+
 function search(query) {
   const q = normalize(query);
   if (!q) return [];
@@ -38,10 +73,16 @@ function search(query) {
     .slice(0, MAX_RESULTS);
 }
 
-/* ---------- Render Item ---------- */
+/* ============================================
+   RENDER ITEM
+   ============================================ */
+
 function renderItem(p) {
+  const BASE = getBasePath();
+  const url = `${BASE}product.html?id=${p.id}`;
+
   return `
-    <a href="/product/${p.slug || p.id}" class="search-item" data-search-item="${p.id}">
+    <a href="${url}" class="search-item" data-search-item="${p.id}">
       <span class="search-item__img">${ICONS.phone}</span>
       <span class="search-item__info">
         <span class="search-item__name">${p.name}</span>
@@ -55,7 +96,10 @@ function renderItem(p) {
   `;
 }
 
-/* ---------- Render Dropdown ---------- */
+/* ============================================
+   RENDER DROPDOWN
+   ============================================ */
+
 function renderDropdown(dropdown, query) {
   if (!query) {
     dropdown.classList.remove('is-open');
@@ -99,7 +143,10 @@ function renderDropdown(dropdown, query) {
   dropdown.classList.add('is-open');
 }
 
-/* ---------- Init ---------- */
+/* ============================================
+   INIT
+   ============================================ */
+
 export function initSearch() {
   const inputs = document.querySelectorAll('.header__search-input');
   if (!inputs.length) return;
@@ -108,7 +155,6 @@ export function initSearch() {
     const wrapper = input.closest('.header__search');
     if (!wrapper) return;
 
-    // ساخت Dropdown
     let dropdown = wrapper.querySelector('.search-dropdown');
     if (!dropdown) {
       dropdown = document.createElement('div');
@@ -118,7 +164,6 @@ export function initSearch() {
 
     let debounceTimer;
 
-    // Input event
     input.addEventListener('input', (e) => {
       clearTimeout(debounceTimer);
       const val = e.target.value;
@@ -127,19 +172,16 @@ export function initSearch() {
       }, 180);
     });
 
-    // Focus
     input.addEventListener('focus', () => {
       if (input.value.trim()) {
         renderDropdown(dropdown, input.value.trim());
       }
     });
 
-    // Close on blur (با تأخیر تا کلیک روی آیتم‌ها گرفته شود)
     input.addEventListener('blur', () => {
       setTimeout(() => dropdown.classList.remove('is-open'), 180);
     });
 
-    // ESC
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         dropdown.classList.remove('is-open');
@@ -148,7 +190,6 @@ export function initSearch() {
     });
   });
 
-  // Close on outside click
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.header__search')) {
       document
