@@ -1,0 +1,270 @@
+/* ============================================
+   ACCESSIBILITY STYLES
+   ============================================ */
+
+/* ============================================
+   1. SKIP LINK
+   ============================================ */
+
+.skip-link {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  z-index: 99999;
+  padding: 12px 20px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 10px;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 8px 24px -8px rgba(35, 134, 215, 0.55);
+  transform: translateY(-200%);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+/* ============================================
+   2. FOCUS VISIBLE — بهبود یافته
+   ============================================ */
+
+*:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+}
+
+/* Focus روی background تیره */
+.qv-overlay:focus-visible,
+.drawer:focus-visible,
+.cart-drawer:focus-visible {
+  outline: 3px solid #fff;
+}
+
+/* ============================================
+   3. SCREEN READER ONLY
+   ============================================ */
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* ============================================
+   4. REDUCED MOTION
+   ============================================ */
+
+/* حالت ۱: کاربر خودش توی تنظیمات سایت فعال کرده */
+html.reduced-motion *,
+html.reduced-motion *::before,
+html.reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+html.reduced-motion .reveal,
+html.reduced-motion .stagger > * {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+html.reduced-motion .float,
+html.reduced-motion .pulse,
+html.reduced-motion .marquee__inner,
+html.reduced-motion .gradient-text {
+  animation: none !important;
+}
+
+/* حالت ۲: سیستم‌عامل کاربر prefers-reduced-motion داره */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal,
+  .stagger > * {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .float,
+  .pulse,
+  .marquee__inner,
+  .gradient-text,
+  .hero::before,
+  .hero::after,
+  .flash-sale::before,
+  .flash-sale::after,
+  .why-us::before,
+  .why-us::after,
+  .footer::before {
+    animation: none !important;
+  }
+}
+
+/* ============================================
+   5. TOUCH TARGET SIZE (a11y)
+   ============================================ */
+
+@media (pointer: coarse) {
+  button,
+  a.header__action,
+  a.nav__link,
+  .p-card__action,
+  .f-card__wish {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .p-card__action,
+  .f-card__wish {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* ============================================
+   6. LINK UNDERLINE (برای تشخیص بهتر)
+   ============================================ */
+
+.article-body a,
+.product-description a,
+.legal-section a,
+.faq-item__answer-inner a,
+.success-note a,
+.track-notfound__text a,
+.contact-info-item__value--link:hover,
+.breadcrumb a:hover,
+.nav__link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ============================================
+   7. HIGH CONTRAST MODE
+   ============================================ */
+
+@media (prefers-contrast: more) {
+  :root {
+    --text-muted: #4A5568;
+    --border: #9CA3AF;
+    --border-soft: #D1D5DB;
+  }
+
+  .p-card,
+  .f-card,
+  .category-card,
+  .brand-card {
+    border-width: 2px;
+  }
+}
+
+/* ============================================
+   8. KEYBOARD-ONLY FOCUS برای کارت‌ها
+   ============================================ */
+
+.p-card[tabindex="0"]:focus-visible,
+.f-card[tabindex="0"]:focus-visible,
+.category-card[tabindex="0"]:focus-visible,
+.brand-card[tabindex="0"]:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 4px;
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   9. SELECTION TEXT (خوانایی)
+   ============================================ */
+
+::selection {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* ============================================
+   10. PRINT STYLES (a11y برای پرینت)
+   ============================================ */
+
+@media print {
+  .header,
+  .nav,
+  .announcement,
+  .floating,
+  .drawer,
+  .drawer-overlay,
+  .cart-drawer,
+  .cart-overlay,
+  .qv-overlay,
+  .toast-container,
+  .skip-link,
+  .footer {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+    font-size: 12pt;
+  }
+
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #555;
+  }
+
+  a[href^="#"]::after,
+  a[href^="javascript:"]::after {
+    content: "";
+  }
+
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
+  }
+
+  h1, h2, h3 {
+    page-break-after: avoid;
+  }
+}
+
+/* ============================================
+   11. ARIA-HIDDEN — مخفی کردن از screen reader
+   ============================================ */
+
+[aria-hidden="true"]:not(.sr-only) {
+  pointer-events: none;
+  user-select: none;
+}

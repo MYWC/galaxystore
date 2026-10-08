@@ -1,6 +1,6 @@
 /* ============================================
    LAYOUT — Header + Nav + Footer + Common UI
-   با تشخیص خودکار Base Path + SEO
+   با Base Path + SEO + Performance + A11y
    ============================================ */
 
 import { initDrawer } from '../sections/drawer.js';
@@ -13,6 +13,8 @@ import { cart, wishlist, compare, onChange, KEYS } from '../store/state.js';
 import { initAnimations } from '../utils/animations.js';
 import { initMicro, bounceCartBadge } from '../utils/micro.js';
 import { injectSiteSchema } from '../utils/seo.js';
+import { initPerformance } from '../utils/performance.js';
+import { initA11y, announceCartUpdate } from '../utils/a11y.js';
 
 /* ============================================
    BASE PATH DETECTION
@@ -25,12 +27,10 @@ function getBasePath() {
   const cleanPath = path.split(/[?#]/)[0];
   const parts = cleanPath.split('/').filter(Boolean);
 
-  // حذف نام فایل آخر (اگر هست)
   if (parts.length && parts[parts.length - 1].includes('.')) {
     parts.pop();
   }
 
-  // شمارش عمق داخل پوشه‌های شناخته‌شده
   let depth = 0;
   for (let i = parts.length - 1; i >= 0; i--) {
     if (KNOWN_SUBFOLDERS.includes(parts[i])) {
@@ -46,7 +46,6 @@ function getBasePath() {
 const BASE = getBasePath();
 const u = (p) => BASE + p;
 
-// Expose base path globally for other modules (search.js, etc.)
 window.MS_BASE_PATH = BASE;
 
 /* ============================================
@@ -54,26 +53,26 @@ window.MS_BASE_PATH = BASE;
    ============================================ */
 
 const ANNOUNCEMENT_HTML = `
-<div class="announcement">
+<div class="announcement" role="region" aria-label="اطلاع‌رسانی">
   <div class="container">
     <div class="announcement__inner">
       <span class="announcement__item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
         ارسال سریع به سراسر کشور
       </span>
-      <span class="announcement__divider"></span>
+      <span class="announcement__divider" aria-hidden="true"></span>
       <span class="announcement__item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.66 0 3.22.45 4.56 1.24"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.66 0 3.22.45 4.56 1.24"/></svg>
         ضمانت اصالت کالا
       </span>
-      <span class="announcement__divider"></span>
+      <span class="announcement__divider" aria-hidden="true"></span>
       <span class="announcement__item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         پرداخت امن
       </span>
-      <span class="announcement__divider"></span>
+      <span class="announcement__divider" aria-hidden="true"></span>
       <span class="announcement__item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
         ۷ روز ضمانت بازگشت
       </span>
     </div>
@@ -82,46 +81,46 @@ const ANNOUNCEMENT_HTML = `
 `;
 
 const HEADER_HTML = `
-<header class="header" id="site-header">
+<header class="header" id="site-header" role="banner">
   <div class="container">
     <div class="header__inner">
-      <button class="header__menu-btn" aria-label="منو" id="menu-toggle">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <button class="header__menu-btn" aria-label="باز کردن منو" aria-expanded="false" aria-controls="mobile-drawer" id="menu-toggle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
-      <a href="${u('index.html')}" class="header__logo" aria-label="موبایل استور">
-        <span class="header__logo-mark">
+      <a href="${u('index.html')}" class="header__logo" aria-label="موبایل استور — بازگشت به صفحه اصلی">
+        <span class="header__logo-mark" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
         </span>
         <span class="header__logo-text">
           <span>موبایل استور</span>
-          <span>MOBILE & TABLET</span>
+          <span aria-hidden="true">MOBILE & TABLET</span>
         </span>
       </a>
-      <div class="header__search">
-        <svg class="header__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="search" class="header__search-input" placeholder="جستجوی گوشی، تبلت یا برند..." aria-label="جستجو" autocomplete="off" />
+      <div class="header__search" role="search">
+        <svg class="header__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" class="header__search-input" placeholder="جستجوی گوشی، تبلت یا برند..." aria-label="جستجو در محصولات" autocomplete="off" />
       </div>
       <div class="header__actions">
-        <a href="${u('wishlist.html')}" class="header__action header__action--optional" aria-label="علاقه‌مندی‌ها">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-          <span class="header__action-badge" data-badge="wishlist">0</span>
+        <a href="${u('wishlist.html')}" class="header__action header__action--optional" aria-label="لیست علاقه‌مندی‌ها">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <span class="header__action-badge" data-badge="wishlist" aria-live="polite">0</span>
         </a>
-        <a href="${u('compare.html')}" class="header__action header__action--optional" aria-label="مقایسه">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+        <a href="${u('compare.html')}" class="header__action header__action--optional" aria-label="مقایسه محصولات">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
         </a>
         <a href="${u('account/index.html')}" class="header__action header__action--optional" aria-label="حساب کاربری">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </a>
         <a href="${u('cart.html')}" class="header__action" aria-label="سبد خرید">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-          <span class="header__action-badge header__action-badge--cart">0</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span class="header__action-badge header__action-badge--cart" aria-live="polite">0</span>
         </a>
       </div>
     </div>
     <div class="header__mobile-search">
-      <div class="header__search" style="max-width:100%; margin:0;">
-        <svg class="header__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="search" class="header__search-input" placeholder="جستجوی محصول..." aria-label="جستجو" autocomplete="off" />
+      <div class="header__search" style="max-width:100%; margin:0;" role="search">
+        <svg class="header__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" class="header__search-input" placeholder="جستجوی محصول..." aria-label="جستجو در محصولات" autocomplete="off" />
       </div>
     </div>
   </div>
@@ -133,13 +132,13 @@ const NAV_HTML = `
   <div class="container">
     <div class="nav__inner">
       <a href="${u('index.html')}" class="nav__link nav__link--accent">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 0.67s0.74 2.65 0.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l0.03-0.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5 0.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-0.36 3.6-1.21 4.62-2.58 0.39 1.29 0.59 2.65 0.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 0.67s0.74 2.65 0.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l0.03-0.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5 0.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-0.36 3.6-1.21 4.62-2.58 0.39 1.29 0.59 2.65 0.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/></svg>
         پیشنهاد ویژه
       </a>
-      <span class="nav__sep"></span>
+      <span class="nav__sep" aria-hidden="true"></span>
       <a href="${u('category.html?type=phone')}" class="nav__link">گوشی موبایل</a>
       <a href="${u('category.html?type=tablet')}" class="nav__link">تبلت</a>
-      <span class="nav__sep"></span>
+      <span class="nav__sep" aria-hidden="true"></span>
       <a href="${u('brand.html?id=apple')}" class="nav__link">آیفون</a>
       <a href="${u('brand.html?id=samsung')}" class="nav__link">سامسونگ</a>
       <a href="${u('brand.html?id=xiaomi')}" class="nav__link">شیائومی</a>
@@ -159,16 +158,16 @@ const NAV_HTML = `
 
 const DRAWER_HTML = `
 <div class="drawer-overlay" id="drawer-overlay"></div>
-<aside class="drawer" id="mobile-drawer" aria-label="منوی موبایل" aria-hidden="true">
+<aside class="drawer" id="mobile-drawer" role="dialog" aria-modal="true" aria-label="منوی موبایل" aria-hidden="true">
   <div class="drawer__head">
-    <a href="${u('index.html')}" class="drawer__logo">
-      <span class="drawer__logo-mark">
+    <a href="${u('index.html')}" class="drawer__logo" aria-label="موبایل استور">
+      <span class="drawer__logo-mark" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
       </span>
-      <span class="drawer__logo-text"><span>موبایل استور</span><span>MOBILE & TABLET</span></span>
+      <span class="drawer__logo-text"><span>موبایل استور</span><span aria-hidden="true">MOBILE & TABLET</span></span>
     </a>
     <button class="drawer__close" id="drawer-close" aria-label="بستن منو">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
   </div>
   <div class="drawer__body">
@@ -176,9 +175,8 @@ const DRAWER_HTML = `
       <div class="drawer__section-title">فروشگاه</div>
       <div class="drawer__list">
         <a href="${u('category.html?filter=discount')}" class="drawer__link drawer__link--accent">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 0.67s0.74 2.65 0.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l0.03-0.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5 0.67z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 0.67s0.74 2.65 0.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l0.03-0.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5 0.67z"/></svg>
           پیشنهاد ویژه
-          <span class="drawer__link-badge drawer__link-badge--discount">۱۲</span>
         </a>
         <a href="${u('category.html?type=phone')}" class="drawer__link">گوشی موبایل</a>
         <a href="${u('category.html?type=tablet')}" class="drawer__link">تبلت</a>
@@ -206,33 +204,33 @@ const DRAWER_HTML = `
       <div class="drawer__section-title">حساب من</div>
       <div class="drawer__list">
         <a href="${u('account/index.html')}" class="drawer__link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           حساب کاربری
         </a>
         <a href="${u('wishlist.html')}" class="drawer__link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           علاقه‌مندی‌ها
           <span class="drawer__link-badge" data-badge="wishlist-drawer">0</span>
         </a>
         <a href="${u('compare.html')}" class="drawer__link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
           مقایسه
         </a>
         <a href="${u('cart.html')}" class="drawer__link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
           سبد خرید
           <span class="drawer__link-badge" data-badge="cart-drawer">0</span>
         </a>
         <a href="${u('support/track.html')}" class="drawer__link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
           پیگیری سفارش
         </a>
       </div>
     </div>
   </div>
   <div class="drawer__foot">
-    <a href="tel:02112345678" class="drawer__contact">
-      <span class="drawer__contact-icon">
+    <a href="tel:02112345678" class="drawer__contact" aria-label="تماس با پشتیبانی">
+      <span class="drawer__contact-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
       </span>
       <span class="drawer__contact-text">
@@ -250,15 +248,15 @@ const DRAWER_HTML = `
 
 const CART_DRAWER_HTML = `
 <div class="cart-overlay" id="cart-overlay"></div>
-<aside class="cart-drawer" id="cart-drawer" aria-label="سبد خرید" aria-hidden="true">
+<aside class="cart-drawer" id="cart-drawer" role="dialog" aria-modal="true" aria-label="سبد خرید" aria-hidden="true">
   <div class="cart-drawer__head">
     <div class="cart-drawer__title-wrap">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
       <h2 class="cart-drawer__title">سبد خرید</h2>
-      <span class="cart-drawer__count">۰</span>
+      <span class="cart-drawer__count" aria-live="polite">۰</span>
     </div>
-    <button class="cart-drawer__close" id="cart-close" aria-label="بستن">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    <button class="cart-drawer__close" id="cart-close" aria-label="بستن سبد خرید">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
   </div>
   <div class="cart-drawer__body" id="cart-drawer-body"></div>
@@ -267,10 +265,10 @@ const CART_DRAWER_HTML = `
 `;
 
 const QUICK_VIEW_HTML = `
-<div class="qv-overlay" id="qv-overlay" role="dialog" aria-modal="true">
+<div class="qv-overlay" id="qv-overlay" role="dialog" aria-modal="true" aria-label="نمایش سریع محصول">
   <div class="qv-modal">
     <button class="qv-modal__close" id="qv-close" aria-label="بستن">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
     <div id="qv-content" style="display: contents;"></div>
   </div>
@@ -279,12 +277,12 @@ const QUICK_VIEW_HTML = `
 
 const FLOATING_HTML = `
 <div class="floating">
-  <button class="floating__btn floating__btn--top" id="back-to-top" aria-label="بازگشت به بالا">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+  <button class="floating__btn floating__btn--top" id="back-to-top" aria-label="بازگشت به بالای صفحه">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
   </button>
-  <button class="floating__btn floating__btn--chat" id="chat-btn" aria-label="پشتیبانی">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="13" y2="14"/></svg>
-    <span class="floating__online"></span>
+  <button class="floating__btn floating__btn--chat" id="chat-btn" aria-label="پشتیبانی آنلاین">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="13" y2="14"/></svg>
+    <span class="floating__online" aria-hidden="true"></span>
   </button>
 </div>
 `;
@@ -294,32 +292,32 @@ const FLOATING_HTML = `
    ============================================ */
 
 const FOOTER_HTML = `
-<footer class="footer" id="site-footer">
+<footer class="footer" id="site-footer" role="contentinfo">
   <div class="container">
     <div class="footer__grid">
       <div class="footer__brand">
-        <a href="${u('index.html')}" class="footer__logo">
-          <span class="footer__logo-mark">
+        <a href="${u('index.html')}" class="footer__logo" aria-label="موبایل استور">
+          <span class="footer__logo-mark" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
           </span>
           <span class="footer__logo-text">
             <span>موبایل استور</span>
-            <span>MOBILE & TABLET</span>
+            <span aria-hidden="true">MOBILE & TABLET</span>
           </span>
         </a>
         <p class="footer__desc">
           فروشگاه تخصصی موبایل و تبلت با ۱۰ برند معتبر جهانی،
           ضمانت اصالت کالا و خدمات پس از فروش مطمئن.
         </p>
-        <div class="footer__social">
+        <div class="footer__social" role="navigation" aria-label="شبکه‌های اجتماعی">
           <a href="#" class="footer__social-link" aria-label="اینستاگرام">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
           </a>
           <a href="#" class="footer__social-link" aria-label="تلگرام">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.5 4.5 2.7 11.6c-1 .4-1 1.9.1 2.2l4.6 1.4 1.7 5.3c.3 1 1.6 1.1 2.1.2l2.5-4.3 4.6 3.4c.8.6 2 .1 2.2-.9l3-12c.2-1-.8-1.8-1.7-1.4z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.5 4.5 2.7 11.6c-1 .4-1 1.9.1 2.2l4.6 1.4 1.7 5.3c.3 1 1.6 1.1 2.1.2l2.5-4.3 4.6 3.4c.8.6 2 .1 2.2-.9l3-12c.2-1-.8-1.8-1.7-1.4z"/></svg>
           </a>
           <a href="#" class="footer__social-link" aria-label="توییتر">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 3H22l-7.5 8.6L23.3 21H16l-5.6-7.4L3.9 21H1l8-9.2L1 3h7.4l5 6.7L18.9 3z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 3H22l-7.5 8.6L23.3 21H16l-5.6-7.4L3.9 21H1l8-9.2L1 3h7.4l5 6.7L18.9 3z"/></svg>
           </a>
         </div>
       </div>
@@ -356,16 +354,16 @@ const FOOTER_HTML = `
         <h4 class="footer__col-title">خبرنامه</h4>
         <p class="footer__newsletter-desc">برای دریافت تخفیف‌ها و اخبار جدید ایمیل خود را وارد کنید.</p>
         <form class="footer__newsletter-form" id="newsletter-form">
-          <input type="email" class="footer__newsletter-input" placeholder="ایمیل شما..." aria-label="ایمیل" required />
-          <button type="submit" class="footer__newsletter-btn" aria-label="عضویت">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          <input type="email" class="footer__newsletter-input" placeholder="ایمیل شما..." aria-label="ایمیل خبرنامه" required />
+          <button type="submit" class="footer__newsletter-btn" aria-label="عضویت در خبرنامه">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
           </button>
         </form>
       </div>
     </div>
     <div class="footer__bottom">
       <p class="footer__copyright">© <strong id="footer-year">۱۴۰۴</strong> موبایل استور — تمامی حقوق محفوظ است.</p>
-      <div class="footer__payments">
+      <div class="footer__payments" aria-label="روش‌های پرداخت">
         <span class="footer__payment">زرین‌پال</span>
         <span class="footer__payment">سامان</span>
         <span class="footer__payment">ملت</span>
@@ -395,19 +393,29 @@ export function initLayout() {
   inject('layout-floating', FLOATING_HTML);
   inject('layout-footer', FOOTER_HTML);
 
-  // SEO — Organization + Website schema
+  // SEO
   injectSiteSchema();
 
-  // Preconnect برای performance
+  // Preconnect
   const preconnect = document.createElement('link');
   preconnect.rel = 'preconnect';
   preconnect.href = 'https://rogjalyqfpwgdtahfqdn.supabase.co';
   document.head.appendChild(preconnect);
 
   const preconnect2 = document.createElement('link');
-  preconnect2.rel = 'dns-prefetch';
+  preconnect2.rel = 'preconnect';
   preconnect2.href = 'https://cdn.jsdelivr.net';
+  preconnect2.crossOrigin = 'anonymous';
   document.head.appendChild(preconnect2);
+
+  // a11y CSS
+  if (!document.getElementById('a11y-css')) {
+    const a11yLink = document.createElement('link');
+    a11yLink.id = 'a11y-css';
+    a11yLink.rel = 'stylesheet';
+    a11yLink.href = u('css/a11y.css');
+    document.head.appendChild(a11yLink);
+  }
 
   const header = document.getElementById('site-header');
   if (header) {
@@ -425,11 +433,21 @@ export function initLayout() {
   initAnimations();
   initMicro();
 
+  // Performance
+  initPerformance();
+
+  // A11y
+  initA11y();
+
   syncBadges();
   onChange(KEYS.wishlist, syncBadges);
   onChange(KEYS.cart, () => {
     syncBadges();
     bounceCartBadge();
+    // a11y announcement
+    try {
+      announceCartUpdate(cart.count());
+    } catch {}
   });
   onChange(KEYS.compare, syncBadges);
 }
