@@ -1,5 +1,5 @@
 /* ============================================
-   NOTIFICATIONS PAGE — Refactored with Auth Service
+   NOTIFICATIONS PAGE — with Supabase
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -9,6 +9,11 @@ import {
   signOut,
   isSupabaseConfigured,
 } from '../services/auth.js';
+import {
+  getNotifications,
+  markNotificationRead,
+  markAllNotificationsRead,
+} from '../services/notifications.js';
 
 /* ============================================
    INIT LAYOUT
@@ -17,10 +22,8 @@ import {
 initLayout();
 
 /* ============================================
-   CONSTANTS
+   ICONS
    ============================================ */
-
-const NOTIFS_KEY = 'ms_notifications';
 
 const ICONS = {
   order: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>`,
@@ -39,6 +42,7 @@ const ICONS = {
 
 const state = {
   filter: 'all',
+  items: [],
 };
 
 /* ============================================
@@ -53,101 +57,6 @@ async function checkAuth() {
     return null;
   }
   return user;
-}
-
-/* ============================================
-   STORAGE
-   ============================================ */
-
-function getAllNotifications() {
-  try {
-    const raw = localStorage.getItem(NOTIFS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveNotifications(list) {
-  try {
-    localStorage.setItem(NOTIFS_KEY, JSON.stringify(list));
-  } catch {}
-}
-
-/* ============================================
-   SEED
-   ============================================ */
-
-function seedIfEmpty(user) {
-  const list = getAllNotifications();
-  if (list.length) return;
-
-  const now = Date.now();
-
-  const demo = [
-    {
-      id: 'n1',
-      type: 'order',
-      icon: 'order',
-      title: 'سفارش شما ارسال شد 🚚',
-      text: 'سفارش <strong>MS-' + (12345000 + Math.floor(Math.random() * 999)) + '</strong> تحویل پست شد. کد رهگیری برای شما پیامک می‌شود.',
-      time: new Date(now - 5 * 60 * 1000).toISOString(),
-      read: false,
-      link: 'account/orders.html',
-    },
-    {
-      id: 'n2',
-      type: 'offer',
-      icon: 'offer',
-      title: 'تخفیف ۲۵٪ روی لوازم جانبی',
-      text: 'تا پایان هفته روی تمام لوازم جانبی <strong>۲۵٪ تخفیف</strong> ویژه در نظر گرفته شده. فرصت را از دست ندهید!',
-      time: new Date(now - 45 * 60 * 1000).toISOString(),
-      read: false,
-      link: 'category.html?filter=discount',
-    },
-    {
-      id: 'n3',
-      type: 'system',
-      icon: 'system',
-      title: 'ورود موفق به حساب کاربری',
-      text: 'ورود جدیدی به حساب شما انجام شد. اگر شما نبودید، رمز عبور خود را تغییر دهید.',
-      time: new Date(now - 3 * 60 * 60 * 1000).toISOString(),
-      read: true,
-      link: 'account/profile.html',
-    },
-    {
-      id: 'n4',
-      type: 'order',
-      icon: 'success',
-      title: 'سفارش شما تأیید شد ✅',
-      text: 'سفارش شما بررسی و تأیید شد. به‌زودی بسته‌بندی و ارسال می‌شود.',
-      time: new Date(now - 1 * 24 * 60 * 60 * 1000).toISOString(),
-      read: true,
-      link: 'account/orders.html',
-    },
-    {
-      id: 'n5',
-      type: 'offer',
-      icon: 'warning',
-      title: 'پیشنهاد ویژه Flash Sale',
-      text: 'فروش فلش با تخفیف‌های تا <strong>۳۰٪</strong> آغاز شد. فقط تا پایان امروز!',
-      time: new Date(now - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      read: true,
-      link: 'index.html#flash-sale',
-    },
-    {
-      id: 'n6',
-      type: 'system',
-      icon: 'system',
-      title: 'به موبایل استور خوش آمدید 🎉',
-      text: 'حساب کاربری شما با موفقیت ساخته شد. از خرید با ما لذت ببرید.',
-      time: new Date(now - 5 * 24 * 60 * 60 * 1000).toISOString(),
-      read: true,
-      link: 'index.html',
-    },
-  ];
-
-  saveNotifications(demo);
 }
 
 /* ============================================
@@ -186,20 +95,18 @@ function fa(n) {
    ============================================ */
 
 function getFiltered() {
-  const list = getAllNotifications();
-
-  let filtered = [...list].sort((a, b) => {
+  const list = [...state.items].sort((a, b) => {
     if (a.read !== b.read) return a.read ? 1 : -1;
-    return new Date(b.time) - new Date(a.time);
+    return new Date(b.time || b.createdAt) - new Date(a.time || a.createdAt);
   });
 
   if (state.filter === 'unread') {
-    filtered = filtered.filter((n) => !n.read);
-  } else if (state.filter !== 'all') {
-    filtered = filtered.filter((n) => n.type === state.filter);
+    return list.filter((n) => !n.read);
   }
-
-  return filtered;
+  if (state.filter !== 'all') {
+    return list.filter((n) => n.type === state.filter);
+  }
+  return list;
 }
 
 /* ============================================
@@ -207,7 +114,7 @@ function getFiltered() {
    ============================================ */
 
 function updateCounts() {
-  const list = getAllNotifications();
+  const list = state.items;
 
   const counts = {
     all: list.length,
@@ -274,7 +181,7 @@ function renderItem(n) {
         <div class="notif-meta">
           <span class="notif-time">
             ${ICONS.clock}
-            ${formatTime(n.time)}
+            ${formatTime(n.time || n.createdAt)}
           </span>
 
           <span class="notif-tag notif-tag--${n.type}">
@@ -304,7 +211,7 @@ function render() {
 
   updateCounts();
 
-  const all = getAllNotifications();
+  const all = state.items;
   const filtered = getFiltered();
 
   if (!all.length) {
@@ -334,22 +241,22 @@ function render() {
    ACTIONS
    ============================================ */
 
-function markAsRead(id) {
-  const list = getAllNotifications();
-  const idx = list.findIndex((n) => n.id === id);
-  if (idx === -1) return;
+async function handleMarkRead(id) {
+  await markNotificationRead(id);
 
-  list[idx].read = true;
-  saveNotifications(list);
+  const idx = state.items.findIndex((n) => n.id === id);
+  if (idx !== -1) {
+    state.items[idx].read = true;
+  }
+
   render();
 }
 
-function markAllAsRead() {
-  const list = getAllNotifications();
-  if (!list.length) return;
+async function handleMarkAllRead() {
+  if (!state.items.length) return;
 
-  list.forEach((n) => { n.read = true; });
-  saveNotifications(list);
+  await markAllNotificationsRead();
+  state.items.forEach((n) => { n.read = true; });
   render();
 
   toast({
@@ -360,11 +267,12 @@ function markAllAsRead() {
 }
 
 function openNotification(id) {
-  const list = getAllNotifications();
-  const notif = list.find((n) => n.id === id);
+  const notif = state.items.find((n) => n.id === id);
   if (!notif) return;
 
-  if (!notif.read) markAsRead(id);
+  if (!notif.read) {
+    handleMarkRead(id);
+  }
 
   if (notif.link) {
     setTimeout(() => {
@@ -401,7 +309,7 @@ function bindList() {
     const markBtn = e.target.closest('[data-mark]');
     if (markBtn) {
       e.stopPropagation();
-      markAsRead(markBtn.dataset.mark);
+      handleMarkRead(markBtn.dataset.mark);
       toast({
         type: 'info',
         title: 'خوانده شد',
@@ -421,7 +329,7 @@ function bindMarkAll() {
   const btn = document.getElementById('mark-all-read');
   if (!btn) return;
 
-  btn.addEventListener('click', markAllAsRead);
+  btn.addEventListener('click', handleMarkAllRead);
 }
 
 function bindReset() {
@@ -466,7 +374,8 @@ async function init() {
   const user = await checkAuth();
   if (!user) return;
 
-  seedIfEmpty(user);
+  // لود اعلان‌ها از Supabase
+  state.items = await getNotifications();
 
   bindTabs();
   bindList();
@@ -481,7 +390,7 @@ async function init() {
   }
 
   console.log(
-    `%c✓ Notifications page — ${getAllNotifications().length} items`,
+    `%c✓ Notifications page — ${state.items.length} items`,
     'color:#18B981;font-weight:bold;'
   );
 }
