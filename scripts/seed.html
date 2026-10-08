@@ -2,149 +2,71 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>درون‌ریزی محصولات | موبایل استور</title>
+  <title>درون‌ریزی محصولات</title>
   <style>
     * { box-sizing: border-box; }
     body {
-      font-family: Vazirmatn, system-ui, -apple-system, sans-serif;
+      font-family: Vazirmatn, system-ui, sans-serif;
       direction: rtl;
       background: linear-gradient(135deg, #EEF8FF 0%, #F3F0FF 100%);
-      margin: 0;
-      padding: 40px 20px;
-      min-height: 100vh;
+      margin: 0; padding: 40px 20px; min-height: 100vh;
     }
     .box {
-      max-width: 760px;
-      margin: 0 auto;
-      background: #fff;
-      border-radius: 24px;
-      padding: 36px;
+      max-width: 760px; margin: 0 auto; background: #fff;
+      border-radius: 24px; padding: 36px;
       box-shadow: 0 30px 60px -30px rgba(23,32,42,0.2);
     }
-    h1 { margin: 0 0 8px; font-size: 26px; letter-spacing: -0.5px; }
+    h1 { margin: 0 0 8px; font-size: 26px; }
     p.sub { color: #6B7280; margin: 0 0 28px; line-height: 1.7; }
     code {
-      background: #F6F9FB;
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-family: monospace;
-      font-size: 13px;
-      color: #2386D7;
+      background: #F6F9FB; padding: 2px 8px; border-radius: 6px;
+      font-family: monospace; font-size: 13px; color: #2386D7;
     }
     .stat {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      margin-bottom: 24px;
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 16px; margin-bottom: 24px;
     }
     .stat > div {
-      padding: 20px;
-      background: linear-gradient(135deg, #EAF4FD, #DCEBFB);
-      border-radius: 16px;
-      text-align: center;
+      padding: 20px; background: linear-gradient(135deg, #EAF4FD, #DCEBFB);
+      border-radius: 16px; text-align: center;
     }
     .stat strong {
-      display: block;
-      font-size: 32px;
-      color: #2386D7;
-      font-weight: 900;
-      letter-spacing: -1px;
-      line-height: 1;
-      margin-bottom: 6px;
+      display: block; font-size: 32px; color: #2386D7;
+      font-weight: 900; line-height: 1; margin-bottom: 6px;
     }
-    .stat span {
-      font-size: 12px;
-      color: #6B7280;
-      font-weight: 600;
-    }
+    .stat span { font-size: 12px; color: #6B7280; font-weight: 600; }
     .progress {
-      height: 10px;
-      background: #E6EBEF;
-      border-radius: 999px;
-      overflow: hidden;
-      margin-bottom: 20px;
+      height: 10px; background: #E6EBEF; border-radius: 999px;
+      overflow: hidden; margin-bottom: 20px;
     }
     .progress__fill {
-      height: 100%;
-      background: linear-gradient(90deg, #2386D7, #16B5A5);
-      transition: width 0.3s;
-      width: 0;
-      border-radius: 999px;
+      height: 100%; background: linear-gradient(90deg, #2386D7, #16B5A5);
+      transition: width 0.3s; width: 0; border-radius: 999px;
     }
     button {
-      width: 100%;
-      padding: 18px 28px;
-      background: #2386D7;
-      color: #fff;
-      border: none;
-      border-radius: 14px;
-      font-size: 17px;
-      font-weight: 800;
-      cursor: pointer;
-      font-family: inherit;
-      transition: all 0.2s;
+      width: 100%; padding: 18px 28px; background: #2386D7; color: #fff;
+      border: none; border-radius: 14px; font-size: 17px; font-weight: 800;
+      cursor: pointer; font-family: inherit; transition: all 0.2s;
       box-shadow: 0 12px 28px -10px rgba(35,134,215,0.5);
     }
-    button:hover:not(:disabled) {
-      background: #1B6FB5;
-      transform: translateY(-2px);
-    }
-    button:disabled {
-      background: #CBD5E0;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
+    button:hover:not(:disabled) { background: #1B6FB5; transform: translateY(-2px); }
+    button:disabled { background: #CBD5E0; cursor: not-allowed; box-shadow: none; }
     .log {
-      margin-top: 20px;
-      padding: 18px;
-      background: #0B1219;
-      color: #A8E4DC;
-      border-radius: 14px;
-      font-family: 'SF Mono', Monaco, monospace;
-      font-size: 12.5px;
-      max-height: 380px;
-      overflow-y: auto;
-      direction: ltr;
-      text-align: left;
+      margin-top: 20px; padding: 18px; background: #0B1219; color: #A8E4DC;
+      border-radius: 14px; font-family: monospace; font-size: 12.5px;
+      max-height: 380px; overflow-y: auto; direction: ltr; text-align: left;
       line-height: 1.75;
     }
-    .log:empty::before {
-      content: 'آماده...';
-      opacity: 0.5;
-    }
-    .warn {
-      padding: 14px 18px;
-      background: #FFF7E6;
-      border-right: 4px solid #F59E0B;
-      border-radius: 10px;
-      font-size: 13px;
-      line-height: 1.7;
-      color: #92400E;
-      margin-bottom: 20px;
-    }
+    .log:empty::before { content: 'آماده...'; opacity: 0.5; }
   </style>
 </head>
 <body>
   <div class="box">
     <h1>🚀 درون‌ریزی محصولات</h1>
     <p class="sub">
-      همه محصولات از فایل‌های <code>js/data/products/*.js</code> خوانده و به جدول
-      <code>products</code> در Supabase فرستاده می‌شوند. محصولات تکراری به‌روزرسانی می‌شوند (upsert).
+      همه محصولات از <code>js/data/products/*.js</code> خوانده و به جدول
+      <code>products</code> در Supabase فرستاده می‌شوند.
     </p>
-
-    <div class="warn">
-      ⚠️ <strong>قبل از شروع، این SQL رو توی Supabase اجرا کن</strong> تا اجازه‌ی insert بده:
-      <br><br>
-      <code>CREATE POLICY "products_temp_insert" ON public.products FOR INSERT WITH CHECK (true);</code>
-      <br>
-      <code>CREATE POLICY "products_temp_update" ON public.products FOR UPDATE USING (true);</code>
-      <br><br>
-      بعد از اتمام seed، حتماً این‌ها رو حذف کن:
-      <br><br>
-      <code>DROP POLICY IF EXISTS "products_temp_insert" ON public.products;</code>
-      <br>
-      <code>DROP POLICY IF EXISTS "products_temp_update" ON public.products;</code>
-    </div>
 
     <div class="stat">
       <div>
@@ -162,13 +84,11 @@
     </div>
 
     <button id="seed-btn" disabled>شروع درون‌ریزی</button>
-
     <div class="log" id="log"></div>
   </div>
 
   <script type="module">
     import { supabase, isSupabaseConfigured } from '../js/services/supabase.js';
-
     import { appleProducts } from '../js/data/products/apple.js';
     import { samsungProducts } from '../js/data/products/samsung.js';
     import { xiaomiProducts } from '../js/data/products/xiaomi.js';
@@ -180,29 +100,15 @@
     import { vivoProducts } from '../js/data/products/vivo.js';
     import { transsionProducts } from '../js/data/products/transsion.js';
 
-    /* ============================================
-       جمع‌آوری محصولات
-       ============================================ */
-
     const allProducts = [
-      ...appleProducts,
-      ...samsungProducts,
-      ...xiaomiProducts,
-      ...googleProducts,
-      ...oneplusProducts,
-      ...honorProducts,
-      ...huaweiProducts,
-      ...oppoProducts,
-      ...vivoProducts,
+      ...appleProducts, ...samsungProducts, ...xiaomiProducts,
+      ...googleProducts, ...oneplusProducts, ...honorProducts,
+      ...huaweiProducts, ...oppoProducts, ...vivoProducts,
       ...transsionProducts,
     ];
 
-    // حذف تکراری‌ها بر اساس id
     const unique = Object.values(
-      allProducts.reduce((acc, p) => {
-        acc[p.id] = p;
-        return acc;
-      }, {})
+      allProducts.reduce((acc, p) => { acc[p.id] = p; return acc; }, {})
     );
 
     const brands = new Set(unique.map((p) => p.brand));
@@ -210,55 +116,31 @@
     document.getElementById('count-products').textContent = unique.length.toLocaleString('fa-IR');
     document.getElementById('count-brands').textContent = brands.size.toLocaleString('fa-IR');
 
-    /* ============================================
-       Helper
-       ============================================ */
-
     const btn = document.getElementById('seed-btn');
     const logEl = document.getElementById('log');
     const progressEl = document.getElementById('progress');
 
     function log(msg, type = 'info') {
-      const colors = {
-        info: '#A8E4DC',
-        success: '#18B981',
-        error: '#EF5350',
-        warn: '#F59E0B',
-      };
+      const colors = { info: '#A8E4DC', success: '#18B981', error: '#EF5350' };
       const time = new Date().toLocaleTimeString('en-GB');
-      logEl.innerHTML += `<div style="color:${colors[type] || colors.info}">[${time}] ${msg}</div>`;
+      logEl.innerHTML += `<div style="color:${colors[type]}">[${time}] ${msg}</div>`;
       logEl.scrollTop = logEl.scrollHeight;
     }
 
-    /* ============================================
-       بررسی اولیه
-       ============================================ */
-
     if (!isSupabaseConfigured()) {
-      log('✗ Supabase تنظیم نشده — نمی‌توانم ادامه دهم', 'error');
+      log('✗ Supabase تنظیم نشده', 'error');
       btn.textContent = 'Supabase تنظیم نشده';
     } else {
       btn.disabled = false;
       log(`✓ Supabase آماده است`, 'success');
-      log(`✓ ${unique.length} محصول منحصربه‌فرد آماده (از ${brands.size} برند)`, 'success');
-      log(`ℹ️  منتظر کلیک شما...`, 'info');
+      log(`✓ ${unique.length} محصول (${brands.size} برند) آماده`, 'success');
     }
-
-    /* ============================================
-       Seed
-       ============================================ */
 
     btn.addEventListener('click', async () => {
       if (!isSupabaseConfigured()) return;
-
       btn.disabled = true;
       btn.textContent = 'در حال درون‌ریزی...';
-      log('', 'info');
-      log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
-      log('شروع درون‌ریزی', 'info');
-      log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
 
-      // تبدیل به فرمت Supabase
       const payload = unique.map((p) => ({
         id: p.id,
         brand: p.brand,
@@ -276,58 +158,43 @@
         is_active: true,
       }));
 
-      // Batch های 25 تایی
       const BATCH = 25;
       const totalBatches = Math.ceil(payload.length / BATCH);
-      let successCount = 0;
-      let errorCount = 0;
+      let successCount = 0, errorCount = 0;
 
       for (let i = 0; i < totalBatches; i++) {
-        const start = i * BATCH;
-        const end = start + BATCH;
-        const batch = payload.slice(start, end);
-
+        const batch = payload.slice(i * BATCH, (i + 1) * BATCH);
         log(`Batch ${i + 1}/${totalBatches} — ${batch.length} محصول...`, 'info');
-
         try {
           const { error } = await supabase
             .from('products')
             .upsert(batch, { onConflict: 'id' });
-
           if (error) {
             errorCount += batch.length;
-            log(`  ✗ خطا: ${error.message}`, 'error');
+            log(`  ✗ ${error.message}`, 'error');
           } else {
             successCount += batch.length;
-            log(`  ✓ ${batch.length} محصول موفق`, 'success');
+            log(`  ✓ ${batch.length} موفق`, 'success');
           }
         } catch (err) {
           errorCount += batch.length;
-          log(`  ✗ Exception: ${err.message}`, 'error');
+          log(`  ✗ ${err.message}`, 'error');
         }
-
-        const percent = Math.round(((i + 1) / totalBatches) * 100);
-        progressEl.style.width = `${percent}%`;
+        progressEl.style.width = `${Math.round(((i + 1) / totalBatches) * 100)}%`;
       }
 
-      log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
-      log('پایان درون‌ریزی', 'info');
-      log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
       log(`✓ موفق: ${successCount}`, 'success');
       if (errorCount) log(`✗ خطا: ${errorCount}`, 'error');
 
-      // شمارش نهایی
       try {
         const { count } = await supabase
           .from('products')
           .select('*', { count: 'exact', head: true });
-
         log(`📊 مجموع در دیتابیس: ${count}`, 'success');
       } catch {}
 
       btn.textContent = 'تکمیل شد ✅';
       btn.style.background = '#18B981';
-      btn.style.boxShadow = '0 12px 28px -10px rgba(24,185,129,0.5)';
     });
   </script>
 </body>
