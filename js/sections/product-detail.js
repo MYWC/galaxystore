@@ -1,5 +1,5 @@
 /* ============================================
-   PRODUCT DETAIL PAGE — با SEO
+   PRODUCT DETAIL PAGE — با SEO + Reviews
    ============================================ */
 
 import { products, formatPrice } from '../data/products.js';
@@ -7,8 +7,9 @@ import { cart, wishlist, compare, onChange, KEYS } from '../store/state.js';
 import { toast } from '../components/toast.js';
 import { openCart } from '../components/cart-drawer.js';
 import { renderProductCard } from '../components/product-card.js';
-import { reviews } from '../data/reviews.js';
 import { injectProductSchema, setPageMeta, injectBreadcrumbSchema, SITE_URL } from '../utils/seo.js';
+import { getProductReviews, addReview, getUserReviewForProduct } from '../services/reviews.js';
+import { getCurrentUser } from '../services/auth.js';
 
 const ICONS = {
   cart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`,
@@ -116,7 +117,6 @@ function renderBreadcrumb(p) {
     parentLink.href = `brand.html?id=${p.category}`;
   }
 
-  // SEO Breadcrumb Schema
   injectBreadcrumbSchema([
     { name: 'خانه', url: SITE_URL + '/' },
     { name: 'گوشی موبایل', url: SITE_URL + '/category.html?type=phone' },
@@ -307,7 +307,6 @@ function renderInfo(p) {
 }
 
 function bindInfoEvents(p) {
-  /* ---------- Color ---------- */
   const colorWrap = document.getElementById('color-options');
   if (colorWrap) {
     colorWrap.addEventListener('click', (e) => {
@@ -323,7 +322,6 @@ function bindInfoEvents(p) {
     });
   }
 
-  /* ---------- Storage ---------- */
   const storageWrap = document.getElementById('storage-options');
   if (storageWrap) {
     storageWrap.addEventListener('click', (e) => {
@@ -338,7 +336,6 @@ function bindInfoEvents(p) {
     });
   }
 
-  /* ---------- Add to Cart ---------- */
   const addBtn = document.getElementById('add-to-cart-btn');
   if (addBtn) {
     addBtn.addEventListener('click', () => {
@@ -378,7 +375,6 @@ function bindInfoEvents(p) {
     });
   }
 
-  /* ---------- Wishlist ---------- */
   const wishBtn = document.getElementById('wish-btn');
   if (wishBtn) {
     wishBtn.addEventListener('click', () => {
@@ -435,7 +431,6 @@ function updatePriceAndStock(p) {
     addBtn.disabled = v.stock === 0;
   }
 
-  // Update SEO price dynamically
   if (currentProduct) {
     injectProductSchema(currentProduct, v.price);
   }
@@ -463,7 +458,7 @@ function renderTabs(p) {
   });
 }
 
-function renderTabContent(p, tab) {
+async function renderTabContent(p, tab) {
   const content = document.getElementById('product-tabs-content');
   if (!content) return;
 
@@ -522,33 +517,267 @@ function renderTabContent(p, tab) {
       </div>
     `;
   } else if (tab === 'reviews') {
-    const productReviews = reviews.slice(0, 5);
+    content.innerHTML = `
+      <div class="product-reviews-loading">
+        <div class="skeleton" style="height:60px; border-radius:12px; margin-bottom:12px;"></div>
+        <div class="skeleton" style="height:60px; border-radius:12px; margin-bottom:12px;"></div>
+        <div class="skeleton" style="height:60px; border-radius:12px;"></div>
+      </div>
+    `;
 
-    if (!productReviews.length) {
-      content.innerHTML = `<div class="product-reviews-empty">هنوز نظری ثبت نشده. اولین نظر را شما بگذارید.</div>`;
-      return;
+    const [reviews, user, existingReview] = await Promise.all([
+      getProductReviews(p.id, 20),
+      getCurrentUser(),
+      getUserReviewForProduct(p.id),
+    ]);
+
+    const stats = reviews.length
+      ? {
+          count: reviews.length,
+          average: Math.round(
+            (reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length) * 10
+          ) / 10,
+        }
+      : { count: 0, average: 0 };
+
+    const statsHTML = `
+      <div class="product-reviews-stats">
+        <div class="product-reviews-stats__score">
+          <span class="product-reviews-stats__number">${stats.average.toFixed(1)}</span>
+          <div class="product-reviews-stats__stars">
+            ${renderStars(stats.average)}
+          </div>
+          <span class="product-reviews-stats__count">از ${stats.count.toLocaleString('fa-IR')} نظر</span>
+        </div>
+        ${user && !existingReview ? `
+          <button class="product-reviews-stats__add" id="add-review-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            ثبت نظر شما
+          </button>
+        ` : ''}
+      </div>
+    `;
+
+    const formHTML = user && !existingReview ? `
+      <div class="product-review-form" id="review-form" hidden>
+        <h4 class="product-review-form__title">نظر خود را ثبت کنید</h4>
+
+        <div class="product-review-form__rating" id="review-rating">
+          <span class="product-review-form__rating-label">امتیاز شما:</span>
+          <div class="product-review-form__stars" role="radiogroup">
+            ${[5, 4, 3, 2, 1].map((n) => `
+              <button type="button" class="product-review-form__star" data-rating="${n}" aria-label="${n} ستاره">
+                ${ICONS.star}
+              </button>
+            `).join('')}
+          </div>
+          <span class="product-review-form__rating-value" id="rating-value">۵ از ۵</span>
+        </div>
+
+        <div class="product-review-form__field">
+          <label for="review-comment" class="product-review-form__label">
+            متن نظر <span style="color:var(--discount);">*</span>
+          </label>
+          <textarea
+            id="review-comment"
+            class="product-review-form__textarea"
+            placeholder="تجربه‌ی خود را با دیگران به اشتراک بگذارید... (حداقل ۱۰ کاراکتر)"
+            rows="4"
+            maxlength="500"
+          ></textarea>
+          <div class="product-review-form__counter">
+            <span id="review-counter">۰</span> / ۵۰۰ کاراکتر
+          </div>
+        </div>
+
+        <div class="product-review-form__actions">
+          <button type="button" class="btn btn--outline" id="review-cancel">انصراف</button>
+          <button type="button" class="btn btn--primary" id="review-submit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            ثبت نظر
+          </button>
+        </div>
+      </div>
+    ` : '';
+
+    const guestNotice = !user ? `
+      <div class="product-review-form__notice">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span>برای ثبت نظر ابتدا <a href="auth/login.html">وارد حساب کاربری</a> شوید.</span>
+      </div>
+    ` : '';
+
+    const alreadyReviewed = user && existingReview ? `
+      <div class="product-review-form__notice product-review-form__notice--success">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>شما قبلاً برای این محصول نظر ثبت کرده‌اید.</span>
+      </div>
+    ` : '';
+
+    let reviewsHTML = '';
+    if (!reviews.length) {
+      reviewsHTML = `
+        <div class="product-reviews-empty">
+          <div class="product-reviews-empty__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:40px;height:40px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <h4>هنوز نظری ثبت نشده</h4>
+          <p>اولین نفری باشید که نظر خود را ثبت می‌کنید.</p>
+        </div>
+      `;
+    } else {
+      reviewsHTML = reviews.map((r) => `
+        <div class="product-review">
+          <div class="product-review__head">
+            <span class="product-review__avatar" style="background:${r.avatarColor}">${r.initials}</span>
+            <div class="product-review__info">
+              <span class="product-review__name">${r.userName}</span>
+              <span class="product-review__date">${r.dateFa}</span>
+            </div>
+            <span class="product-review__stars">
+              ${Array.from({ length: 5 }).map((_, i) => (i < r.rating ? ICONS.star : '')).join('')}
+            </span>
+            ${r.verified ? `<span class="product-review__verified">${ICONS.check} خرید تأیید‌شده</span>` : ''}
+          </div>
+          <p class="product-review__body">${r.comment}</p>
+        </div>
+      `).join('');
     }
 
     content.innerHTML = `
-      <div class="product-reviews-list">
-        ${productReviews.map((r) => `
-          <div class="product-review">
-            <div class="product-review__head">
-              <span class="product-review__avatar" style="background:${r.avatarColor}">${r.initials}</span>
-              <div class="product-review__info">
-                <span class="product-review__name">${r.name}</span>
-                <span class="product-review__date">${r.date}</span>
-              </div>
-              <span class="product-review__stars">
-                ${Array.from({ length: 5 }).map((_, i) => (i < r.rating ? ICONS.star : '')).join('')}
-              </span>
-            </div>
-            <p class="product-review__body">${r.comment}</p>
-          </div>
-        `).join('')}
+      ${statsHTML}
+      ${formHTML}
+      ${guestNotice}
+      ${alreadyReviewed}
+      <div class="product-reviews-list" id="reviews-list">
+        ${reviewsHTML}
       </div>
     `;
+
+    bindReviewForm(p, existingReview);
   }
+}
+
+/* ============================================
+   BIND REVIEW FORM
+   ============================================ */
+
+function bindReviewForm(product, existingReview) {
+  const addBtn = document.getElementById('add-review-btn');
+  const form = document.getElementById('review-form');
+  const cancelBtn = document.getElementById('review-cancel');
+  const submitBtn = document.getElementById('review-submit');
+  const ratingWrap = document.getElementById('review-rating');
+  const ratingValue = document.getElementById('rating-value');
+  const commentEl = document.getElementById('review-comment');
+  const counterEl = document.getElementById('review-counter');
+
+  if (!addBtn || !form) return;
+
+  let selectedRating = 5;
+
+  addBtn.addEventListener('click', () => {
+    form.hidden = false;
+    addBtn.style.display = 'none';
+    commentEl?.focus();
+  });
+
+  cancelBtn?.addEventListener('click', () => {
+    form.hidden = true;
+    addBtn.style.display = '';
+    if (commentEl) commentEl.value = '';
+    if (counterEl) counterEl.textContent = '۰';
+    selectedRating = 5;
+    updateStars(5);
+  });
+
+  function updateStars(value) {
+    ratingWrap?.querySelectorAll('.product-review-form__star').forEach((btn) => {
+      const rating = Number(btn.dataset.rating);
+      btn.classList.toggle('is-active', rating <= value);
+    });
+    if (ratingValue) {
+      const fa = ['۰', '۱', '۲', '۳', '۴', '۵'];
+      ratingValue.textContent = `${fa[value]} از ۵`;
+    }
+  }
+
+  ratingWrap?.querySelectorAll('.product-review-form__star').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      selectedRating = Number(btn.dataset.rating);
+      updateStars(selectedRating);
+    });
+    btn.addEventListener('mouseenter', () => {
+      const hovValue = Number(btn.dataset.rating);
+      updateStars(hovValue);
+    });
+  });
+
+  ratingWrap?.addEventListener('mouseleave', () => {
+    updateStars(selectedRating);
+  });
+
+  updateStars(5);
+
+  commentEl?.addEventListener('input', () => {
+    if (counterEl) {
+      counterEl.textContent = commentEl.value.length.toLocaleString('fa-IR');
+    }
+  });
+
+  submitBtn?.addEventListener('click', async () => {
+    const comment = commentEl?.value.trim() || '';
+
+    if (!comment || comment.length < 10) {
+      toast({
+        type: 'error',
+        title: 'متن نظر کوتاه است',
+        message: 'حداقل ۱۰ کاراکتر بنویسید',
+        duration: 3000,
+      });
+      commentEl?.focus();
+      return;
+    }
+
+    const originalHTML = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;animation:rotateSlow 0.8s linear infinite;">
+        <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+      </svg>
+      در حال ارسال...
+    `;
+
+    const result = await addReview({
+      productId: product.id,
+      rating: selectedRating,
+      comment,
+    });
+
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = originalHTML;
+
+    if (result.error) {
+      toast({
+        type: 'error',
+        title: 'خطا',
+        message: result.error.message,
+        duration: 3500,
+      });
+      return;
+    }
+
+    toast({
+      type: 'success',
+      title: 'نظر شما ثبت شد',
+      message: 'ممنون از وقتی که گذاشتید ❤️',
+      duration: 3000,
+    });
+
+    setTimeout(() => {
+      renderTabContent(product, 'reviews');
+    }, 500);
+  });
 }
 
 /* ============================================
@@ -591,7 +820,6 @@ export function initProductDetail() {
 
   currentProduct = p;
 
-  // ===== SEO — Meta + Schema =====
   const v = p.variants[currentVariantIndex] || p.variants[0];
 
   setPageMeta({
@@ -604,7 +832,6 @@ export function initProductDetail() {
 
   injectProductSchema(p, v.price);
 
-  // ===== Render =====
   renderBreadcrumb(p);
   renderGallery(p);
   renderInfo(p);
