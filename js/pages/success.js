@@ -1,11 +1,12 @@
 /* ============================================
-   SUCCESS PAGE
+   SUCCESS PAGE — with Supabase Orders
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
 import { products, formatPrice } from '../data/products.js';
 import { renderProductCard } from '../components/product-card.js';
 import { toast } from '../components/toast.js';
+import { getOrderByNumber } from '../services/orders.js';
 
 /* ============================================
    INIT LAYOUT
@@ -17,25 +18,13 @@ initLayout();
    HELPERS
    ============================================ */
 
-function getOrderFromStorage(orderNumber) {
-  try {
-    const orders = JSON.parse(localStorage.getItem('ms_orders') || '[]');
-    if (orderNumber) {
-      return orders.find((o) => o.orderNumber === orderNumber) || orders[0];
-    }
-    return orders[0];
-  } catch {
-    return null;
-  }
-}
-
 function getOrderNumberFromUrl() {
   const params = new URLSearchParams(window.location.search);
   return params.get('order');
 }
 
 /* ============================================
-   ORDER ITEMS
+   RENDER ITEMS
    ============================================ */
 
 function renderItems(order) {
@@ -68,43 +57,37 @@ function renderItems(order) {
 }
 
 /* ============================================
-   ORDER INFO
+   RENDER INFO
    ============================================ */
 
 function renderInfo(order) {
   if (!order) return;
 
-  // Receiver
+  const customer = order.customer || {};
+  const shipping = order.shipping || {};
+
   const receiver = document.getElementById('info-receiver');
   if (receiver) {
-    receiver.textContent = `${order.customer.firstName} ${order.customer.lastName}`;
+    receiver.textContent = `${customer.firstName || ''} ${customer.lastName || ''}`.trim() || '—';
   }
 
-  // Phone
   const phone = document.getElementById('info-phone');
-  if (phone) {
-    phone.textContent = order.customer.phone || '—';
-  }
+  if (phone) phone.textContent = customer.phone || '—';
 
   const phoneShort = document.getElementById('info-phone-short');
-  if (phoneShort) {
-    phoneShort.textContent = order.customer.phone || 'شما';
-  }
+  if (phoneShort) phoneShort.textContent = customer.phone || 'شما';
 
-  // Address
   const address = document.getElementById('info-address');
   if (address) {
     const parts = [
-      order.shipping.province,
-      order.shipping.city,
-      order.shipping.address,
-      order.shipping.plateNumber,
+      shipping.province,
+      shipping.city,
+      shipping.address,
+      shipping.plateNumber,
     ].filter(Boolean);
-
-    address.textContent = parts.join('، ');
+    address.textContent = parts.join('، ') || '—';
   }
 
-  // Shipping method
   const shippingLabels = {
     express: 'ارسال سریع (پست پیشتاز)',
     normal: 'ارسال عادی (پست سفارشی)',
@@ -112,10 +95,9 @@ function renderInfo(order) {
   };
   const shippingEl = document.getElementById('info-shipping');
   if (shippingEl) {
-    shippingEl.textContent = shippingLabels[order.shipping.method] || '—';
+    shippingEl.textContent = shippingLabels[shipping.method] || '—';
   }
 
-  // Payment method
   const paymentLabels = {
     online: 'پرداخت آنلاین',
     cod: 'پرداخت در محل',
@@ -126,7 +108,6 @@ function renderInfo(order) {
     paymentEl.textContent = paymentLabels[order.payment] || '—';
   }
 
-  // Total
   const totalEl = document.getElementById('info-total');
   if (totalEl) {
     totalEl.textContent = formatPrice(order.total);
@@ -134,7 +115,7 @@ function renderInfo(order) {
 }
 
 /* ============================================
-   ORDER CODE
+   RENDER ORDER CODE
    ============================================ */
 
 function renderOrderCode(order) {
@@ -144,7 +125,6 @@ function renderOrderCode(order) {
 
   codeEl.textContent = order.orderNumber;
 
-  // Copy on click
   if (codeBtn) {
     codeBtn.addEventListener('click', async () => {
       try {
@@ -170,7 +150,7 @@ function renderOrderCode(order) {
 }
 
 /* ============================================
-   RECOMMENDED
+   RENDER RECOMMENDED
    ============================================ */
 
 function renderRecommended(order) {
@@ -198,7 +178,7 @@ function renderRecommended(order) {
 }
 
 /* ============================================
-   CONFETTI ANIMATION
+   CONFETTI
    ============================================ */
 
 function launchConfetti() {
@@ -229,65 +209,56 @@ function launchConfetti() {
 }
 
 /* ============================================
-   GLOBAL CLICK (Recommended cards)
+   NOT FOUND
    ============================================ */
 
-document.addEventListener('click', (e) => {
-  const wish = e.target.closest('.p-card [data-wishlist]');
-  if (wish) {
-    e.preventDefault();
-    // Wishlist از layout.js مدیریت میشود
-    return;
-  }
+function renderNotFound() {
+  const main = document.getElementById('success-page');
+  if (!main) return;
 
-  const add = e.target.closest('.p-card [data-add-to-cart]');
-  if (add) {
-    // از layout.js مدیریت میشود
-    return;
-  }
-});
+  main.innerHTML = `
+    <div class="container" style="padding: 80px 20px; text-align: center;">
+      <div style="width:96px; height:96px; border-radius:28px; background:var(--bg-soft); display:flex; align-items:center; justify-content:center; margin: 0 auto 24px; color: var(--text-muted);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:44px; height:44px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <h2 style="font-size:24px; margin-bottom:12px; font-weight:700;">سفارشی یافت نشد</h2>
+      <p style="color:var(--text-muted); margin-bottom:24px; max-width: 400px; margin-inline: auto; line-height:1.8;">
+        متأسفانه اطلاعاتی از سفارش شما پیدا نکردیم. لطفاً با پشتیبانی تماس بگیرید.
+      </p>
+      <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+        <a href="index.html" class="btn btn--primary">بازگشت به خانه</a>
+        <a href="support/contact.html" class="btn btn--outline">تماس با پشتیبانی</a>
+      </div>
+    </div>
+  `;
+}
 
 /* ============================================
    INIT
    ============================================ */
 
-function init() {
+async function init() {
   const orderNumber = getOrderNumberFromUrl();
-  const order = getOrderFromStorage(orderNumber);
 
-  if (!order) {
-    // هیچ سفارشی پیدا نشد
-    const main = document.getElementById('success-page');
-    if (main) {
-      main.innerHTML = `
-        <div class="container" style="padding: 80px 20px; text-align: center;">
-          <div style="width:96px; height:96px; border-radius:28px; background:var(--bg-soft); display:flex; align-items:center; justify-content:center; margin: 0 auto 24px; color: var(--text-muted);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:44px; height:44px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          </div>
-          <h2 style="font-size:24px; margin-bottom:12px; font-weight:700;">سفارشی یافت نشد</h2>
-          <p style="color:var(--text-muted); margin-bottom:24px; max-width: 400px; margin-inline: auto; line-height:1.8;">
-            متأسفانه اطلاعاتی از سفارش شما پیدا نکردیم. لطفاً با پشتیبانی تماس بگیرید.
-          </p>
-          <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-            <a href="index.html" class="btn btn--primary">بازگشت به خانه</a>
-            <a href="support/contact.html" class="btn btn--outline">تماس با پشتیبانی</a>
-          </div>
-        </div>
-      `;
-    }
+  if (!orderNumber) {
+    renderNotFound();
     return;
   }
 
-  // Update page title
+  const order = await getOrderByNumber(orderNumber);
+
+  if (!order) {
+    renderNotFound();
+    return;
+  }
+
   document.title = `سفارش ${order.orderNumber} ثبت شد | موبایل استور`;
 
-  // Render
   renderOrderCode(order);
   renderItems(order);
   renderInfo(order);
   renderRecommended(order);
 
-  // Confetti
   setTimeout(launchConfetti, 300);
 
   console.log(

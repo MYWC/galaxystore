@@ -1,10 +1,11 @@
 /* ============================================
-   TRACK ORDER PAGE
+   TRACK ORDER PAGE — with Supabase Orders
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
 import { formatPrice } from '../data/products.js';
 import { toast } from '../components/toast.js';
+import { getOrderByNumber, getOrderByPhone } from '../services/orders.js';
 
 /* ============================================
    INIT LAYOUT
@@ -17,12 +18,13 @@ initLayout();
    ============================================ */
 
 const state = {
-  tab: 'order', // 'order' | 'phone'
+  tab: 'order',
   query: '',
+  order: null,
 };
 
 /* ============================================
-   STATUS DEFINITIONS
+   STATUSES
    ============================================ */
 
 const STATUSES = [
@@ -69,30 +71,7 @@ const STATUS_LABELS = {
    HELPERS
    ============================================ */
 
-function getOrders() {
-  try {
-    const raw = localStorage.getItem('ms_orders');
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function findOrderByNumber(orderNumber) {
-  const cleaned = (orderNumber || '').trim().toUpperCase();
-  return getOrders().find((o) => o.orderNumber.toUpperCase() === cleaned);
-}
-
-function findOrderByPhone(phone) {
-  const cleaned = (phone || '').trim().replace(/\D/g, '');
-  return getOrders().find((o) => {
-    const orderPhone = (o.customer?.phone || '').replace(/\D/g, '');
-    return orderPhone === cleaned;
-  });
-}
-
 function getOrderStatus(order) {
-  // محاسبه وضعیت بر اساس زمان گذشته از ثبت سفارش
   const createdAt = new Date(order.createdAt).getTime();
   const now = Date.now();
   const diffMinutes = (now - createdAt) / 60000;
@@ -100,7 +79,7 @@ function getOrderStatus(order) {
   if (diffMinutes < 5) return 'registered';
   if (diffMinutes < 30) return 'confirmed';
   if (diffMinutes < 120) return 'packed';
-  if (diffMinutes < 1440) return 'shipped'; // ۱ روز
+  if (diffMinutes < 1440) return 'shipped';
   return 'delivered';
 }
 
@@ -120,14 +99,13 @@ function formatDate(dateString) {
   if (!dateString) return '—';
   try {
     const date = new Date(dateString);
-    const options = {
+    return date.toLocaleDateString('fa-IR', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-    };
-    return date.toLocaleDateString('fa-IR', options);
+    });
   } catch {
     return '—';
   }
@@ -145,7 +123,7 @@ function getRelativeTime(minutesAgo) {
 }
 
 /* ============================================
-   RENDER — TIMELINE
+   RENDER TIMELINE
    ============================================ */
 
 function renderTimeline(order) {
@@ -157,9 +135,7 @@ function renderTimeline(order) {
 
   const createdAt = new Date(order.createdAt).getTime();
   const now = Date.now();
-
-  // محاسبه زمان هر مرحله
-  const stepDurations = [0, 5, 30, 120, 1440]; // دقیقه
+  const stepDurations = [0, 5, 30, 120, 1440];
 
   wrap.innerHTML = STATUSES.map((status, i) => {
     let stepClass = 'is-pending';
@@ -180,7 +156,7 @@ function renderTimeline(order) {
     return `
       <div class="track-timeline__step ${stepClass}">
         <div class="track-timeline__dot">
-          ${i <= currentIndex ? status.icon : status.icon}
+          ${status.icon}
         </div>
         <div class="track-timeline__content">
           <h4 class="track-timeline__title">${status.title}</h4>
@@ -193,7 +169,7 @@ function renderTimeline(order) {
 }
 
 /* ============================================
-   RENDER — ITEMS
+   RENDER ITEMS
    ============================================ */
 
 function renderItems(order) {
@@ -231,7 +207,7 @@ function renderItems(order) {
 }
 
 /* ============================================
-   RENDER — RESULT
+   RENDER ORDER
    ============================================ */
 
 function renderOrder(order) {
@@ -241,11 +217,9 @@ function renderOrder(order) {
   if (notFound) notFound.hidden = true;
   if (result) result.hidden = false;
 
-  // Order number
   const numberEl = document.getElementById('order-number');
   if (numberEl) numberEl.textContent = order.orderNumber;
 
-  // Status badge
   const statusId = getOrderStatus(order);
   const statusLabel = getStatusLabel(statusId);
   const statusBadge = document.getElementById('order-status-badge');
@@ -254,11 +228,9 @@ function renderOrder(order) {
     statusBadge.textContent = statusLabel.label;
   }
 
-  // Date
   const dateEl = document.getElementById('order-date');
   if (dateEl) dateEl.textContent = formatDate(order.createdAt);
 
-  // Shipping
   const shippingLabels = {
     express: 'ارسال سریع',
     normal: 'ارسال عادی',
@@ -269,11 +241,9 @@ function renderOrder(order) {
     shippingEl.textContent = shippingLabels[order.shipping?.method] || '—';
   }
 
-  // Total
   const totalEl = document.getElementById('order-total');
   if (totalEl) totalEl.textContent = `${formatPrice(order.total)} تومان`;
 
-  // Payment
   const paymentLabels = {
     online: 'پرداخت آنلاین',
     cod: 'پرداخت در محل',
@@ -284,45 +254,38 @@ function renderOrder(order) {
     paymentEl.textContent = paymentLabels[order.payment] || '—';
   }
 
-  // Address info
+  const customer = order.customer || {};
+  const shipping = order.shipping || {};
+
   const receiverEl = document.getElementById('track-receiver');
   if (receiverEl) {
-    receiverEl.textContent = `${order.customer?.firstName || ''} ${order.customer?.lastName || ''}`.trim() || '—';
+    receiverEl.textContent = `${customer.firstName || ''} ${customer.lastName || ''}`.trim() || '—';
   }
 
   const phoneEl = document.getElementById('track-phone');
-  if (phoneEl) phoneEl.textContent = order.customer?.phone || '—';
+  if (phoneEl) phoneEl.textContent = customer.phone || '—';
 
   const addressEl = document.getElementById('track-address');
   if (addressEl) {
     const parts = [
-      order.shipping?.province,
-      order.shipping?.city,
-      order.shipping?.address,
-      order.shipping?.plateNumber,
+      shipping.province,
+      shipping.city,
+      shipping.address,
+      shipping.plateNumber,
     ].filter(Boolean);
     addressEl.textContent = parts.join('، ') || '—';
   }
 
   const postalEl = document.getElementById('track-postal');
-  if (postalEl) postalEl.textContent = order.shipping?.postalCode || '—';
+  if (postalEl) postalEl.textContent = shipping.postalCode || '—';
 
-  // Render sections
   renderTimeline(order);
   renderItems(order);
 
-  // Scroll to result
   setTimeout(() => {
-    const page = document.getElementById('track-page');
-    if (page) {
-      window.scrollTo({ top: 200, behavior: 'smooth' });
-    }
+    window.scrollTo({ top: 200, behavior: 'smooth' });
   }, 100);
 }
-
-/* ============================================
-   RENDER — NOT FOUND
-   ============================================ */
 
 function renderNotFound() {
   const result = document.getElementById('track-result');
@@ -338,7 +301,7 @@ function renderNotFound() {
    SEARCH
    ============================================ */
 
-function performSearch(query) {
+async function performSearch(query) {
   const cleaned = (query || '').trim();
 
   if (!cleaned) {
@@ -351,20 +314,49 @@ function performSearch(query) {
     return;
   }
 
-  let order = null;
+  const btn = document.querySelector('.track-search__submit');
+  const originalHTML = btn?.innerHTML;
 
-  if (state.tab === 'order') {
-    order = findOrderByNumber(cleaned);
-  } else {
-    order = findOrderByPhone(cleaned);
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;animation:rotateSlow 0.8s linear infinite;">
+        <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+      </svg>
+    `;
   }
 
-  if (!order) {
-    renderNotFound();
-    return;
-  }
+  try {
+    let order = null;
 
-  renderOrder(order);
+    if (state.tab === 'order') {
+      order = await getOrderByNumber(cleaned);
+    } else {
+      order = await getOrderByPhone(cleaned);
+    }
+
+    if (!order) {
+      renderNotFound();
+      return;
+    }
+
+    state.order = order;
+    renderOrder(order);
+
+  } catch (err) {
+    console.error('Search error:', err);
+    toast({
+      type: 'error',
+      title: 'خطا در جستجو',
+      message: 'لطفاً دوباره تلاش کنید',
+      duration: 3000,
+    });
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = originalHTML;
+    }
+  }
 }
 
 /* ============================================
@@ -387,8 +379,9 @@ function bindTabs() {
 
     if (input) {
       input.value = '';
-      input.placeholder =
-        state.tab === 'order' ? 'مثلاً MS-12345678' : 'مثلاً ۰۹۱۲۳۴۵۶۷۸۹';
+      input.placeholder = state.tab === 'order'
+        ? 'مثلاً MS-12345678'
+        : 'مثلاً ۰۹۱۲۳۴۵۶۷۸۹';
       input.focus();
     }
   });
@@ -409,7 +402,6 @@ function bindForm() {
     });
   }
 
-  // Try again
   const tryAgain = document.getElementById('try-again');
   if (tryAgain) {
     tryAgain.addEventListener('click', () => {
@@ -425,7 +417,6 @@ function bindForm() {
     });
   }
 
-  // New search
   const newSearch = document.getElementById('new-search');
   if (newSearch) {
     newSearch.addEventListener('click', () => {
@@ -443,7 +434,7 @@ function bindForm() {
 }
 
 /* ============================================
-   AUTO-FILL FROM URL
+   URL QUERY
    ============================================ */
 
 function checkUrlQuery() {
@@ -471,19 +462,6 @@ function checkUrlQuery() {
 function init() {
   bindTabs();
   bindForm();
-
-  // If no orders exist, show hint
-  if (!getOrders().length) {
-    const hint = document.getElementById('track-hint');
-    if (hint) {
-      hint.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        هنوز سفارشی ثبت نکرده‌اید. پس از خرید موفق، شماره سفارش برای شما ارسال می‌شود.
-      `;
-    }
-  }
-
-  // Auto-check URL
   checkUrlQuery();
 
   console.log('%c✓ Track order page loaded', 'color:#18B981;font-weight:bold;');

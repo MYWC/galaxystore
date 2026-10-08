@@ -1,11 +1,12 @@
 /* ============================================
-   CHECKOUT PAGE
+   CHECKOUT PAGE — with Supabase Orders
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
 import { cart, onChange, KEYS } from '../store/state.js';
 import { formatPrice } from '../data/products.js';
 import { toast } from '../components/toast.js';
+import { createOrder } from '../services/orders.js';
 
 /* ============================================
    INIT LAYOUT
@@ -24,8 +25,9 @@ const PROVINCES = [
   'آذربایجان غربی', 'البرز', 'گیلان', 'مازندران', 'خوزستان',
   'کرمان', 'یزد', 'قزوین', 'مرکزی', 'همدان',
   'کرمانشاه', 'گلستان', 'سیستان و بلوچستان', 'هرمزگان', 'بوشهر',
-  'اردبیل', 'زنجان', 'قـم', 'لرستان', 'کردستان',
-  'چهارمحال و بختیاری', 'کهگیلویه و بویراحمد', 'سمنان', 'خراسان شمالی', 'خراسان جنوبی', 'ایلام',
+  'اردبیل', 'زنجان', 'قم', 'لرستان', 'کردستان',
+  'چهارمحال و بختیاری', 'کهگیلویه و بویراحمد', 'سمنان',
+  'خراسان شمالی', 'خراسان جنوبی', 'ایلام',
 ];
 
 /* ============================================
@@ -46,6 +48,8 @@ const formData = {
   payment: 'online',
   note: '',
 };
+
+let isSubmitting = false;
 
 /* ============================================
    HELPERS
@@ -71,7 +75,6 @@ function getShippingPrice() {
   const items = cart.get();
   const subtotal = calcSubtotal(items) - calcDiscount(items);
 
-  // ارسال سریع رایگان بالای ۵ میلیون
   if (input.value === 'express' && subtotal >= FREE_SHIPPING_THRESHOLD) {
     return 0;
   }
@@ -90,7 +93,7 @@ function calcTotal() {
 }
 
 /* ============================================
-   RENDER ITEMS (Sidebar)
+   RENDER ITEMS
    ============================================ */
 
 function renderItems() {
@@ -136,11 +139,9 @@ function renderItems() {
 function renderSummary() {
   const { subtotal, discount, shipping, total } = calcTotal();
 
-  // Subtotal
   const subEl = document.getElementById('co-subtotal');
   if (subEl) subEl.textContent = `${formatPrice(subtotal)} تومان`;
 
-  // Discount
   const disRow = document.getElementById('co-row-discount');
   const disEl = document.getElementById('co-discount');
   if (discount > 0) {
@@ -150,7 +151,6 @@ function renderSummary() {
     if (disRow) disRow.hidden = true;
   }
 
-  // Shipping
   const shipEl = document.getElementById('co-shipping');
   if (shipEl) {
     if (shipping === 0) {
@@ -160,11 +160,9 @@ function renderSummary() {
     }
   }
 
-  // Total
   const totalEl = document.getElementById('co-total');
   if (totalEl) totalEl.textContent = formatPrice(total);
 
-  // Savings
   const savingsWrap = document.getElementById('co-savings');
   const savingsEl = document.getElementById('co-savings-value');
   const totalSavings = discount + (shipping === 0 ? 250000 : 0);
@@ -219,49 +217,41 @@ function clearError(fieldName) {
 function validateForm() {
   let valid = true;
 
-  // First name
   if (!formData.firstName.trim() || formData.firstName.trim().length < 2) {
     setError('firstName', 'نام را وارد کنید (حداقل ۲ کاراکتر)');
     valid = false;
   } else clearError('firstName');
 
-  // Last name
   if (!formData.lastName.trim() || formData.lastName.trim().length < 2) {
     setError('lastName', 'نام خانوادگی را وارد کنید');
     valid = false;
   } else clearError('lastName');
 
-  // Phone
   if (!/^09\d{9}$/.test(formData.phone)) {
     setError('phone', 'شماره موبایل باید با ۰۹ شروع شود و ۱۱ رقم باشد');
     valid = false;
   } else clearError('phone');
 
-  // Email (اختیاری - اگر پر بود چک شود)
   if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
     setError('email', 'ایمیل معتبر نیست');
     valid = false;
   } else clearError('email');
 
-  // Province
   if (!formData.province) {
     setError('province', 'استان را انتخاب کنید');
     valid = false;
   } else clearError('province');
 
-  // City
   if (!formData.city.trim() || formData.city.trim().length < 2) {
     setError('city', 'شهر را وارد کنید');
     valid = false;
   } else clearError('city');
 
-  // Address
   if (!formData.address.trim() || formData.address.trim().length < 10) {
     setError('address', 'آدرس کامل را وارد کنید (حداقل ۱۰ کاراکتر)');
     valid = false;
   } else clearError('address');
 
-  // Postal code
   if (!/^\d{10}$/.test(formData.postalCode)) {
     setError('postalCode', 'کد پستی باید ۱۰ رقم باشد');
     valid = false;
@@ -275,7 +265,6 @@ function validateForm() {
    ============================================ */
 
 function bindForm() {
-  // Inputs → state
   const inputs = [
     'firstName', 'lastName', 'phone', 'email', 'city', 'postalCode', 'plateNumber',
   ];
@@ -287,7 +276,6 @@ function bindForm() {
     el.addEventListener('input', (e) => {
       formData[id] = e.target.value;
 
-      // Sanitize phone/postal
       if (id === 'phone' || id === 'postalCode') {
         e.target.value = e.target.value.replace(/\D/g, '');
         formData[id] = e.target.value;
@@ -297,7 +285,6 @@ function bindForm() {
     });
   });
 
-  // Address (textarea)
   const addressEl = document.getElementById('address');
   if (addressEl) {
     addressEl.addEventListener('input', (e) => {
@@ -306,7 +293,6 @@ function bindForm() {
     });
   }
 
-  // Note
   const noteEl = document.getElementById('orderNote');
   if (noteEl) {
     noteEl.addEventListener('input', (e) => {
@@ -314,10 +300,8 @@ function bindForm() {
     });
   }
 
-  // Province select
   const provEl = document.getElementById('province');
   if (provEl) {
-    // Populate
     provEl.innerHTML = '<option value="">انتخاب استان</option>' +
       PROVINCES.map((p) => `<option value="${p}">${p}</option>`).join('');
 
@@ -327,7 +311,6 @@ function bindForm() {
     });
   }
 
-  // Shipping options
   const shippingWrap = document.getElementById('shipping-options');
   if (shippingWrap) {
     shippingWrap.addEventListener('change', (e) => {
@@ -342,7 +325,6 @@ function bindForm() {
     });
   }
 
-  // Payment options
   const payWrap = document.getElementById('payment-options');
   if (payWrap) {
     payWrap.addEventListener('change', (e) => {
@@ -358,10 +340,12 @@ function bindForm() {
 }
 
 /* ============================================
-   SUBMIT
+   SUBMIT ORDER
    ============================================ */
 
-function submitOrder() {
+async function submitOrder() {
+  if (isSubmitting) return;
+
   if (!cart.get().length) {
     toast({
       type: 'warning',
@@ -372,7 +356,6 @@ function submitOrder() {
   }
 
   if (!validateForm()) {
-    // Scroll to first error
     const firstError = document.querySelector('.form-field.has-error');
     if (firstError) {
       firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -387,56 +370,77 @@ function submitOrder() {
     return;
   }
 
-  const { total } = calcTotal();
-  const orderNumber = 'MS-' + Date.now().toString().slice(-8);
+  const btn = document.getElementById('checkout-submit');
+  const originalHTML = btn.innerHTML;
 
-  // ساختار سفارش (بعداً به Supabase وصل میشود)
-  const order = {
-    orderNumber,
-    items: cart.get(),
+  isSubmitting = true;
+  btn.disabled = true;
+  btn.innerHTML = `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;animation:rotateSlow 0.8s linear infinite;">
+      <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+    </svg>
+    در حال ثبت سفارش...
+  `;
+
+  const { subtotal, discount, shipping, total } = calcTotal();
+
+  // ساخت اطلاعات سفارش
+  const orderData = {
     customer: {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      phone: formData.phone,
-      email: formData.email,
+      firstName: formData.firstName.trim(),
+      lastName: formData.lastName.trim(),
+      phone: formData.phone.trim(),
+      email: formData.email.trim(),
     },
     shipping: {
       province: formData.province,
-      city: formData.city,
-      address: formData.address,
-      postalCode: formData.postalCode,
-      plateNumber: formData.plateNumber,
+      city: formData.city.trim(),
+      address: formData.address.trim(),
+      postalCode: formData.postalCode.trim(),
+      plateNumber: formData.plateNumber.trim(),
       method: formData.shipping,
     },
+    items: cart.get(),
     payment: formData.payment,
-    note: formData.note,
+    note: formData.note.trim(),
+    subtotal,
+    discount,
+    shippingFee: shipping,
     total,
-    createdAt: new Date().toISOString(),
   };
 
-  // ذخیره در localStorage (بعداً به Supabase)
   try {
-    const orders = JSON.parse(localStorage.getItem('ms_orders') || '[]');
-    orders.unshift(order);
-    localStorage.setItem('ms_orders', JSON.stringify(orders));
-    localStorage.setItem('ms_last_order', orderNumber);
-  } catch {}
+    const { order, saved } = await createOrder(orderData);
 
-  // نمایش Toast
-  toast({
-    type: 'success',
-    title: 'سفارش ثبت شد',
-    message: `شماره سفارش: ${orderNumber}`,
-    duration: 3500,
-  });
+    toast({
+      type: 'success',
+      title: 'سفارش ثبت شد',
+      message: `شماره سفارش: ${order.orderNumber}`,
+      duration: 3500,
+    });
 
-  // پاک کردن سبد
-  cart.clear();
+    // پاک کردن سبد
+    cart.clear();
 
-  // هدایت به صفحه موفقیت
-  setTimeout(() => {
-    window.location.href = `success.html?order=${orderNumber}`;
-  }, 1200);
+    // هدایت به صفحه موفقیت
+    setTimeout(() => {
+      window.location.href = `success.html?order=${order.orderNumber}`;
+    }, 1000);
+
+  } catch (err) {
+    console.error('Submit order error:', err);
+
+    isSubmitting = false;
+    btn.disabled = false;
+    btn.innerHTML = originalHTML;
+
+    toast({
+      type: 'error',
+      title: 'خطا در ثبت سفارش',
+      message: 'لطفاً دوباره تلاش کنید',
+      duration: 3500,
+    });
+  }
 }
 
 /* ============================================
@@ -459,7 +463,6 @@ function init() {
   bindForm();
   bindSubmit();
 
-  // Live update when cart changes
   onChange(KEYS.cart, render);
 
   console.log('%c✓ Checkout page loaded', 'color:#18B981;font-weight:bold;');

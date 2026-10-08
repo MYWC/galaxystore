@@ -1,5 +1,5 @@
 /* ============================================
-   ACCOUNT DASHBOARD — Refactored with Auth Service
+   ACCOUNT DASHBOARD — with Supabase Orders
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -11,6 +11,7 @@ import {
   signOut,
   isSupabaseConfigured,
 } from '../services/auth.js';
+import { getRecentOrders } from '../services/orders.js';
 
 /* ============================================
    INIT LAYOUT
@@ -22,22 +23,19 @@ initLayout();
    CONSTANTS
    ============================================ */
 
-const ORDERS_KEY = 'ms_orders';
 const ADDRESSES_KEY = 'ms_addresses';
 const LAST_LOGIN_KEY = 'ms_last_login';
 
 /* ============================================
-   HELPERS
+   STATE
    ============================================ */
 
-function getOrders() {
-  try {
-    const raw = localStorage.getItem(ORDERS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
+let recentOrders = [];
+let ordersCount = 0;
+
+/* ============================================
+   HELPERS
+   ============================================ */
 
 function getAddresses() {
   try {
@@ -71,8 +69,7 @@ function getInitials(firstName, lastName) {
 function formatDate(dateString) {
   if (!dateString) return '—';
   try {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('fa-IR', {
+    return new Date(dateString).toLocaleDateString('fa-IR', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -83,6 +80,8 @@ function formatDate(dateString) {
 }
 
 function getOrderStatus(order) {
+  if (order.status === 'canceled') return 'canceled';
+
   const createdAt = new Date(order.createdAt).getTime();
   const diffMinutes = (Date.now() - createdAt) / 60000;
 
@@ -96,6 +95,7 @@ function getOrderStatusLabel(status) {
     processing: { label: 'در حال پردازش', class: 'processing' },
     shipped: { label: 'ارسال شده', class: 'shipped' },
     delivered: { label: 'تحویل شده', class: 'delivered' },
+    canceled: { label: 'لغو شده', class: 'canceled' },
   };
   return map[status] || map.processing;
 }
@@ -117,11 +117,7 @@ async function checkAuth() {
     return null;
   }
 
-  // ثبت آخرین ورود (اگر امروز ثبت نشده)
-  const lastLogin = getLastLogin();
-  if (!lastLogin) {
-    setLastLogin();
-  }
+  if (!getLastLogin()) setLastLogin();
 
   return user;
 }
@@ -143,8 +139,7 @@ function renderHero(user) {
   if (phoneEl) phoneEl.textContent = user.phone || '—';
 
   if (joinedEl) {
-    const createdAt = user.createdAt || new Date().toISOString();
-    joinedEl.textContent = formatDate(createdAt);
+    joinedEl.textContent = formatDate(user.createdAt || new Date().toISOString());
   }
 }
 
@@ -153,7 +148,6 @@ function renderHero(user) {
    ============================================ */
 
 function renderStats() {
-  const orders = getOrders();
   const wishlistCount = wishlist.count();
   const addressesCount = getAddresses().length;
   const compareCount = compare.count();
@@ -163,7 +157,7 @@ function renderStats() {
     if (el) el.textContent = fa(val);
   };
 
-  setVal('stat-orders', orders.length);
+  setVal('stat-orders', ordersCount);
   setVal('stat-wishlist', wishlistCount);
   setVal('stat-addresses', addressesCount);
   setVal('stat-compare', compareCount);
@@ -173,14 +167,12 @@ function renderStats() {
    RENDER — RECENT ORDERS
    ============================================ */
 
-function renderRecentOrders() {
+function renderRecentOrdersList() {
   const wrap = document.getElementById('recent-orders');
   const empty = document.getElementById('orders-empty');
   if (!wrap || !empty) return;
 
-  const orders = getOrders().slice(0, 3);
-
-  if (!orders.length) {
+  if (!recentOrders.length) {
     wrap.innerHTML = '';
     wrap.hidden = true;
     empty.hidden = false;
@@ -190,7 +182,7 @@ function renderRecentOrders() {
   wrap.hidden = false;
   empty.hidden = true;
 
-  wrap.innerHTML = orders.map((order) => {
+  wrap.innerHTML = recentOrders.map((order) => {
     const statusId = getOrderStatus(order);
     const status = getOrderStatusLabel(statusId);
 
@@ -354,7 +346,6 @@ function bindLogout() {
     }
   });
 
-  // Create modal if not exists
   if (!document.getElementById('logout-modal')) {
     const modal = document.createElement('div');
     modal.id = 'logout-modal';
@@ -386,7 +377,6 @@ function bindLogout() {
     document.getElementById('logout-confirm')?.addEventListener('click', performLogout);
   }
 
-  // ESC key
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') hideLogoutModal();
   });
@@ -400,14 +390,25 @@ async function init() {
   const user = await checkAuth();
   if (!user) return;
 
+  // لود سفارش‌ها از Supabase/local
+  try {
+    recentOrders = await getRecentOrders(3);
+    ordersCount = recentOrders.length >= 3
+      ? recentOrders.length
+      : (await getRecentOrders(100)).length; // برای شمارش کامل، تعداد بیشتری می‌گیریم
+  } catch (err) {
+    console.error('Load orders error:', err);
+    recentOrders = [];
+    ordersCount = 0;
+  }
+
   renderHero(user);
   renderStats();
-  renderRecentOrders();
+  renderRecentOrdersList();
   renderWishlistPreview();
   renderAddressesPreview();
   bindLogout();
 
-  // Update stats on wishlist/compare changes
   onChange(KEYS.wishlist, () => {
     renderStats();
     renderWishlistPreview();
@@ -415,14 +416,10 @@ async function init() {
 
   onChange(KEYS.compare, renderStats);
 
-  // ذخیره آخرین ورود
   setLastLogin();
 
   if (!isSupabaseConfigured()) {
-    console.log(
-      '%c⚠️  Account — running in Local Fallback mode',
-      'color:#F59E0B;font-weight:bold;'
-    );
+    console.log('%c⚠️  Account — Local Fallback mode', 'color:#F59E0B;font-weight:bold;');
   }
 
   console.log(

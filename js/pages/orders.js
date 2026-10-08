@@ -1,5 +1,5 @@
 /* ============================================
-   MY ORDERS PAGE — Refactored with Auth Service
+   MY ORDERS PAGE — with Supabase Orders
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -10,18 +10,13 @@ import {
   signOut,
   isSupabaseConfigured,
 } from '../services/auth.js';
+import { getUserOrders } from '../services/orders.js';
 
 /* ============================================
    INIT LAYOUT
    ============================================ */
 
 initLayout();
-
-/* ============================================
-   CONSTANTS
-   ============================================ */
-
-const ORDERS_KEY = 'ms_orders';
 
 /* ============================================
    STATE
@@ -31,20 +26,12 @@ const state = {
   status: 'all',
   query: '',
   expanded: new Set(),
+  orders: [], // cache
 };
 
 /* ============================================
-   HELPERS
+   AUTH
    ============================================ */
-
-function getOrders() {
-  try {
-    const raw = localStorage.getItem(ORDERS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
 
 async function checkAuth() {
   const user = await getCurrentUser();
@@ -55,6 +42,10 @@ async function checkAuth() {
   }
   return user;
 }
+
+/* ============================================
+   HELPERS
+   ============================================ */
 
 function getOrderStatus(order) {
   if (order.status === 'canceled') return 'canceled';
@@ -119,7 +110,7 @@ function getPaymentLabel(method) {
    ============================================ */
 
 function filterOrders() {
-  let orders = getOrders();
+  let orders = state.orders;
 
   if (state.status !== 'all') {
     orders = orders.filter((o) => getOrderStatus(o) === state.status);
@@ -140,7 +131,7 @@ function filterOrders() {
    ============================================ */
 
 function updateTabCounts() {
-  const orders = getOrders();
+  const orders = state.orders;
 
   const counts = {
     all: orders.length,
@@ -182,7 +173,6 @@ function renderOrderCard(order) {
   const itemsCount = items.length;
   const totalQty = items.reduce((sum, i) => sum + (i.qty || 1), 0);
 
-  /* ---------- Thumbs ---------- */
   const thumbsHTML = items.slice(0, 3).map((item) => {
     const productId = item.id.split('-').slice(0, -1).join('-');
     const imgSrc = item.image || `../assets/images/products/${productId}.jpg`;
@@ -198,7 +188,6 @@ function renderOrderCard(order) {
     ? `<div class="order-thumb order-thumb--more">+${fa(itemsCount - 3)}</div>`
     : '';
 
-  /* ---------- Details Items ---------- */
   const detailsItemsHTML = items.map((item) => {
     const productId = item.id.split('-').slice(0, -1).join('-');
     const imgSrc = item.image || `../assets/images/products/${productId}.jpg`;
@@ -223,17 +212,10 @@ function renderOrderCard(order) {
     `;
   }).join('');
 
-  /* ---------- Summary ---------- */
-  const subtotal = items.reduce((sum, i) => sum + (i.oldPrice || i.price) * i.qty, 0);
-  const discount = items.reduce((sum, i) => {
-    if (i.oldPrice && i.oldPrice > i.price) {
-      return sum + (i.oldPrice - i.price) * i.qty;
-    }
-    return sum;
-  }, 0);
+  const subtotal = order.subtotal || items.reduce((sum, i) => sum + (i.oldPrice || i.price) * i.qty, 0);
+  const discount = order.discount || 0;
   const total = order.total || (subtotal - discount);
 
-  /* ---------- Address ---------- */
   const addressParts = [
     order.shipping?.province,
     order.shipping?.city,
@@ -384,10 +366,9 @@ function renderList() {
   const noResult = document.getElementById('orders-no-result');
   if (!list) return;
 
-  const allOrders = getOrders();
   const filtered = filterOrders();
 
-  if (!allOrders.length) {
+  if (!state.orders.length) {
     list.innerHTML = '';
     list.hidden = true;
     if (empty) empty.hidden = false;
@@ -533,6 +514,9 @@ async function init() {
   const user = await checkAuth();
   if (!user) return;
 
+  // لود سفارش‌ها
+  state.orders = await getUserOrders();
+
   bindTabs();
   bindSearch();
   bindExpand();
@@ -546,7 +530,7 @@ async function init() {
   }
 
   console.log(
-    `%c✓ Orders page loaded — ${getOrders().length} orders`,
+    `%c✓ Orders page loaded — ${state.orders.length} orders`,
     'color:#18B981;font-weight:bold;'
   );
 }
