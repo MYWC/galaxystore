@@ -1,9 +1,14 @@
 /* ============================================
-   ADDRESSES PAGE
+   ADDRESSES PAGE — Refactored with Auth Service
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
 import { toast } from '../components/toast.js';
+import {
+  getCurrentUser,
+  signOut,
+  isSupabaseConfigured,
+} from '../services/auth.js';
 
 /* ============================================
    INIT LAYOUT
@@ -15,7 +20,6 @@ initLayout();
    CONSTANTS
    ============================================ */
 
-const SESSION_KEY = 'ms_session';
 const ADDRESSES_KEY = 'ms_addresses';
 
 const PROVINCES = [
@@ -41,23 +45,14 @@ const state = {
    AUTH
    ============================================ */
 
-function getSession() {
-  try {
-    const raw = localStorage.getItem(SESSION_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
-function checkAuth() {
-  const session = getSession();
-  if (!session?.user) {
+async function checkAuth() {
+  const user = await getCurrentUser();
+  if (!user) {
     const redirect = encodeURIComponent('account/addresses.html');
     window.location.href = `../auth/login.html?redirect=${redirect}`;
     return null;
   }
-  return session.user;
+  return user;
 }
 
 /* ============================================
@@ -93,10 +88,6 @@ function fa(n) {
   return Number(n).toLocaleString('fa-IR');
 }
 
-/* ============================================
-   VALIDATORS
-   ============================================ */
-
 function isPhone(str) {
   return /^09\d{9}$/.test((str || '').replace(/\D/g, ''));
 }
@@ -125,12 +116,11 @@ function clearAllErrors() {
 }
 
 /* ============================================
-   RENDER
+   RENDER — CARD
    ============================================ */
 
 function renderAddressCard(addr) {
   const isDefault = addr.isDefault;
-
   const labelText = addr.label || (isDefault ? 'آدرس پیش‌فرض' : 'آدرس');
 
   const fullAddress = [
@@ -231,7 +221,6 @@ function render() {
   if (empty) empty.hidden = true;
   if (stats) stats.hidden = false;
 
-  // Sort: default first, then by createdAt desc
   const sorted = [...list].sort((a, b) => {
     if (a.isDefault && !b.isDefault) return -1;
     if (!a.isDefault && b.isDefault) return 1;
@@ -240,7 +229,6 @@ function render() {
 
   grid.innerHTML = sorted.map(renderAddressCard).join('');
 
-  // Stats
   const totalEl = document.getElementById('stat-total');
   const defaultEl = document.getElementById('stat-default');
   if (totalEl) totalEl.textContent = fa(list.length);
@@ -251,7 +239,7 @@ function render() {
 }
 
 /* ============================================
-   MODAL — OPEN / CLOSE
+   MODAL
    ============================================ */
 
 function openModal(addressId = null) {
@@ -269,7 +257,6 @@ function openModal(addressId = null) {
     if (title) title.textContent = 'ویرایش آدرس';
     if (submitText) submitText.textContent = 'ذخیره تغییرات';
 
-    // Fill form
     document.getElementById('address-id').value = addr.id;
     document.getElementById('addr-label').value = addr.label || '';
     document.getElementById('addr-receiverName').value = addr.receiverName || '';
@@ -284,11 +271,9 @@ function openModal(addressId = null) {
     if (title) title.textContent = 'افزودن آدرس جدید';
     if (submitText) submitText.textContent = 'ذخیره آدرس';
 
-    // Reset form
     document.getElementById('address-form').reset();
     document.getElementById('address-id').value = '';
 
-    // If first address, auto-default
     if (!getAddresses().length) {
       document.getElementById('addr-isDefault').checked = true;
     }
@@ -309,10 +294,6 @@ function closeModal() {
   document.body.style.overflow = '';
   state.editingId = null;
 }
-
-/* ============================================
-   DELETE MODAL
-   ============================================ */
 
 function openDeleteModal(id) {
   const modal = document.getElementById('delete-modal');
@@ -335,7 +316,6 @@ function confirmDelete() {
   const removed = list.find((a) => a.id === state.deletingId);
   const filtered = list.filter((a) => a.id !== state.deletingId);
 
-  // If removed was default, set first remaining as default
   if (removed?.isDefault && filtered.length) {
     filtered[0].isDefault = true;
   }
@@ -351,10 +331,6 @@ function confirmDelete() {
     duration: 2500,
   });
 }
-
-/* ============================================
-   SET DEFAULT
-   ============================================ */
 
 function setDefault(id) {
   const list = getAddresses();
@@ -376,7 +352,7 @@ function setDefault(id) {
 }
 
 /* ============================================
-   FORM SUBMIT
+   FORM
    ============================================ */
 
 function validateForm() {
@@ -462,14 +438,11 @@ function handleSubmit(e) {
     let list = getAddresses();
 
     if (state.editingId) {
-      // Update
       list = list.map((a) => (a.id === state.editingId ? { ...a, ...data } : a));
     } else {
-      // Add
       list.push(data);
     }
 
-    // Handle default
     if (data.isDefault) {
       list = list.map((a) => ({
         ...a,
@@ -494,7 +467,7 @@ function handleSubmit(e) {
 }
 
 /* ============================================
-   BIND — PROVINCES
+   BIND
    ============================================ */
 
 function populateProvinces() {
@@ -505,12 +478,7 @@ function populateProvinces() {
     PROVINCES.map((p) => `<option value="${p}">${p}</option>`).join('');
 }
 
-/* ============================================
-   BIND — ALL
-   ============================================ */
-
 function bindEvents() {
-  // Add buttons
   const addBtn = document.getElementById('add-address-btn');
   const addBtnEmpty = document.getElementById('add-address-btn-empty');
 
@@ -518,7 +486,6 @@ function bindEvents() {
     if (b) b.addEventListener('click', () => openModal());
   });
 
-  // Modal close
   const modalClose = document.getElementById('modal-close');
   const modalCancel = document.getElementById('modal-cancel');
   const modal = document.getElementById('address-modal');
@@ -532,11 +499,9 @@ function bindEvents() {
     });
   }
 
-  // Form submit
   const form = document.getElementById('address-form');
   if (form) form.addEventListener('submit', handleSubmit);
 
-  // Input sanitize
   const phoneInput = document.getElementById('addr-receiverPhone');
   if (phoneInput) {
     phoneInput.addEventListener('input', (e) => {
@@ -553,12 +518,9 @@ function bindEvents() {
     });
   }
 
-  // Clear errors on input
   ['receiverName', 'city', 'address'].forEach((id) => {
     const el = document.getElementById(`addr-${id}`);
-    if (el) {
-      el.addEventListener('input', () => clearError(id));
-    }
+    if (el) el.addEventListener('input', () => clearError(id));
   });
 
   const province = document.getElementById('addr-province');
@@ -566,7 +528,6 @@ function bindEvents() {
     province.addEventListener('change', () => clearError('province'));
   }
 
-  // Card actions (event delegation)
   const grid = document.getElementById('addresses-grid');
   if (grid) {
     grid.addEventListener('click', (e) => {
@@ -582,7 +543,6 @@ function bindEvents() {
     });
   }
 
-  // Delete modal
   const deleteCancel = document.getElementById('delete-cancel');
   const deleteConfirm = document.getElementById('delete-confirm');
   const deleteModal = document.getElementById('delete-modal');
@@ -596,7 +556,6 @@ function bindEvents() {
     });
   }
 
-  // ESC key
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       closeModal();
@@ -604,19 +563,19 @@ function bindEvents() {
     }
   });
 
-  // Logout
   const logoutBtn = document.getElementById('logout-btn-sidebar');
   if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
+    logoutBtn.addEventListener('click', async () => {
       if (!confirm('آیا از خروج مطمئن هستید؟')) return;
-      try {
-        localStorage.removeItem(SESSION_KEY);
-      } catch {}
+
+      await signOut();
+
       toast({
         type: 'success',
         title: 'خروج موفق',
         duration: 2000,
       });
+
       setTimeout(() => {
         window.location.href = '../index.html';
       }, 1000);
@@ -628,13 +587,17 @@ function bindEvents() {
    INIT
    ============================================ */
 
-function init() {
-  const user = checkAuth();
+async function init() {
+  const user = await checkAuth();
   if (!user) return;
 
   populateProvinces();
   bindEvents();
   render();
+
+  if (!isSupabaseConfigured()) {
+    console.log('%c⚠️  Addresses — Local Fallback mode', 'color:#F59E0B;font-weight:bold;');
+  }
 
   console.log(
     `%c✓ Addresses page — ${getAddresses().length} addresses`,

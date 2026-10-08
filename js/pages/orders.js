@@ -1,10 +1,15 @@
 /* ============================================
-   MY ORDERS PAGE
+   MY ORDERS PAGE — Refactored with Auth Service
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
 import { formatPrice } from '../data/products.js';
 import { toast } from '../components/toast.js';
+import {
+  getCurrentUser,
+  signOut,
+  isSupabaseConfigured,
+} from '../services/auth.js';
 
 /* ============================================
    INIT LAYOUT
@@ -16,7 +21,6 @@ initLayout();
    CONSTANTS
    ============================================ */
 
-const SESSION_KEY = 'ms_session';
 const ORDERS_KEY = 'ms_orders';
 
 /* ============================================
@@ -33,15 +37,6 @@ const state = {
    HELPERS
    ============================================ */
 
-function getSession() {
-  try {
-    const raw = localStorage.getItem(SESSION_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
 function getOrders() {
   try {
     const raw = localStorage.getItem(ORDERS_KEY);
@@ -51,14 +46,14 @@ function getOrders() {
   }
 }
 
-function checkAuth() {
-  const session = getSession();
-  if (!session?.user) {
+async function checkAuth() {
+  const user = await getCurrentUser();
+  if (!user) {
     const redirect = encodeURIComponent('account/orders.html');
     window.location.href = `../auth/login.html?redirect=${redirect}`;
     return null;
   }
-  return session.user;
+  return user;
 }
 
 function getOrderStatus(order) {
@@ -86,11 +81,7 @@ function formatDate(dateString, includeTime = false) {
   if (!dateString) return '—';
   try {
     const date = new Date(dateString);
-    const options = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    };
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
     if (includeTime) {
       options.hour = '2-digit';
       options.minute = '2-digit';
@@ -130,12 +121,10 @@ function getPaymentLabel(method) {
 function filterOrders() {
   let orders = getOrders();
 
-  // Filter by status
   if (state.status !== 'all') {
     orders = orders.filter((o) => getOrderStatus(o) === state.status);
   }
 
-  // Filter by query
   if (state.query) {
     const q = state.query.trim().toUpperCase();
     orders = orders.filter((o) =>
@@ -147,7 +136,7 @@ function filterOrders() {
 }
 
 /* ============================================
-   COUNT TABS
+   TAB COUNTS
    ============================================ */
 
 function updateTabCounts() {
@@ -193,8 +182,8 @@ function renderOrderCard(order) {
   const itemsCount = items.length;
   const totalQty = items.reduce((sum, i) => sum + (i.qty || 1), 0);
 
-  // ---------- Thumbs ----------
-  const thumbsHTML = items.slice(0, 3).map((item, i) => {
+  /* ---------- Thumbs ---------- */
+  const thumbsHTML = items.slice(0, 3).map((item) => {
     const productId = item.id.split('-').slice(0, -1).join('-');
     const imgSrc = item.image || `../assets/images/products/${productId}.jpg`;
 
@@ -209,7 +198,7 @@ function renderOrderCard(order) {
     ? `<div class="order-thumb order-thumb--more">+${fa(itemsCount - 3)}</div>`
     : '';
 
-  // ---------- Details Items ----------
+  /* ---------- Details Items ---------- */
   const detailsItemsHTML = items.map((item) => {
     const productId = item.id.split('-').slice(0, -1).join('-');
     const imgSrc = item.image || `../assets/images/products/${productId}.jpg`;
@@ -234,7 +223,7 @@ function renderOrderCard(order) {
     `;
   }).join('');
 
-  // ---------- Summary ----------
+  /* ---------- Summary ---------- */
   const subtotal = items.reduce((sum, i) => sum + (i.oldPrice || i.price) * i.qty, 0);
   const discount = items.reduce((sum, i) => {
     if (i.oldPrice && i.oldPrice > i.price) {
@@ -244,7 +233,7 @@ function renderOrderCard(order) {
   }, 0);
   const total = order.total || (subtotal - discount);
 
-  // ---------- Address ----------
+  /* ---------- Address ---------- */
   const addressParts = [
     order.shipping?.province,
     order.shipping?.city,
@@ -254,7 +243,6 @@ function renderOrderCard(order) {
   return `
     <div class="order-card ${isExpanded ? 'is-expanded' : ''}" data-order="${order.orderNumber}">
 
-      <!-- Head -->
       <div class="order-card__head">
         <div class="order-card__head-left">
           <span class="order-card__num">
@@ -273,7 +261,6 @@ function renderOrderCard(order) {
         </span>
       </div>
 
-      <!-- Body -->
       <div class="order-card__body">
         <div class="order-items-preview">
           <div class="order-items-preview__thumbs">
@@ -291,7 +278,6 @@ function renderOrderCard(order) {
           </div>
         </div>
 
-        <!-- Meta -->
         <div class="order-card__meta">
           <div class="order-meta-item">
             <span class="order-meta-item__icon">
@@ -325,7 +311,6 @@ function renderOrderCard(order) {
         </div>
       </div>
 
-      <!-- Details (Hidden) -->
       <div class="order-card__details">
         <div class="order-details-list">
           ${detailsItemsHTML}
@@ -361,7 +346,6 @@ function renderOrderCard(order) {
         ` : ''}
       </div>
 
-      <!-- Foot -->
       <div class="order-card__foot">
         <div class="order-card__total">
           <span class="order-card__total-label">مبلغ کل:</span>
@@ -403,7 +387,6 @@ function renderList() {
   const allOrders = getOrders();
   const filtered = filterOrders();
 
-  // No orders at all
   if (!allOrders.length) {
     list.innerHTML = '';
     list.hidden = true;
@@ -412,7 +395,6 @@ function renderList() {
     return;
   }
 
-  // No results after filter
   if (!filtered.length) {
     list.innerHTML = '';
     list.hidden = true;
@@ -428,17 +410,13 @@ function renderList() {
   list.innerHTML = filtered.map(renderOrderCard).join('');
 }
 
-/* ============================================
-   RENDER — FULL
-   ============================================ */
-
 function render() {
   updateTabCounts();
   renderList();
 }
 
 /* ============================================
-   BIND — TABS
+   BIND
    ============================================ */
 
 function bindTabs() {
@@ -457,16 +435,11 @@ function bindTabs() {
   });
 }
 
-/* ============================================
-   BIND — SEARCH
-   ============================================ */
-
 function bindSearch() {
   const input = document.getElementById('orders-search');
   if (!input) return;
 
   let timer;
-
   input.addEventListener('input', (e) => {
     clearTimeout(timer);
     const val = e.target.value;
@@ -477,10 +450,6 @@ function bindSearch() {
     }, 250);
   });
 }
-
-/* ============================================
-   BIND — EXPAND
-   ============================================ */
 
 function bindExpand() {
   document.addEventListener('click', (e) => {
@@ -515,10 +484,6 @@ function bindExpand() {
   });
 }
 
-/* ============================================
-   BIND — RESET
-   ============================================ */
-
 function bindReset() {
   const btn = document.getElementById('orders-reset');
   if (!btn) return;
@@ -538,20 +503,14 @@ function bindReset() {
   });
 }
 
-/* ============================================
-   BIND — LOGOUT
-   ============================================ */
-
 function bindLogout() {
   const btn = document.getElementById('logout-btn-sidebar');
   if (!btn) return;
 
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', async () => {
     if (!confirm('آیا از خروج از حساب کاربری مطمئن هستید؟')) return;
 
-    try {
-      localStorage.removeItem(SESSION_KEY);
-    } catch {}
+    await signOut();
 
     toast({
       type: 'success',
@@ -570,8 +529,8 @@ function bindLogout() {
    INIT
    ============================================ */
 
-function init() {
-  const user = checkAuth();
+async function init() {
+  const user = await checkAuth();
   if (!user) return;
 
   bindTabs();
@@ -581,6 +540,10 @@ function init() {
   bindLogout();
 
   render();
+
+  if (!isSupabaseConfigured()) {
+    console.log('%c⚠️  Orders — Local Fallback mode', 'color:#F59E0B;font-weight:bold;');
+  }
 
   console.log(
     `%c✓ Orders page loaded — ${getOrders().length} orders`,

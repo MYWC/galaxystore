@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2386D7" />
+  <title>بازگشت کالا | موبایل استور</title>
+  <meta name="description" content="درخواست بازگشت و مرجوعی کالا — شرایط، مراحل و ثبت درخواست" />
+
+  <link rel="stylesheet" href="../css/reset.css" />
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+
+  <link rel="stylesheet" href="../css/components/button.css" />
+  <link rel="stylesheet" href="../css/components/card.css" />
+  <link rel="stylesheet" href="../css/components/badge.css" />
+  <link rel="stylesheet" href="../css/components/placeholder.css" />
+  <link rel="stylesheet" href="../css/components/product-card.css" />
+  <link rel="stylesheet" href="../css/components/floating.css" />
+  <link rel="stylesheet" href="../css/components/drawer.css" />
+  <link rel="stylesheet" href="../css/components/toast.css" />
+  <link rel="stylesheet" href="../css/components/cart-drawer.css" />
+  <link rel="stylesheet" href="../css/components/quick-view.css" />
+  <link rel="stylesheet" href="../css/components/search-dropdown.css" />
+
+  <link rel="stylesheet" href="../css/sections/announcement.css" />
+  <link rel="stylesheet" href="../css/sections/header.css" />
+  <link rel="stylesheet" href="../css/sections/nav.css" />
+  <link rel="stylesheet" href="../css/sections/footer.css" />
+
+  <link rel="stylesheet" href="../css/pages/faq.css" />
+
+  <style>
+    /* Returns-specific styles */
+    .returns-page {
+      padding-block: 30px 80px;
+    }
+
+    /* Steps */
+    .return-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .return-step {
+      position: relative;
+      background: #fff;
+      border: 1px solid var(--border-soft);
+      border-radius: 18px;
+      padding: 24px 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .return-step:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+      box-shadow: 0 14px 30px -14px rgba(35, 134, 215, 0.25);
+    }
+
+    .return-step__num {
+      width: 44px;
+      height: 44px;
+      margin: 0 auto 14px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: var(--fw-black);
+      box-shadow: 0 8px 20px -6px rgba(35, 134, 215, 0.4);
+    }
+
+    .return-step__icon {
+      width: 44px;
+      height: 44px;
+      margin: 0 auto 14px;
+      border-radius: 13px;
+      background: #EAF4FD;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .return-step__icon svg {
+      width: 22px;
+      height: 22px;
+      stroke-width: 2;
+    }
+
+    .return-step__title {
+      font-size: var(--fs-sm);
+      font-weight: var(--fw-bold);
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .return-step__desc {
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* Conditions grid */
+    .return-conditions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .return-condition {
+      display: flex;
+      gap: 12px;
+      padding: 16px 18px;
+      background: #fff;
+      border: 1px solid var(--border-soft);
+      border-radius: 14px;
+    }
+
+    .return-condition__icon {
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .return-condition__icon svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2.4;
+    }
+
+    .return-condition__icon--yes {
+      background: #E6F7F1;
+      color: var(--success);
+    }
+
+    .return-condition__icon--no {
+      background: #FDECEC;
+      color: var(--discount);
+    }
+
+    .return-condition__title {
+      font-size: var(--fs-sm);
+      font-weight: var(--fw-semibold);
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .return-condition__desc {
+      font-size: var(--fs-xs);
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* Form */
+    .return-form-wrap {
+      background: #fff;
+      border: 1px solid var(--border-soft);
+      border-radius: 22px;
+      padding: 32px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .return-form-head {
+      text-align: center;
+      margin-bottom: 28px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .return-form-head__icon {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 14px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 24px -10px rgba(35, 134, 215, 0.45);
+    }
+
+    .return-form-head__icon svg {
+      width: 28px;
+      height: 28px;
+      stroke-width: 2;
+    }
+
+    .return-form-head__title {
+      font-size: var(--fs-xl);
+      font-weight: var(--fw-black);
+      color: var(--text);
+      letter-spacing: -0.4px;
+      margin-bottom: 6px;
+    }
+
+    .return-form-head__desc {
+      font-size: var(--fs-sm);
+      color: var(--text-muted);
+      line-height: 1.75;
+    }
+
+    .return-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .form-grid--2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .form-field__label {
+      font-size: var(--fs-xs);
+      font-weight: var(--fw-semibold);
+      color: var(--text);
+    }
+
+    .form-field__required {
+      color: var(--discount);
+    }
+
+    .form-field__input,
+    .form-field__select,
+    .form-field__textarea {
+      width: 100%;
+      padding: 13px 16px;
+      background: var(--bg-soft);
+      border: 1.5px solid transparent;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: var(--fs-sm);
+      color: var(--text);
+      transition: all 0.2s ease;
+    }
+
+    .form-field__input:focus,
+    .form-field__select:focus,
+    .form-field__textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(35, 134, 215, 0.10);
+    }
+
+    .form-field__select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+      background-repeat: no-repeat;
+      background-position: left 14px center;
+      padding-left: 40px;
+      cursor: pointer;
+    }
+
+    .form-field__textarea {
+      resize: vertical;
+      min-height: 100px;
+      line-height: 1.7;
+    }
+
+    .form-field__error {
+      font-size: 11px;
+      color: var(--discount);
+      font-weight: var(--fw-medium);
+      display: none;
+      padding-inline-start: 4px;
+    }
+
+    .form-field.has-error .form-field__input,
+    .form-field.has-error .form-field__select,
+    .form-field.has-error .form-field__textarea {
+      border-color: var(--discount);
+      background: #FEF5F5;
+    }
+
+    .form-field.has-error .form-field__error {
+      display: block;
+    }
+
+    .return-submit {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      height: 54px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 14px;
+      font-size: var(--fs-md);
+      font-weight: var(--fw-bold);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 12px 28px -10px rgba(35, 134, 215, 0.5);
+      margin-top: 8px;
+    }
+
+    .return-submit:hover:not(:disabled) {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .return-submit:disabled {
+      background: var(--bg-soft);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* Success */
+    .return-success {
+      text-align: center;
+      padding: 40px 24px;
+    }
+
+    .return-success__icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--success), #14A16F);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 20px 40px -10px rgba(24, 185, 129, 0.45), 0 0 0 8px rgba(24, 185, 129, 0.12);
+    }
+
+    .return-success__icon svg {
+      width: 40px;
+      height: 40px;
+      stroke-width: 3;
+    }
+
+    .return-success__title {
+      font-size: 22px;
+      font-weight: var(--fw-black);
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .return-success__text {
+      font-size: var(--fs-sm);
+      color: var(--text-muted);
+      line-height: 1.85;
+      max-width: 420px;
+      margin: 0 auto 24px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .return-steps { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .return-steps { grid-template-columns: 1fr; gap: 12px; }
+      .return-conditions { grid-template-columns: 1fr; }
+      .return-form-wrap { padding: 20px 16px; }
+      .form-grid--2 { grid-template-columns: 1fr; }
+    }
+  </style>
+
+  <link rel="stylesheet" href="../css/responsive.css" />
+  <link rel="stylesheet" href="../css/animations.css" />
+  <link rel="stylesheet" href="../css/performance.css" />
+  <link rel="stylesheet" href="../css/micro-interactions.css" />
+</head>
+<body>
+
+  <div id="layout-announcement"></div>
+  <div id="layout-header"></div>
+  <div id="layout-nav"></div>
+
+  <main class="returns-page" id="returns-page">
+    <div class="container">
+
+      <nav class="breadcrumb reveal">
+        <a href="../index.html">خانه</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        <a href="../support/contact.html">پشتیبانی</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        <span>بازگشت کالا</span>
+      </nav>
+
+      <!-- HERO -->
+      <section class="faq-hero reveal">
+        <div class="faq-hero__bg"></div>
+        <div class="faq-hero__content">
+          <span class="faq-hero__eyebrow">
+            <span class="faq-hero__eyebrow-dot"></span>
+            بازگشت و مرجوعی
+          </span>
+          <h1 class="faq-hero__title">
+            <span class="faq-hero__title-accent">۷ روز</span> ضمانت بازگشت کالا
+          </h1>
+          <p class="faq-hero__desc">
+            اگر از خرید خود راضی نیستید، تا ۷ روز پس از دریافت می‌توانید درخواست
+            بازگشت ثبت کنید. فرایند ساده و سریع است.
+          </p>
+        </div>
+      </section>
+
+      <!-- STEPS -->
+      <section class="return-steps reveal">
+        <div class="return-step">
+          <div class="return-step__num">۱</div>
+          <h3 class="return-step__title">ثبت درخواست</h3>
+          <p class="return-step__desc">فرم زیر را با اطلاعات سفارش پر کنید</p>
+        </div>
+        <div class="return-step">
+          <div class="return-step__num">۲</div>
+          <h3 class="return-step__title">بررسی و تأیید</h3>
+          <p class="return-step__desc">تیم پشتیبانی طی ۲۴ ساعت بررسی می‌کند</p>
+        </div>
+        <div class="return-step">
+          <div class="return-step__num">۳</div>
+          <h3 class="return-step__title">ارسال کالا</h3>
+          <p class="return-step__desc">کالا را طبق شرایط بسته‌بندی و ارسال کنید</p>
+        </div>
+        <div class="return-step">
+          <div class="return-step__num">۴</div>
+          <h3 class="return-step__title">بازگشت وجه</h3>
+          <p class="return-step__desc">پس از تأیید، مبلغ به حساب شما واریز می‌شود</p>
+        </div>
+      </section>
+
+      <!-- CONDITIONS -->
+      <section class="reveal" style="margin-bottom: 40px;">
+        <h2 style="font-size: var(--fs-xl); font-weight: var(--fw-bold); margin-bottom: 20px; color: var(--text);">
+          شرایط بازگشت کالا
+        </h2>
+
+        <div class="return-conditions">
+          <div class="return-condition">
+            <span class="return-condition__icon return-condition__icon--yes">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <div>
+              <h3 class="return-condition__title">بسته‌بندی سالم</h3>
+              <p class="return-condition__desc">کالا در بسته‌بندی اصلی و باز نشده باشد</p>
+            </div>
+          </div>
+
+          <div class="return-condition">
+            <span class="return-condition__icon return-condition__icon--yes">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <div>
+              <h3 class="return-condition__title">لوازم کامل</h3>
+              <p class="return-condition__desc">تمام لوازم جانبی و هدایا کامل باشد</p>
+            </div>
+          </div>
+
+          <div class="return-condition">
+            <span class="return-condition__icon return-condition__icon--yes">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <div>
+              <h3 class="return-condition__title">فاکتور خرید</h3>
+              <p class="return-condition__desc">فاکتور رسمی خرید همراه کالا باشد</p>
+            </div>
+          </div>
+
+          <div class="return-condition">
+            <span class="return-condition__icon return-condition__icon--no">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </span>
+            <div>
+              <h3 class="return-condition__title">آسیب فیزیکی</h3>
+              <p class="return-condition__desc">کالا نباید آسیب فیزیکی یا خط و خش داشته باشد</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FORM -->
+      <section class="reveal">
+        <div class="return-form-wrap" id="return-form-wrap">
+          <div class="return-form-head">
+            <div class="return-form-head__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            </div>
+            <h2 class="return-form-head__title">ثبت درخواست بازگشت</h2>
+            <p class="return-form-head__desc">
+              فرم زیر را با اطلاعات دقیق پر کنید تا درخواست شما سریع‌تر بررسی شود.
+            </p>
+          </div>
+
+          <form class="return-form" id="return-form" novalidate>
+
+            <div class="form-grid form-grid--2">
+              <div class="form-field" id="field-orderNumber">
+                <label class="form-field__label" for="r-orderNumber">
+                  شماره سفارش <span class="form-field__required">*</span>
+                </label>
+                <input type="text" id="r-orderNumber" class="form-field__input" placeholder="مثلاً MS-12345678" required />
+                <span class="form-field__error" data-error="orderNumber"></span>
+              </div>
+
+              <div class="form-field" id="field-phone">
+                <label class="form-field__label" for="r-phone">
+                  شماره موبایل <span class="form-field__required">*</span>
+                </label>
+                <input type="tel" id="r-phone" class="form-field__input" placeholder="۰۹۱۲۳۴۵۶۷۸۹" inputmode="numeric" maxlength="11" required />
+                <span class="form-field__error" data-error="phone"></span>
+              </div>
+            </div>
+
+            <div class="form-grid form-grid--2">
+              <div class="form-field" id="field-fullName">
+                <label class="form-field__label" for="r-fullName">
+                  نام و نام خانوادگی <span class="form-field__required">*</span>
+                </label>
+                <input type="text" id="r-fullName" class="form-field__input" placeholder="مثلاً علی رضایی" required />
+                <span class="form-field__error" data-error="fullName"></span>
+              </div>
+
+              <div class="form-field" id="field-reason">
+                <label class="form-field__label" for="r-reason">
+                  دلیل بازگشت <span class="form-field__required">*</span>
+                </label>
+                <select id="r-reason" class="form-field__select" required>
+                  <option value="">انتخاب کنید</option>
+                  <option value="not-needed">انصراف از خرید</option>
+                  <option value="defective">کالای معیوب</option>
+                  <option value="not-as-described">مغایرت با توضیحات</option>
+                  <option value="wrong-item">ارسال اشتباه</option>
+                  <option value="other">سایر موارد</option>
+                </select>
+                <span class="form-field__error" data-error="reason"></span>
+              </div>
+            </div>
+
+            <div class="form-field" id="field-description">
+              <label class="form-field__label" for="r-description">
+                توضیحات بیشتر <span class="form-field__required">*</span>
+              </label>
+              <textarea id="r-description" class="form-field__textarea" placeholder="مشکل کالا را با جزئیات توضیح دهید..." rows="4" required></textarea>
+              <span class="form-field__error" data-error="description"></span>
+            </div>
+
+            <button type="submit" class="return-submit" id="return-submit">
+              <span>ثبت درخواست بازگشت</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </form>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <div id="layout-footer"></div>
+  <div id="layout-drawer"></div>
+  <div id="layout-cart-drawer"></div>
+  <div id="layout-quick-view"></div>
+  <div id="layout-floating"></div>
+
+  <script type="module" src="../js/pages/returns.js"></script>
+</body>
+</html>

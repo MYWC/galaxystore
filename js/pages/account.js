@@ -1,11 +1,16 @@
 /* ============================================
-   ACCOUNT DASHBOARD
+   ACCOUNT DASHBOARD — Refactored with Auth Service
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
 import { formatPrice } from '../data/products.js';
-import { cart, wishlist, compare, onChange, KEYS } from '../store/state.js';
+import { wishlist, compare, onChange, KEYS } from '../store/state.js';
 import { toast } from '../components/toast.js';
+import {
+  getCurrentUser,
+  signOut,
+  isSupabaseConfigured,
+} from '../services/auth.js';
 
 /* ============================================
    INIT LAYOUT
@@ -17,28 +22,13 @@ initLayout();
    CONSTANTS
    ============================================ */
 
-const SESSION_KEY = 'ms_session';
 const ORDERS_KEY = 'ms_orders';
 const ADDRESSES_KEY = 'ms_addresses';
+const LAST_LOGIN_KEY = 'ms_last_login';
 
 /* ============================================
    HELPERS
    ============================================ */
-
-function getSession() {
-  try {
-    const raw = localStorage.getItem(SESSION_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
-function clearSession() {
-  try {
-    localStorage.removeItem(SESSION_KEY);
-  } catch {}
-}
 
 function getOrders() {
   try {
@@ -56,6 +46,20 @@ function getAddresses() {
   } catch {
     return [];
   }
+}
+
+function getLastLogin() {
+  try {
+    return localStorage.getItem(LAST_LOGIN_KEY) || null;
+  } catch {
+    return null;
+  }
+}
+
+function setLastLogin(date = new Date().toISOString()) {
+  try {
+    localStorage.setItem(LAST_LOGIN_KEY, date);
+  } catch {}
 }
 
 function getInitials(firstName, lastName) {
@@ -104,17 +108,22 @@ function fa(number) {
    AUTH GUARD
    ============================================ */
 
-function checkAuth() {
-  const session = getSession();
+async function checkAuth() {
+  const user = await getCurrentUser();
 
-  if (!session?.user) {
-    // Redirect to login
+  if (!user) {
     const redirect = encodeURIComponent('account/index.html');
     window.location.href = `../auth/login.html?redirect=${redirect}`;
     return null;
   }
 
-  return session.user;
+  // ثبت آخرین ورود (اگر امروز ثبت نشده)
+  const lastLogin = getLastLogin();
+  if (!lastLogin) {
+    setLastLogin();
+  }
+
+  return user;
 }
 
 /* ============================================
@@ -123,18 +132,19 @@ function checkAuth() {
 
 function renderHero(user) {
   const initials = getInitials(user.firstName, user.lastName);
+
   const initialsEl = document.getElementById('user-initials');
   const nameEl = document.getElementById('user-name');
   const phoneEl = document.getElementById('user-phone');
   const joinedEl = document.getElementById('user-joined');
 
   if (initialsEl) initialsEl.textContent = initials;
-  if (nameEl) nameEl.textContent = `${user.firstName} ${user.lastName}`;
+  if (nameEl) nameEl.textContent = `${user.firstName} ${user.lastName}`.trim() || 'کاربر';
   if (phoneEl) phoneEl.textContent = user.phone || '—';
 
   if (joinedEl) {
-    const session = getSession();
-    joinedEl.textContent = formatDate(session?.loggedInAt || new Date().toISOString());
+    const createdAt = user.createdAt || new Date().toISOString();
+    joinedEl.textContent = formatDate(createdAt);
   }
 }
 
@@ -184,10 +194,12 @@ function renderRecentOrders() {
     const statusId = getOrderStatus(order);
     const status = getOrderStatusLabel(statusId);
 
-    // اولین محصول
     const firstItem = order.items?.[0];
-    const productId = firstItem ? firstItem.id.split('-').slice(0, -1).join('-') : '';
-    const imgSrc = firstItem?.image || (productId ? `../assets/images/products/${productId}.jpg` : '');
+    const productId = firstItem
+      ? firstItem.id.split('-').slice(0, -1).join('-')
+      : '';
+    const imgSrc = firstItem?.image
+      || (productId ? `../assets/images/products/${productId}.jpg` : '');
     const itemsCount = order.items?.length || 0;
 
     return `
@@ -304,20 +316,18 @@ function renderAddressesPreview() {
 
 function showLogoutModal() {
   const modal = document.getElementById('logout-modal');
-  if (modal) {
-    modal.classList.add('is-open');
-  }
+  if (modal) modal.classList.add('is-open');
 }
 
 function hideLogoutModal() {
   const modal = document.getElementById('logout-modal');
-  if (modal) {
-    modal.classList.remove('is-open');
-  }
+  if (modal) modal.classList.remove('is-open');
 }
 
-function performLogout() {
-  clearSession();
+async function performLogout() {
+  hideLogoutModal();
+
+  await signOut();
 
   toast({
     type: 'success',
@@ -368,7 +378,6 @@ function bindLogout() {
     `;
     document.body.appendChild(modal);
 
-    // Bind modal buttons
     modal.addEventListener('click', (e) => {
       if (e.target === modal) hideLogoutModal();
     });
@@ -387,8 +396,8 @@ function bindLogout() {
    INIT
    ============================================ */
 
-function init() {
-  const user = checkAuth();
+async function init() {
+  const user = await checkAuth();
   if (!user) return;
 
   renderHero(user);
@@ -398,7 +407,7 @@ function init() {
   renderAddressesPreview();
   bindLogout();
 
-  // Update stats on cart changes
+  // Update stats on wishlist/compare changes
   onChange(KEYS.wishlist, () => {
     renderStats();
     renderWishlistPreview();
@@ -406,8 +415,18 @@ function init() {
 
   onChange(KEYS.compare, renderStats);
 
+  // ذخیره آخرین ورود
+  setLastLogin();
+
+  if (!isSupabaseConfigured()) {
+    console.log(
+      '%c⚠️  Account — running in Local Fallback mode',
+      'color:#F59E0B;font-weight:bold;'
+    );
+  }
+
   console.log(
-    `%c✓ Dashboard loaded — Welcome ${user.firstName}!`,
+    `%c✓ Dashboard loaded — Welcome ${user.firstName || 'User'}!`,
     'color:#18B981;font-weight:bold;'
   );
 }

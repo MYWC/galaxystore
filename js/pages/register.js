@@ -1,58 +1,16 @@
 /* ============================================
-   REGISTER PAGE
+   REGISTER PAGE — Refactored with Auth Service
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
 import { toast } from '../components/toast.js';
+import { signUp, isSupabaseConfigured } from '../services/auth.js';
 
 /* ============================================
    INIT LAYOUT
    ============================================ */
 
 initLayout();
-
-/* ============================================
-   CONSTANTS
-   ============================================ */
-
-const USERS_KEY = 'ms_users';
-const SESSION_KEY = 'ms_session';
-
-/* ============================================
-   STORAGE HELPERS
-   ============================================ */
-
-function getUsers() {
-  try {
-    const raw = localStorage.getItem(USERS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveUsers(users) {
-  try {
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-  } catch (e) {
-    console.error('Save users error', e);
-  }
-}
-
-function saveSession(user) {
-  try {
-    localStorage.setItem(SESSION_KEY, JSON.stringify({
-      user: {
-        id: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        phone: user.phone,
-        email: user.email,
-      },
-      loggedInAt: new Date().toISOString(),
-    }));
-  } catch {}
-}
 
 /* ============================================
    VALIDATORS
@@ -63,7 +21,7 @@ function isEmail(str) {
 }
 
 function isPhone(str) {
-  return /^09\d{9}$/.test(str.replace(/\D/g, ''));
+  return /^09\d{9}$/.test((str || '').replace(/\D/g, ''));
 }
 
 function checkPasswordStrength(password) {
@@ -76,13 +34,12 @@ function checkPasswordStrength(password) {
   if (/[^A-Za-z0-9]/.test(password) || password.length >= 12) level++;
 
   level = Math.min(level, 4);
-
   const labels = ['—', 'ضعیف', 'متوسط', 'خوب', 'قوی'];
   return { level, label: labels[level] };
 }
 
 /* ============================================
-   ERROR HELPERS
+   ERRORS
    ============================================ */
 
 function setError(fieldName, message) {
@@ -105,7 +62,7 @@ function clearAllErrors() {
 }
 
 /* ============================================
-   PASSWORD STRENGTH UI
+   PASSWORD STRENGTH
    ============================================ */
 
 function bindPasswordStrength() {
@@ -130,7 +87,7 @@ function bindPasswordStrength() {
 }
 
 /* ============================================
-   BIND INPUT CLEAR ERRORS
+   INPUTS
    ============================================ */
 
 function bindInputs() {
@@ -148,19 +105,14 @@ function bindInputs() {
 
     el.addEventListener('input', () => {
       clearError(key);
-
-      // Phone sanitize
       if (key === 'phone') {
         el.value = el.value.replace(/\D/g, '').slice(0, 11);
       }
     });
   });
 
-  // Terms checkbox
   const terms = document.getElementById('agree-terms');
-  if (terms) {
-    terms.addEventListener('change', () => clearError('terms'));
-  }
+  if (terms) terms.addEventListener('change', () => clearError('terms'));
 }
 
 /* ============================================
@@ -178,7 +130,6 @@ function bindPasswordToggle(btnId, inputId) {
 
     const eye = btn.querySelector('.icon-eye');
     const eyeOff = btn.querySelector('.icon-eye-off');
-
     if (eye && eyeOff) {
       eye.style.display = isPassword ? 'none' : '';
       eyeOff.style.display = isPassword ? '' : 'none';
@@ -187,7 +138,7 @@ function bindPasswordToggle(btnId, inputId) {
 }
 
 /* ============================================
-   VALIDATION
+   VALIDATE
    ============================================ */
 
 function validate() {
@@ -203,77 +154,33 @@ function validate() {
 
   let valid = true;
 
-  // First name
-  if (!firstName) {
-    setError('firstName', 'نام را وارد کنید');
-    valid = false;
-  } else if (firstName.length < 2) {
+  if (!firstName || firstName.length < 2) {
     setError('firstName', 'نام باید حداقل ۲ کاراکتر باشد');
     valid = false;
   }
-
-  // Last name
-  if (!lastName) {
-    setError('lastName', 'نام خانوادگی را وارد کنید');
-    valid = false;
-  } else if (lastName.length < 2) {
+  if (!lastName || lastName.length < 2) {
     setError('lastName', 'نام خانوادگی باید حداقل ۲ کاراکتر باشد');
     valid = false;
   }
-
-  // Phone
-  if (!phone) {
-    setError('phone', 'شماره موبایل را وارد کنید');
-    valid = false;
-  } else if (!isPhone(phone)) {
+  if (!isPhone(phone)) {
     setError('phone', 'شماره موبایل باید ۱۱ رقم و با ۰۹ شروع شود');
     valid = false;
-  } else {
-    // Check duplicate phone
-    const existing = getUsers().find((u) => u.phone === phone);
-    if (existing) {
-      setError('phone', 'این شماره موبایل قبلاً ثبت‌نام کرده است');
-      valid = false;
-    }
   }
-
-  // Email
-  if (!email) {
-    setError('email', 'ایمیل را وارد کنید');
-    valid = false;
-  } else if (!isEmail(email)) {
+  if (!isEmail(email)) {
     setError('email', 'فرمت ایمیل صحیح نیست');
     valid = false;
-  } else {
-    const existing = getUsers().find((u) => u.email?.toLowerCase() === email.toLowerCase());
-    if (existing) {
-      setError('email', 'این ایمیل قبلاً ثبت‌نام کرده است');
-      valid = false;
-    }
   }
-
-  // Password
-  if (!password) {
-    setError('password', 'رمز عبور را وارد کنید');
-    valid = false;
-  } else if (password.length < 8) {
+  if (!password || password.length < 8) {
     setError('password', 'رمز عبور باید حداقل ۸ کاراکتر باشد');
     valid = false;
   } else if (!/[A-Za-z]/.test(password) || !/\d/.test(password)) {
     setError('password', 'رمز عبور باید شامل حرف و عدد باشد');
     valid = false;
   }
-
-  // Confirm password
-  if (!confirmPassword) {
-    setError('confirmPassword', 'تکرار رمز عبور را وارد کنید');
-    valid = false;
-  } else if (password !== confirmPassword) {
-    setError('confirmPassword', 'رمز عبور و تکرار آن یکسان نیستند');
+  if (password !== confirmPassword) {
+    setError('confirmPassword', 'رمز و تکرار آن یکسان نیستند');
     valid = false;
   }
-
-  // Terms
   if (!termsChecked) {
     setError('terms', 'برای ثبت‌نام باید قوانین را بپذیرید');
     valid = false;
@@ -283,19 +190,17 @@ function validate() {
 }
 
 /* ============================================
-   FORM SUBMIT
+   SUBMIT
    ============================================ */
 
-function handleSubmit(e) {
+async function handleSubmit(e) {
   e.preventDefault();
 
   if (!validate()) {
-    // Scroll to first error
     const firstError = document.querySelector('.form-field.has-error, .auth-form__row--terms.has-error');
     if (firstError) {
       firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-
     toast({
       type: 'error',
       title: 'اطلاعات ناقص است',
@@ -309,43 +214,58 @@ function handleSubmit(e) {
   btn.classList.add('is-loading');
   btn.disabled = true;
 
-  // Simulate server
-  setTimeout(() => {
-    const user = {
-      id: 'user-' + Date.now(),
-      firstName: document.getElementById('reg-firstName').value.trim(),
-      lastName: document.getElementById('reg-lastName').value.trim(),
-      phone: document.getElementById('reg-phone').value.trim(),
-      email: document.getElementById('reg-email').value.trim().toLowerCase(),
-      subscribeNews: document.getElementById('subscribe-news').checked,
-      createdAt: new Date().toISOString(),
-    };
+  const result = await signUp({
+    email: document.getElementById('reg-email').value.trim(),
+    password: document.getElementById('reg-password').value,
+    firstName: document.getElementById('reg-firstName').value.trim(),
+    lastName: document.getElementById('reg-lastName').value.trim(),
+    phone: document.getElementById('reg-phone').value.trim(),
+    subscribeNews: document.getElementById('subscribe-news')?.checked || false,
+  });
 
-    // Save
-    const users = getUsers();
-    users.push(user);
-    saveUsers(users);
+  btn.classList.remove('is-loading');
+  btn.disabled = false;
 
-    // Session
-    saveSession(user);
+  if (result.error) {
+    // خطا را زیر فیلد مربوطه نشون بده (بهتره)
+    const msg = result.error.message;
 
-    // Show success
-    showSuccess(user);
+    if (msg.includes('ایمیل')) {
+      setError('email', msg);
+    } else if (msg.includes('موبایل') || msg.includes('شماره')) {
+      setError('phone', msg);
+    }
 
     toast({
-      type: 'success',
-      title: 'ثبت‌نام موفق!',
-      message: `خوش آمدید ${user.firstName} عزیز`,
-      duration: 3000,
+      type: 'error',
+      title: 'ثبت‌نام ناموفق',
+      message: msg,
+      duration: 3500,
     });
+    return;
+  }
 
-    // Redirect after 2.5s
-    setTimeout(() => {
-      const params = new URLSearchParams(window.location.search);
-      const redirect = params.get('redirect') || '../account/index.html';
-      window.location.href = redirect;
-    }, 2500);
-  }, 900);
+  // حالت نیاز به تأیید ایمیل
+  if (result.needsEmailConfirmation) {
+    showEmailConfirmation(result.user);
+    return;
+  }
+
+  // ثبت‌نام موفق + ورود خودکار
+  showSuccess(result.user);
+
+  toast({
+    type: 'success',
+    title: 'ثبت‌نام موفق!',
+    message: `خوش آمدید ${result.user?.firstName || ''} عزیز`,
+    duration: 3000,
+  });
+
+  setTimeout(() => {
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get('redirect') || '../account/index.html';
+    window.location.href = redirect;
+  }, 2500);
 }
 
 /* ============================================
@@ -368,7 +288,7 @@ function showSuccess(user) {
         <h1 class="auth-success__title">ثبت‌نام با موفقیت انجام شد! 🎉</h1>
 
         <p class="auth-success__text">
-          <strong>${user.firstName} ${user.lastName}</strong> عزیز،
+          <strong>${user?.firstName || ''} ${user?.lastName || ''}</strong> عزیز،
           حساب شما با موفقیت ایجاد شد.<br>
           در حال انتقال به پنل کاربری...
         </p>
@@ -379,7 +299,6 @@ function showSuccess(user) {
             رفتن به پنل کاربری
           </a>
           <a href="../index.html" class="btn btn--outline">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             صفحه اصلی
           </a>
         </div>
@@ -387,8 +306,43 @@ function showSuccess(user) {
     </div>
   `;
 
-  // Confetti
   launchConfetti();
+}
+
+/* ============================================
+   EMAIL CONFIRMATION STATE
+   ============================================ */
+
+function showEmailConfirmation(user) {
+  const formSide = document.querySelector('.auth-form-wrap');
+  if (!formSide) return;
+
+  formSide.innerHTML = `
+    <div class="auth-form">
+      <div class="auth-success">
+        <div class="auth-success__icon" style="background: linear-gradient(135deg, #2386D7, #1B6FB5); box-shadow: 0 20px 40px -10px rgba(35,134,215,0.45), 0 0 0 8px rgba(35,134,215,0.12);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="width:38px;height:38px;stroke-width:2.4;">
+            <rect x="2" y="4" width="20" height="16" rx="2"/>
+            <polyline points="22 6 12 13 2 6"/>
+          </svg>
+        </div>
+
+        <h1 class="auth-success__title">ایمیل خود را تأیید کنید</h1>
+
+        <p class="auth-success__text">
+          یک ایمیل تأیید به <strong>${user?.email || ''}</strong> ارسال شد.
+          لطفاً روی لینک داخل ایمیل کلیک کنید تا حساب شما فعال شود.
+        </p>
+
+        <div class="auth-success__actions">
+          <a href="login.html" class="btn btn--primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            بازگشت به صفحه ورود
+          </a>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 /* ============================================
@@ -448,9 +402,9 @@ function bindSocial() {
    ============================================ */
 
 function init() {
-  // Already logged in?
+  // اگر قبلاً وارد شده
   try {
-    const session = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
+    const session = JSON.parse(localStorage.getItem('ms_session') || 'null');
     if (session?.user) {
       const params = new URLSearchParams(window.location.search);
       const redirect = params.get('redirect') || '../account/index.html';
@@ -475,6 +429,13 @@ function init() {
 
   const form = document.getElementById('register-form');
   if (form) form.addEventListener('submit', handleSubmit);
+
+  if (!isSupabaseConfigured()) {
+    console.log(
+      '%c⚠️  Supabase not configured — Register در حالت Local Fallback کار می‌کند',
+      'color:#F59E0B;font-weight:bold;'
+    );
+  }
 
   console.log('%c✓ Register page loaded', 'color:#18B981;font-weight:bold;');
 }

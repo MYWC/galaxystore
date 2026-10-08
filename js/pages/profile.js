@@ -1,9 +1,14 @@
 /* ============================================
-   PROFILE PAGE
+   PROFILE PAGE — Refactored with Auth Service
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
 import { toast } from '../components/toast.js';
+import {
+  getCurrentUser,
+  signOut,
+  isSupabaseConfigured,
+} from '../services/auth.js';
 
 /* ============================================
    INIT LAYOUT
@@ -15,28 +20,13 @@ initLayout();
    CONSTANTS
    ============================================ */
 
-const SESSION_KEY = 'ms_session';
 const USERS_KEY = 'ms_users';
 const PREFS_KEY = 'ms_preferences';
+const LAST_LOGIN_KEY = 'ms_last_login';
 
 /* ============================================
    HELPERS
    ============================================ */
-
-function getSession() {
-  try {
-    const raw = localStorage.getItem(SESSION_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
-function saveSession(session) {
-  try {
-    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-  } catch {}
-}
 
 function getUsers() {
   try {
@@ -64,9 +54,7 @@ function getPrefs() {
       theme: 'light',
     };
   } catch {
-    return {
-      orders: true, offers: true, news: false, sms: true, theme: 'light',
-    };
+    return { orders: true, offers: true, news: false, sms: true, theme: 'light' };
   }
 }
 
@@ -74,6 +62,14 @@ function savePrefs(prefs) {
   try {
     localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
   } catch {}
+}
+
+function getLastLogin() {
+  try {
+    return localStorage.getItem(LAST_LOGIN_KEY) || null;
+  } catch {
+    return null;
+  }
 }
 
 function getInitials(fn, ln) {
@@ -134,47 +130,43 @@ function getCurrentDevice() {
    AUTH
    ============================================ */
 
-function checkAuth() {
-  const session = getSession();
-  if (!session?.user) {
+async function checkAuth() {
+  const user = await getCurrentUser();
+  if (!user) {
     const redirect = encodeURIComponent('account/profile.html');
     window.location.href = `../auth/login.html?redirect=${redirect}`;
     return null;
   }
-  return session;
+  return user;
 }
 
 /* ============================================
    RENDER — HERO
    ============================================ */
 
-function renderHero(session) {
-  const { user, loggedInAt } = session;
-
+function renderHero(user) {
   const avatarEl = document.getElementById('avatar-initials');
   const nameEl = document.getElementById('profile-name');
   const memberEl = document.getElementById('member-since');
   const loginEl = document.getElementById('last-login');
 
   if (avatarEl) avatarEl.textContent = getInitials(user.firstName, user.lastName);
-  if (nameEl) nameEl.textContent = `${user.firstName} ${user.lastName}`;
+  if (nameEl) nameEl.textContent = `${user.firstName} ${user.lastName}`.trim() || 'کاربر';
 
   if (memberEl) {
-    const users = getUsers();
-    const found = users.find((u) => u.id === user.id);
-    memberEl.textContent = formatDate(found?.createdAt || loggedInAt);
+    memberEl.textContent = formatDate(user.createdAt);
   }
 
-  if (loginEl) loginEl.textContent = formatDate(loggedInAt);
+  if (loginEl) {
+    loginEl.textContent = formatDate(getLastLogin() || new Date().toISOString());
+  }
 }
 
 /* ============================================
    RENDER — INFO FORM
    ============================================ */
 
-function renderInfoForm(session) {
-  const { user } = session;
-
+function renderInfoForm(user) {
   const firstName = document.getElementById('info-firstName');
   const lastName = document.getElementById('info-lastName');
   const phone = document.getElementById('info-phone');
@@ -186,18 +178,15 @@ function renderInfoForm(session) {
   if (phone) phone.value = user.phone || '';
   if (email) email.value = user.email || '';
 
-  // Check verified email
   const emailVerified = document.getElementById('email-verified');
   if (emailVerified) {
     emailVerified.hidden = !user.email;
   }
 
-  // Birth date from users storage
   const users = getUsers();
   const found = users.find((u) => u.id === user.id);
   if (birth && found?.birthDate) birth.value = found.birthDate;
 
-  // Current device
   const deviceEl = document.getElementById('current-device');
   if (deviceEl) deviceEl.textContent = getCurrentDevice();
 }
@@ -221,7 +210,6 @@ function renderPreferences() {
     if (el) el.checked = !!prefs[key];
   });
 
-  // Theme
   document.querySelectorAll('.pref-theme__btn').forEach((btn) => {
     btn.classList.toggle('is-active', btn.dataset.theme === prefs.theme);
   });
@@ -268,17 +256,16 @@ function clearError(name) {
   if (err) err.textContent = '';
 }
 
-function bindInfoForm() {
+function bindInfoForm(user) {
   const form = document.getElementById('info-form');
   if (!form) return;
 
-  // Clear errors on input
   ['firstName', 'lastName', 'email', 'birthDate'].forEach((id) => {
     const el = document.getElementById(`info-${id}`);
     if (el) el.addEventListener('input', () => clearError(id));
   });
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const firstName = document.getElementById('info-firstName').value.trim();
@@ -308,51 +295,43 @@ function bindInfoForm() {
     const btn = document.getElementById('save-info');
     btn.disabled = true;
 
-    setTimeout(() => {
-      const session = getSession();
-      if (!session?.user) return;
+    // آپدیت در localStorage
+    const users = getUsers();
+    const idx = users.findIndex((u) => u.id === user.id);
+    if (idx !== -1) {
+      users[idx].firstName = firstName;
+      users[idx].lastName = lastName;
+      users[idx].email = email;
+      users[idx].birthDate = birthDate;
+      saveUsers(users);
+    }
 
-      // Update session
-      session.user.firstName = firstName;
-      session.user.lastName = lastName;
-      session.user.email = email;
-      saveSession(session);
+    // آپدیت کاربر جاری
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.email = email;
 
-      // Update users storage
-      const users = getUsers();
-      const idx = users.findIndex((u) => u.id === session.user.id);
-      if (idx !== -1) {
-        users[idx].firstName = firstName;
-        users[idx].lastName = lastName;
-        users[idx].email = email;
-        users[idx].birthDate = birthDate;
-        saveUsers(users);
-      }
+    renderHero(user);
 
-      renderHero(session);
-      btn.disabled = false;
+    btn.disabled = false;
 
-      toast({
-        type: 'success',
-        title: 'اطلاعات ذخیره شد',
-        message: 'تغییرات شما با موفقیت ثبت شد',
-        duration: 2500,
-      });
-    }, 500);
+    toast({
+      type: 'success',
+      title: 'اطلاعات ذخیره شد',
+      message: 'تغییرات شما با موفقیت ثبت شد',
+      duration: 2500,
+    });
   });
 
-  // Reset
   const reset = document.getElementById('reset-info');
   if (reset) {
     reset.addEventListener('click', (e) => {
       e.preventDefault();
-      const session = getSession();
-      if (session) renderInfoForm(session);
+      renderInfoForm(user);
       ['firstName', 'lastName', 'email', 'birthDate'].forEach(clearError);
     });
   }
 
-  // Change phone
   const changePhone = document.getElementById('change-phone');
   if (changePhone) {
     changePhone.addEventListener('click', () => {
@@ -374,7 +353,6 @@ function bindPasswordForm() {
   const form = document.getElementById('password-form');
   if (!form) return;
 
-  // Toggle password visibility
   document.querySelectorAll('[data-toggle-password]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const inputId = btn.dataset.togglePassword;
@@ -393,7 +371,6 @@ function bindPasswordForm() {
     });
   });
 
-  // Password strength
   const newPw = document.getElementById('pw-new');
   const strength = document.getElementById('pw-strength');
   const strengthText = document.getElementById('pw-strength-text');
@@ -417,7 +394,6 @@ function bindPasswordForm() {
     });
   }
 
-  // Clear errors
   ['currentPassword', 'newPassword', 'confirmPassword'].forEach((id) => {
     const map = {
       currentPassword: 'pw-current',
@@ -432,7 +408,7 @@ function bindPasswordForm() {
     e.preventDefault();
 
     const currentPw = document.getElementById('pw-current').value;
-    const newPw = document.getElementById('pw-new').value;
+    const newPwVal = document.getElementById('pw-new').value;
     const confirmPw = document.getElementById('pw-confirm').value;
 
     ['currentPassword', 'newPassword', 'confirmPassword'].forEach(clearError);
@@ -443,22 +419,20 @@ function bindPasswordForm() {
       setError('currentPassword', 'رمز عبور فعلی را وارد کنید');
       valid = false;
     }
-
-    if (!newPw || newPw.length < 8) {
+    if (!newPwVal || newPwVal.length < 8) {
       setError('newPassword', 'رمز جدید باید حداقل ۸ کاراکتر باشد');
       valid = false;
-    } else if (!/[A-Za-z]/.test(newPw) || !/\d/.test(newPw)) {
+    } else if (!/[A-Za-z]/.test(newPwVal) || !/\d/.test(newPwVal)) {
       setError('newPassword', 'رمز باید شامل حرف و عدد باشد');
       valid = false;
-    } else if (newPw === currentPw) {
+    } else if (newPwVal === currentPw) {
       setError('newPassword', 'رمز جدید نباید با رمز فعلی یکسان باشد');
       valid = false;
     }
-
     if (!confirmPw) {
       setError('confirmPassword', 'تکرار رمز را وارد کنید');
       valid = false;
-    } else if (newPw !== confirmPw) {
+    } else if (newPwVal !== confirmPw) {
       setError('confirmPassword', 'رمز و تکرار آن یکسان نیستند');
       valid = false;
     }
@@ -514,7 +488,6 @@ function bindPreferences() {
     });
   });
 
-  // Theme
   document.querySelectorAll('.pref-theme__btn').forEach((btn) => {
     btn.addEventListener('click', () => {
       const theme = btn.dataset.theme;
@@ -544,12 +517,10 @@ function bindLogoutAll() {
   const btn = document.getElementById('logout-all');
   if (!btn) return;
 
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', async () => {
     if (!confirm('آیا از خروج از همه دستگاه‌ها مطمئن هستید؟')) return;
 
-    try {
-      localStorage.removeItem(SESSION_KEY);
-    } catch {}
+    await signOut();
 
     toast({
       type: 'success',
@@ -571,23 +542,22 @@ function bindDeleteAccount() {
   const btn = document.getElementById('delete-account');
   if (!btn) return;
 
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', async () => {
     if (!confirm('آیا از حذف کامل حساب مطمئن هستید؟ این عمل قابل بازگشت نیست.')) return;
     if (!confirm('آخرین هشدار: تمام اطلاعات شما حذف خواهد شد. مطمئن هستید؟')) return;
 
-    const session = getSession();
-    if (session?.user) {
-      const users = getUsers().filter((u) => u.id !== session.user.id);
-      saveUsers(users);
-    }
+    // خروج + پاک کردن دیتای محلی
+    await signOut();
 
     try {
-      localStorage.removeItem(SESSION_KEY);
       localStorage.removeItem('ms_cart');
       localStorage.removeItem('ms_wishlist');
       localStorage.removeItem('ms_compare');
       localStorage.removeItem('ms_addresses');
       localStorage.removeItem('ms_preferences');
+      localStorage.removeItem('ms_orders');
+      localStorage.removeItem('ms_notifications');
+      localStorage.removeItem('ms_last_login');
     } catch {}
 
     toast({
@@ -604,19 +574,17 @@ function bindDeleteAccount() {
 }
 
 /* ============================================
-   LOGOUT SIDEBAR
+   SIDEBAR LOGOUT
    ============================================ */
 
 function bindSidebarLogout() {
   const btn = document.getElementById('logout-btn-sidebar');
   if (!btn) return;
 
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', async () => {
     if (!confirm('آیا از خروج مطمئن هستید؟')) return;
 
-    try {
-      localStorage.removeItem(SESSION_KEY);
-    } catch {}
+    await signOut();
 
     toast({
       type: 'success',
@@ -652,16 +620,16 @@ function bindAvatarEdit() {
    INIT
    ============================================ */
 
-function init() {
-  const session = checkAuth();
-  if (!session) return;
+async function init() {
+  const user = await checkAuth();
+  if (!user) return;
 
-  renderHero(session);
-  renderInfoForm(session);
+  renderHero(user);
+  renderInfoForm(user);
   renderPreferences();
 
   bindTabs();
-  bindInfoForm();
+  bindInfoForm(user);
   bindPasswordForm();
   bindPreferences();
   bindLogoutAll();
@@ -669,8 +637,12 @@ function init() {
   bindSidebarLogout();
   bindAvatarEdit();
 
+  if (!isSupabaseConfigured()) {
+    console.log('%c⚠️  Profile — Local Fallback mode', 'color:#F59E0B;font-weight:bold;');
+  }
+
   console.log(
-    `%c✓ Profile loaded — ${session.user.firstName}`,
+    `%c✓ Profile loaded — ${user.firstName || 'User'}`,
     'color:#18B981;font-weight:bold;'
   );
 }

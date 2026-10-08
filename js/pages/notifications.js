@@ -1,9 +1,14 @@
 /* ============================================
-   NOTIFICATIONS PAGE
+   NOTIFICATIONS PAGE — Refactored with Auth Service
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
 import { toast } from '../components/toast.js';
+import {
+  getCurrentUser,
+  signOut,
+  isSupabaseConfigured,
+} from '../services/auth.js';
 
 /* ============================================
    INIT LAYOUT
@@ -15,7 +20,6 @@ initLayout();
    CONSTANTS
    ============================================ */
 
-const SESSION_KEY = 'ms_session';
 const NOTIFS_KEY = 'ms_notifications';
 
 const ICONS = {
@@ -38,26 +42,17 @@ const state = {
 };
 
 /* ============================================
-   SESSION
+   AUTH
    ============================================ */
 
-function getSession() {
-  try {
-    const raw = localStorage.getItem(SESSION_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
-function checkAuth() {
-  const session = getSession();
-  if (!session?.user) {
+async function checkAuth() {
+  const user = await getCurrentUser();
+  if (!user) {
     const redirect = encodeURIComponent('account/notifications.html');
     window.location.href = `../auth/login.html?redirect=${redirect}`;
     return null;
   }
-  return session.user;
+  return user;
 }
 
 /* ============================================
@@ -67,8 +62,7 @@ function checkAuth() {
 function getAllNotifications() {
   try {
     const raw = localStorage.getItem(NOTIFS_KEY);
-    let list = raw ? JSON.parse(raw) : [];
-    return list;
+    return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
   }
@@ -81,7 +75,7 @@ function saveNotifications(list) {
 }
 
 /* ============================================
-   SEED (Generate demo notifications)
+   SEED
    ============================================ */
 
 function seedIfEmpty(user) {
@@ -194,13 +188,11 @@ function fa(n) {
 function getFiltered() {
   const list = getAllNotifications();
 
-  // Sort: unread first, then by time
   let filtered = [...list].sort((a, b) => {
     if (a.read !== b.read) return a.read ? 1 : -1;
     return new Date(b.time) - new Date(a.time);
   });
 
-  // Apply filter
   if (state.filter === 'unread') {
     filtered = filtered.filter((n) => !n.read);
   } else if (state.filter !== 'all') {
@@ -232,7 +224,6 @@ function updateCounts() {
     }
   });
 
-  // Sidebar badge
   const badge = document.getElementById('notif-badge');
   if (badge) {
     if (counts.unread > 0) {
@@ -243,7 +234,6 @@ function updateCounts() {
     }
   }
 
-  // Subtitle
   const subtitle = document.getElementById('notif-subtitle');
   if (subtitle) {
     subtitle.textContent = counts.unread > 0
@@ -251,7 +241,6 @@ function updateCounts() {
       : 'تمام اعلان‌های شما';
   }
 
-  // Mark all button
   const markAllBtn = document.getElementById('mark-all-read');
   if (markAllBtn) {
     markAllBtn.hidden = counts.unread === 0;
@@ -318,7 +307,6 @@ function render() {
   const all = getAllNotifications();
   const filtered = getFiltered();
 
-  // No notifications at all
   if (!all.length) {
     list.innerHTML = '';
     list.hidden = true;
@@ -327,7 +315,6 @@ function render() {
     return;
   }
 
-  // No results after filter
   if (!filtered.length) {
     list.innerHTML = '';
     list.hidden = true;
@@ -377,10 +364,8 @@ function openNotification(id) {
   const notif = list.find((n) => n.id === id);
   if (!notif) return;
 
-  // Mark as read
   if (!notif.read) markAsRead(id);
 
-  // Navigate
   if (notif.link) {
     setTimeout(() => {
       window.location.href = `../${notif.link}`;
@@ -413,7 +398,6 @@ function bindList() {
   if (!list) return;
 
   list.addEventListener('click', (e) => {
-    // Mark button
     const markBtn = e.target.closest('[data-mark]');
     if (markBtn) {
       e.stopPropagation();
@@ -426,7 +410,6 @@ function bindList() {
       return;
     }
 
-    // Click on item
     const item = e.target.closest('.notif-item');
     if (item) {
       openNotification(item.dataset.id);
@@ -458,16 +441,17 @@ function bindLogout() {
   const btn = document.getElementById('logout-btn-sidebar');
   if (!btn) return;
 
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', async () => {
     if (!confirm('آیا از خروج مطمئن هستید؟')) return;
-    try {
-      localStorage.removeItem(SESSION_KEY);
-    } catch {}
+
+    await signOut();
+
     toast({
       type: 'success',
       title: 'خروج موفق',
       duration: 2000,
     });
+
     setTimeout(() => {
       window.location.href = '../index.html';
     }, 1000);
@@ -478,8 +462,8 @@ function bindLogout() {
    INIT
    ============================================ */
 
-function init() {
-  const user = checkAuth();
+async function init() {
+  const user = await checkAuth();
   if (!user) return;
 
   seedIfEmpty(user);
@@ -491,6 +475,10 @@ function init() {
   bindLogout();
 
   render();
+
+  if (!isSupabaseConfigured()) {
+    console.log('%c⚠️  Notifications — Local Fallback mode', 'color:#F59E0B;font-weight:bold;');
+  }
 
   console.log(
     `%c✓ Notifications page — ${getAllNotifications().length} items`,
