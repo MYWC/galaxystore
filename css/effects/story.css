@@ -1,0 +1,704 @@
+/* ============================================
+   STORY — Phase 4
+   Storytelling Pages Enhancement
+   ============================================ */
+
+/* ============================================
+   1. ANIMATED TIMELINE (About)
+   ============================================ */
+
+.about-timeline {
+  position: relative;
+}
+
+.timeline-roadmap {
+  position: relative;
+  padding: 60px 0;
+  overflow-x: auto;
+  overflow-y: visible;
+  scrollbar-width: thin;
+  scroll-snap-type: x proximity;
+}
+
+.timeline-roadmap::-webkit-scrollbar {
+  height: 6px;
+}
+
+.timeline-roadmap::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.timeline-roadmap__line {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--primary) 15%,
+    var(--secondary) 50%,
+    var(--primary) 85%,
+    transparent 100%
+  );
+  transform: translateY(-50%);
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.timeline-roadmap.is-visible .timeline-roadmap__line {
+  opacity: 1;
+}
+
+/* Animated line draw */
+.timeline-roadmap__line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--primary) 15%,
+    var(--secondary) 50%,
+    var(--primary) 85%,
+    transparent 100%
+  );
+  clip-path: inset(0 0 0 0);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 2.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.timeline-roadmap.is-visible .timeline-roadmap__line::after {
+  transform: scaleX(1);
+}
+
+.timeline-event {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 240px;
+  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding-top: 12px;
+  opacity: 0;
+  transform: translate3d(0, 30px, 0);
+  transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.timeline-roadmap.is-visible .timeline-event {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.timeline-roadmap.is-visible .timeline-event:nth-child(2) { transition-delay: 0.15s; }
+.timeline-roadmap.is-visible .timeline-event:nth-child(3) { transition-delay: 0.30s; }
+.timeline-roadmap.is-visible .timeline-event:nth-child(4) { transition-delay: 0.45s; }
+.timeline-roadmap.is-visible .timeline-event:nth-child(5) { transition-delay: 0.60s; }
+.timeline-roadmap.is-visible .timeline-event:nth-child(6) { transition-delay: 0.75s; }
+.timeline-roadmap.is-visible .timeline-event:nth-child(7) { transition-delay: 0.90s; }
+
+.timeline-event__dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--border);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.timeline-event__dot::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: rgba(35, 134, 215, 0.10);
+  transform: scale(0);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.timeline-event:hover .timeline-event__dot::before {
+  transform: scale(1);
+}
+
+.timeline-event:hover .timeline-event__dot {
+  border-color: var(--primary);
+  transform: scale(1.3);
+  box-shadow: 0 0 0 6px rgba(35, 134, 215, 0.15);
+}
+
+.timeline-event__dot--active {
+  border-color: var(--primary);
+  background: var(--primary);
+  box-shadow: 0 0 0 6px rgba(35, 134, 215, 0.15);
+  animation: timelinePulse 2s ease-in-out infinite;
+}
+
+@keyframes timelinePulse {
+  0%, 100% {
+    box-shadow: 0 0 0 6px rgba(35, 134, 215, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 0 14px rgba(35, 134, 215, 0);
+  }
+}
+
+.timeline-event__card {
+  text-align: center;
+  padding: 18px 16px;
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .timeline-event__card {
+  background: #131A22;
+}
+
+.timeline-event__card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.timeline-event:hover .timeline-event__card::before {
+  transform: scaleX(1);
+}
+
+.timeline-event:hover .timeline-event__card {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px -20px rgba(35, 134, 215, 0.30);
+  border-color: var(--primary);
+}
+
+.timeline-event__card--active {
+  background: linear-gradient(135deg, #EEF8FF, #F3F0FF);
+  border-color: var(--primary);
+  box-shadow: 0 15px 40px -15px rgba(35, 134, 215, 0.35);
+}
+
+[data-theme="dark"] .timeline-event__card--active {
+  background: linear-gradient(135deg, #131C26, #1B2733);
+}
+
+/* ============================================
+   2. TEAM CARDS HOVER
+   ============================================ */
+
+.team-card {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.team-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: 0;
+}
+
+.team-card:hover::before {
+  opacity: 0.05;
+}
+
+.team-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 25px 50px -20px rgba(35, 134, 215, 0.35);
+  border-color: var(--primary);
+}
+
+.team-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.team-card__avatar {
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+.team-card:hover .team-card__avatar {
+  transform: scale(1.1) rotate(-5deg);
+  box-shadow:
+    0 20px 40px -12px rgba(35, 134, 215, 0.55),
+    0 0 0 8px rgba(35, 134, 215, 0.10);
+}
+
+.team-card__name {
+  transition: color 0.3s ease;
+}
+
+.team-card:hover .team-card__name {
+  color: var(--primary);
+}
+
+/* ============================================
+   3. ARTICLE READING PROGRESS
+   ============================================ */
+
+.article-progress {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  z-index: 9999;
+  background: transparent;
+  pointer-events: none;
+}
+
+.article-progress__bar {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(
+    90deg,
+    var(--primary),
+    var(--secondary),
+    #7C5CFF,
+    var(--primary)
+  );
+  background-size: 300% 100%;
+  animation: gradientSlide 3s linear infinite;
+  transform-origin: right;
+  transition: width 0.1s linear;
+  box-shadow:
+    0 0 12px rgba(35, 134, 215, 0.6),
+    0 0 20px rgba(35, 134, 215, 0.3);
+}
+
+/* ============================================
+   4. FLOATING TOC (Article)
+   ============================================ */
+
+.article-toc {
+  position: sticky;
+  top: 100px;
+}
+
+.article-toc__link {
+  position: relative;
+  padding-inline-start: 20px;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.article-toc__link::before {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%) scaleX(0);
+  width: 3px;
+  height: 60%;
+  background: var(--primary);
+  border-radius: 3px;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: right;
+}
+
+.article-toc__link.is-active {
+  background: #EAF4FD;
+  color: var(--primary);
+  font-weight: var(--fw-bold);
+  padding-inline-start: 26px;
+}
+
+[data-theme="dark"] .article-toc__link.is-active {
+  background: rgba(35, 134, 215, 0.15);
+}
+
+.article-toc__link.is-active::before {
+  transform: translateY(-50%) scaleX(1);
+}
+
+/* ============================================
+   5. ARTICLE SCROLL-SYNC HIGHLIGHT
+   ============================================ */
+
+.article-body h2 {
+  position: relative;
+  padding-inline-start: 0;
+  transition: padding-inline-start 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.article-body h2::before {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 0;
+  background: linear-gradient(180deg, var(--primary), var(--secondary));
+  border-radius: 4px;
+  transition: height 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.article-body h2.is-active::before {
+  height: 80%;
+}
+
+.article-body h2.is-active {
+  padding-inline-start: 16px;
+}
+
+/* ============================================
+   6. FLOATING LABELS FORM (Contact)
+   ============================================ */
+
+.form-field--float {
+  position: relative;
+  padding-top: 20px;
+}
+
+.form-field--float .form-field__input,
+.form-field--float .form-field__textarea {
+  padding: 18px 16px 8px;
+  transition: all 0.3s ease;
+}
+
+.form-field--float .form-field__label {
+  position: absolute;
+  top: 28px;
+  right: 16px;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: right top;
+  background: transparent;
+  padding: 0 6px;
+}
+
+.form-field--float .form-field__input:focus ~ .form-field__label,
+.form-field--float .form-field__input:not(:placeholder-shown) ~ .form-field__label,
+.form-field--float .form-field__textarea:focus ~ .form-field__label,
+.form-field--float .form-field__textarea:not(:placeholder-shown) ~ .form-field__label {
+  top: 8px;
+  right: 10px;
+  font-size: 10px;
+  font-weight: var(--fw-semibold);
+  color: var(--primary);
+  background: var(--bg);
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+[data-theme="dark"] .form-field--float .form-field__input:focus ~ .form-field__label,
+[data-theme="dark"] .form-field--float .form-field__input:not(:placeholder-shown) ~ .form-field__label {
+  background: #131A22;
+}
+
+.form-field--float .form-field__input:focus,
+.form-field--float .form-field__textarea:focus {
+  border-color: var(--primary);
+  box-shadow:
+    0 0 0 4px rgba(35, 134, 215, 0.10),
+    0 8px 20px -10px rgba(35, 134, 215, 0.30);
+  transform: translateY(-1px);
+}
+
+/* Animated border shine */
+.form-field--float::after {
+  content: '';
+  position: absolute;
+  top: 20px;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  border-radius: 12px;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(35, 134, 215, 0.4),
+    transparent
+  );
+  background-size: 200% 100%;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.form-field--float:focus-within::after {
+  opacity: 0.15;
+  animation: shimmer 2s linear infinite;
+}
+
+/* ============================================
+   7. 404 INTERACTIVE PARALLAX
+   ============================================ */
+
+.err-page {
+  position: relative;
+  overflow: hidden;
+}
+
+.err-code {
+  position: relative;
+  display: inline-block;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.err-icon {
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.err-page:hover .err-icon {
+  transform: translateY(-8px) scale(1.05) rotate(-8deg);
+}
+
+.err-link {
+  position: relative;
+  overflow: hidden;
+}
+
+.err-link::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  transform: translate3d(0, 100%, 0);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: -1;
+}
+
+.err-link:hover::before {
+  transform: translate3d(0, 0, 0);
+}
+
+.err-link:hover {
+  color: #fff !important;
+  border-color: transparent;
+}
+
+/* Floating particles for 404 */
+.err-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.err-particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  opacity: 0.15;
+  animation: particleFloat linear infinite;
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translate3d(0, 100vh, 0) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.3;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translate3d(var(--drift, 30px), -100px, 0) scale(1);
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   8. SUCCESS PAGE ANIMATED TIMELINE
+   ============================================ */
+
+.success-timeline .timeline {
+  position: relative;
+}
+
+.success-timeline .timeline__step {
+  opacity: 0;
+  transform: translate3d(0, 20px, 0);
+  transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.success-timeline.is-visible .timeline__step {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.success-timeline.is-visible .timeline__step:nth-child(1) { transition-delay: 0s; }
+.success-timeline.is-visible .timeline__step:nth-child(2) { transition-delay: 0.15s; }
+.success-timeline.is-visible .timeline__step:nth-child(3) { transition-delay: 0.30s; }
+.success-timeline.is-visible .timeline__step:nth-child(4) { transition-delay: 0.45s; }
+
+.timeline__dot {
+  position: relative;
+  overflow: hidden;
+}
+
+.timeline__dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  transform: scale(0);
+  border-radius: 50%;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.timeline__step.is-active .timeline__dot::after {
+  transform: scale(1);
+}
+
+/* ============================================
+   9. HERO PARALLAX SECTIONS
+   ============================================ */
+
+.story-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.story-hero__bg {
+  position: absolute;
+  inset: -20% 0;
+  z-index: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.story-hero__content {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================
+   10. FADE-IN IMAGES ON SCROLL
+   ============================================ */
+
+.story-img-fade {
+  opacity: 0;
+  transform: translate3d(0, 40px, 0);
+  transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+.story-img-fade.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.story-img-fade img {
+  transition: transform 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.story-img-fade:hover img {
+  transform: scale(1.05);
+}
+
+/* ============================================
+   11. MAGAZINE FLIP CARDS
+   ============================================ */
+
+.mag-card {
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mag-card:hover {
+  transform: translateY(-8px);
+}
+
+.mag-card__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 60%
+  );
+  transform: translate3d(-100%, 0, 0) rotate(20deg);
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.mag-card:hover .mag-card__media::after {
+  transform: translate3d(100%, 0, 0) rotate(20deg);
+}
+
+/* ============================================
+   12. REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .timeline-event,
+  .timeline-roadmap__line::after,
+  .team-card,
+  .team-card__avatar,
+  .err-particle,
+  .success-timeline .timeline__step,
+  .story-img-fade {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ============================================
+   13. MOBILE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .timeline-roadmap {
+    padding: 30px 0;
+  }
+
+  .timeline-event {
+    flex: 0 0 200px;
+  }
+
+  .story-img-fade {
+    border-radius: 16px;
+  }
+
+  .form-field--float .form-field__label {
+    top: 24px;
+  }
+
+  .form-field--float .form-field__input:focus ~ .form-field__label,
+  .form-field--float .form-field__input:not(:placeholder-shown) ~ .form-field__label,
+  .form-field--float .form-field__textarea:focus ~ .form-field__label,
+  .form-field--float .form-field__textarea:not(:placeholder-shown) ~ .form-field__label {
+    top: 6px;
+  }
+}

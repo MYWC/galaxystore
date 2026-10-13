@@ -1,6 +1,6 @@
 /* ============================================
    LAYOUT — Header + Nav + Footer + Common UI
-   با Base Path + SEO + Performance + A11y + Effects + Motion + Cinema
+   با Base Path + SEO + Performance + A11y + Effects + Motion + Cinema + Story
    ============================================ */
 
 import { initDrawer } from '../sections/drawer.js';
@@ -17,6 +17,7 @@ import { initPerformance } from '../utils/performance.js';
 import { initA11y, announceCartUpdate } from '../utils/a11y.js';
 import { initEffects, toggleTheme } from '../utils/effects.js';
 import { initMotion } from '../utils/motion.js';
+import { initStory } from '../utils/story.js';
 
 /* ============================================
    BASE PATH DETECTION
@@ -450,6 +451,15 @@ export function initLayout() {
     document.head.appendChild(cinemaLink);
   }
 
+  // Story CSS (Phase 4)
+  if (!document.getElementById('story-css')) {
+    const storyLink = document.createElement('link');
+    storyLink.id = 'story-css';
+    storyLink.rel = 'stylesheet';
+    storyLink.href = u('css/effects/story.css');
+    document.head.appendChild(storyLink);
+  }
+
   // Preconnect
   const preconnect = document.createElement('link');
   preconnect.rel = 'preconnect';
@@ -498,6 +508,9 @@ export function initLayout() {
 
   // Motion (Phase 2)
   initMotion();
+
+  // Story (Phase 4)
+  initStory();
 
   // Theme Toggle
   const themeToggle = document.getElementById('theme-toggle');
