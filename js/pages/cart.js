@@ -1,6 +1,6 @@
 /* ============================================
    CART PAGE — Full Cart + Coupons + Copy (B.8)
-   + Quantity Limits (B.10)
+   + Quantity Limits (B.10) + Form Draft (B.11)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -9,6 +9,7 @@ import { cart, wishlist, onChange, KEYS } from '../store/state.js';
 import { renderProductCard } from '../components/product-card.js';
 import { toast } from '../components/toast.js';
 import { copyText } from '../utils/copy-clipboard.js';
+import { attachFormDraft } from '../utils/form-draft.js';
 
 initLayout();
 
@@ -476,7 +477,6 @@ function bindEvents() {
       const id = inc.dataset.qtyInc;
       const item = cart.get().find((i) => i.id === id);
       if (item) {
-        // === B.10 ===
         const result = cart.updateQty(id, item.qty + 1);
         if (result?.clamped && result.error) {
           toast({
@@ -609,10 +609,20 @@ function bindEvents() {
    ============================================ */
 
 function init() {
+  // === B.11: Cart Note Auto-save ===
+  const noteInput = document.getElementById('cart-note-input');
+  if (noteInput) {
+    attachFormDraft(noteInput, {
+      key: 'cart-note',
+      debounceMs: 600,
+      showIndicator: true,
+    });
+  }
+
   render();
   bindEvents();
 
-  console.log('%c✓ Cart page loaded (B.10)', 'color:#18B981;font-weight:bold;');
+  console.log('%c✓ Cart page loaded (B.11)', 'color:#18B981;font-weight:bold;');
 }
 
 init();

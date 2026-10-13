@@ -1,6 +1,7 @@
 /* ============================================
    CHECKOUT PAGE — Multi-step Wizard (B.7)
    with Supabase Orders + Button Loading (A.6)
+   + Form Draft (B.11)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -9,6 +10,7 @@ import { formatPrice } from '../data/products.js';
 import { toast } from '../components/toast.js';
 import { createOrder } from '../services/orders.js';
 import { withButtonLoading } from '../utils/button-loading.js';
+import { saveDraft, loadDraft, clearDraft, debounce } from '../utils/form-draft.js';
 
 /* ============================================
    INIT LAYOUT
@@ -22,6 +24,7 @@ initLayout();
 
 const FREE_SHIPPING_THRESHOLD = 5000000;
 const TOTAL_STEPS = 3;
+const DRAFT_KEY = 'checkout';
 
 const PROVINCES = [
   'تهران', 'اصفهان', 'فارس', 'خراسان رضوی', 'آذربایجان شرقی',
@@ -68,6 +71,63 @@ const formData = {
   payment: 'online',
   note: '',
 };
+
+/* ============================================
+   DRAFT (B.11)
+   ============================================ */
+
+const persistDraft = debounce(() => {
+  saveDraft(DRAFT_KEY, formData);
+}, 600);
+
+function restoreDraft() {
+  const draft = loadDraft(DRAFT_KEY);
+  if (!draft || !draft.values) return false;
+
+  Object.keys(draft.values).forEach((k) => {
+    if (k in formData) {
+      formData[k] = draft.values[k];
+    }
+  });
+
+  return true;
+}
+
+function populateForm() {
+  const setVal = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val == null ? '' : val;
+  };
+
+  setVal('firstName', formData.firstName);
+  setVal('lastName', formData.lastName);
+  setVal('phone', formData.phone);
+  setVal('email', formData.email);
+  setVal('city', formData.city);
+  setVal('address', formData.address);
+  setVal('postalCode', formData.postalCode);
+  setVal('plateNumber', formData.plateNumber);
+  setVal('orderNote', formData.note);
+
+  const prov = document.getElementById('province');
+  if (prov) prov.value = formData.province || '';
+
+  // Shipping radio
+  const shipInput = document.querySelector(`input[name="shipping"][value="${formData.shipping}"]`);
+  if (shipInput) {
+    shipInput.checked = true;
+    document.querySelectorAll('.shipping-option').forEach((o) => o.classList.remove('is-selected'));
+    shipInput.closest('.shipping-option')?.classList.add('is-selected');
+  }
+
+  // Payment radio
+  const payInput = document.querySelector(`input[name="payment"][value="${formData.payment}"]`);
+  if (payInput) {
+    payInput.checked = true;
+    document.querySelectorAll('.payment-option').forEach((o) => o.classList.remove('is-selected'));
+    payInput.closest('.payment-option')?.classList.add('is-selected');
+  }
+}
 
 /* ============================================
    HELPERS
@@ -278,7 +338,6 @@ function renderReview() {
     ` : ''}
   `;
 
-  // Edit buttons
   wrap.querySelectorAll('[data-goto-step]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const step = Number(btn.dataset.gotoStep);
@@ -318,25 +377,21 @@ function render() {
    ============================================ */
 
 function updateStepUI() {
-  // Indicators
   document.querySelectorAll('[data-step-indicator]').forEach((el) => {
     const stepNum = Number(el.dataset.stepIndicator);
     el.classList.toggle('is-active', stepNum === state.currentStep);
     el.classList.toggle('is-done', stepNum < state.currentStep);
   });
 
-  // Step lines
   const lines = document.querySelectorAll('.checkout-step__line');
   lines.forEach((line, i) => {
     line.classList.toggle('is-done', i + 1 < state.currentStep);
   });
 
-  // Panels
   document.querySelectorAll('.checkout-wizard-step').forEach((panel) => {
     panel.classList.toggle('is-active', Number(panel.dataset.step) === state.currentStep);
   });
 
-  // Buttons
   const backBtn = document.getElementById('wizard-back');
   const nextBtn = document.getElementById('wizard-next');
   const submitBtn = document.getElementById('checkout-submit');
@@ -357,7 +412,6 @@ function updateStepUI() {
     submitBtn.hidden = state.currentStep !== TOTAL_STEPS;
   }
 
-  // Scroll to top of wizard
   const wizardTop = document.getElementById('checkout-steps');
   if (wizardTop) {
     const offset = 100;
@@ -371,7 +425,6 @@ function updateStepUI() {
 function goToStep(step) {
   if (step < 1 || step > TOTAL_STEPS) return;
 
-  // اگه جلو می‌ریم، ولیدیت کن
   if (step > state.currentStep) {
     for (let s = state.currentStep; s < step; s++) {
       if (!validateStep(s)) {
@@ -389,7 +442,6 @@ function goToStep(step) {
   state.currentStep = step;
   updateStepUI();
 
-  // پاک کردن خطاهای مرحله بعد
   if (step === 3) {
     renderReview();
   }
@@ -469,11 +521,7 @@ function validateStep(step) {
     } else clearError('postalCode');
   }
 
-  // Step 2 و Step 3 نیازی به validation جداگانه ندارن
-  // (shipping و payment همیشه یه گزینه انتخاب شده دارن)
-
   if (!valid) {
-    // Scroll to first error
     const firstError = document.querySelector('.form-field.has-error');
     if (firstError) {
       firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -505,6 +553,7 @@ function bindForm() {
       }
 
       clearError(id);
+      persistDraft(); // ← B.11
     });
   });
 
@@ -513,6 +562,7 @@ function bindForm() {
     addressEl.addEventListener('input', (e) => {
       formData.address = e.target.value;
       clearError('address');
+      persistDraft(); // ← B.11
     });
   }
 
@@ -520,6 +570,7 @@ function bindForm() {
   if (noteEl) {
     noteEl.addEventListener('input', (e) => {
       formData.note = e.target.value;
+      persistDraft(); // ← B.11
     });
   }
 
@@ -531,6 +582,7 @@ function bindForm() {
     provEl.addEventListener('change', (e) => {
       formData.province = e.target.value;
       clearError('province');
+      persistDraft(); // ← B.11
     });
   }
 
@@ -545,6 +597,7 @@ function bindForm() {
 
       formData.shipping = input.value;
       renderSummary();
+      persistDraft(); // ← B.11
     });
   }
 
@@ -558,6 +611,7 @@ function bindForm() {
       input.closest('.payment-option').classList.add('is-selected');
 
       formData.payment = input.value;
+      persistDraft(); // ← B.11
     });
   }
 }
@@ -573,7 +627,6 @@ function bindWizard() {
   if (nextBtn) nextBtn.addEventListener('click', goNext);
   if (backBtn) backBtn.addEventListener('click', goBack);
 
-  // Enter key در input ها → مرحله بعد
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter') return;
     if (state.currentStep >= TOTAL_STEPS) return;
@@ -602,7 +655,6 @@ async function submitOrder() {
     return;
   }
 
-  // Validate all steps
   for (let s = 1; s <= TOTAL_STEPS; s++) {
     if (!validateStep(s)) {
       goToStep(s);
@@ -651,6 +703,9 @@ async function submitOrder() {
     try {
       const { order } = await createOrder(orderData);
 
+      // === B.11: پاک کردن پیش‌نویس بعد از ثبت موفق ===
+      clearDraft(DRAFT_KEY);
+
       toast({
         type: 'success',
         title: 'سفارش ثبت شد',
@@ -682,7 +737,6 @@ async function submitOrder() {
 function bindSubmit() {
   const btn = document.getElementById('checkout-submit');
   if (!btn) return;
-
   btn.addEventListener('click', submitOrder);
 }
 
@@ -691,15 +745,33 @@ function bindSubmit() {
    ============================================ */
 
 function init() {
+  // === B.11: بازیابی پیش‌نویس قبل از رندر ===
+  const restored = restoreDraft();
+
   render();
   bindForm();
   bindWizard();
   bindSubmit();
   updateStepUI();
 
+  // === B.11: اگه بازیابی شد، فرم رو پر کن + پیام بده ===
+  if (restored) {
+    populateForm();
+    renderSummary();
+
+    setTimeout(() => {
+      toast({
+        type: 'info',
+        title: 'پیش‌نویس بازیابی شد',
+        message: 'اطلاعات قبلی شما به‌طور خودکار بازیابی شد',
+        duration: 3500,
+      });
+    }, 500);
+  }
+
   onChange(KEYS.cart, render);
 
-  console.log('%c✓ Checkout page loaded (B.7 — Multi-step)', 'color:#18B981;font-weight:bold;');
+  console.log('%c✓ Checkout page loaded (B.11)', 'color:#18B981;font-weight:bold;');
 }
 
 init();

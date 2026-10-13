@@ -1,5 +1,6 @@
 /* ============================================
    ADDRESSES PAGE — Refactored with Auth Service
+   + Form Draft (B.11)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -9,6 +10,7 @@ import {
   signOut,
   isSupabaseConfigured,
 } from '../services/auth.js';
+import { attachFormDraft, clearDraft } from '../utils/form-draft.js';
 
 /* ============================================
    INIT LAYOUT
@@ -21,6 +23,7 @@ initLayout();
    ============================================ */
 
 const ADDRESSES_KEY = 'ms_addresses';
+const DRAFT_KEY = 'address-new';
 
 const PROVINCES = [
   'تهران', 'اصفهان', 'فارس', 'خراسان رضوی', 'آذربایجان شرقی',
@@ -40,6 +43,9 @@ const state = {
   editingId: null,
   deletingId: null,
 };
+
+// === B.11: Draft controller ===
+let addressDraftCtrl = null;
 
 /* ============================================
    AUTH
@@ -282,6 +288,25 @@ function openModal(addressId = null) {
   if (modal) modal.classList.add('is-open');
   document.body.style.overflow = 'hidden';
 
+  // === B.11: attach draft to modal form (only for NEW address) ===
+  const form = document.getElementById('address-form');
+  if (form) {
+    // Clean up previous controller
+    if (addressDraftCtrl) {
+      addressDraftCtrl = null;
+    }
+
+    // Only auto-save in "new address" mode (not edit)
+    if (!addressId) {
+      addressDraftCtrl = attachFormDraft(form, {
+        key: DRAFT_KEY,
+        debounceMs: 700,
+        showIndicator: true,
+        autoRestore: true,
+      });
+    }
+  }
+
   setTimeout(() => {
     const first = document.getElementById('addr-label');
     if (first) first.focus();
@@ -453,6 +478,15 @@ function handleSubmit(e) {
     }
 
     saveAddresses(list);
+
+    // === B.11: clear draft after successful submit (new mode only) ===
+    if (!state.editingId) {
+      clearDraft(DRAFT_KEY);
+      if (addressDraftCtrl) {
+        addressDraftCtrl = null;
+      }
+    }
+
     submitBtn.disabled = false;
     closeModal();
     render();
@@ -600,7 +634,7 @@ async function init() {
   }
 
   console.log(
-    `%c✓ Addresses page — ${getAddresses().length} addresses`,
+    `%c✓ Addresses page — ${getAddresses().length} addresses (B.11)`,
     'color:#18B981;font-weight:bold;'
   );
 }

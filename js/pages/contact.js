@@ -1,9 +1,10 @@
 /* ============================================
-   CONTACT PAGE
+   CONTACT PAGE — with Form Draft (B.11)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
 import { toast } from '../components/toast.js';
+import { attachFormDraft, clearDraft } from '../utils/form-draft.js';
 
 /* ============================================
    INIT LAYOUT
@@ -18,6 +19,7 @@ initLayout();
 const PHONE_NUMBER = '09362582236';
 const PHONE_NUMBER_FA = '۰۹۳۶۲۵۸۲۲۳۶';
 const MAX_MESSAGE_LENGTH = 1000;
+const DRAFT_KEY = 'contact-form';
 
 /* ============================================
    MESSENGER HANDLERS
@@ -38,7 +40,6 @@ async function handleMessenger(type) {
   const msg = messages[type];
   if (!msg) return;
 
-  // Try to copy the number to clipboard
   let copied = false;
   try {
     await navigator.clipboard.writeText(PHONE_NUMBER);
@@ -150,9 +151,7 @@ function handleSubmit(e) {
   btn.classList.add('is-loading');
   btn.disabled = true;
 
-  // Simulate server request
   setTimeout(() => {
-    // Save message to localStorage (آینده: Supabase)
     try {
       const messages = JSON.parse(localStorage.getItem('ms_contact_messages') || '[]');
       messages.unshift({
@@ -166,6 +165,9 @@ function handleSubmit(e) {
       });
       localStorage.setItem('ms_contact_messages', JSON.stringify(messages.slice(0, 50)));
     } catch {}
+
+    // === B.11: پاک کردن پیش‌نویس بعد از ارسال موفق ===
+    clearDraft(DRAFT_KEY);
 
     showSuccess();
   }, 900);
@@ -234,7 +236,6 @@ function initMessageCounter() {
    ============================================ */
 
 function bindInputs() {
-  // Phone sanitize
   const phone = document.getElementById('c-phone');
   if (phone) {
     phone.addEventListener('input', (e) => {
@@ -243,7 +244,6 @@ function bindInputs() {
     });
   }
 
-  // Clear errors on other inputs
   ['name', 'email', 'message'].forEach((id) => {
     const el = document.getElementById(`c-${id}`);
     if (el) {
@@ -275,13 +275,23 @@ function bindMessengers() {
 
 function init() {
   const form = document.getElementById('contact-form');
-  if (form) form.addEventListener('submit', handleSubmit);
+  if (form) {
+    form.addEventListener('submit', handleSubmit);
+
+    // === B.11: Auto-save draft ===
+    attachFormDraft(form, {
+      key: DRAFT_KEY,
+      debounceMs: 800,
+      showIndicator: true,
+      autoRestore: true,
+    });
+  }
 
   initMessageCounter();
   bindInputs();
   bindMessengers();
 
-  console.log('%c✓ Contact page loaded', 'color:#18B981;font-weight:bold;');
+  console.log('%c✓ Contact page loaded (B.11)', 'color:#18B981;font-weight:bold;');
 }
 
 init();

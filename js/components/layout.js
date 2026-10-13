@@ -6,6 +6,7 @@
    + Empty State (A.7) + Breadcrumb (B.1) + Voice (B.4)
    + Compare Bar (B.5) + Wishlist Feedback (B.6)
    + Copy Clipboard (B.8) + Password Strength (B.9)
+   + Form Draft (B.11)
    (بدون Dark Mode)
    ============================================ */
 
@@ -30,6 +31,7 @@ import { autoBreadcrumb } from './breadcrumb.js';
 import { initCompareBar } from '../utils/compare-bar.js';
 import { initWishlistFeedback } from '../utils/wishlist-feedback.js';
 import { initCopyButtons } from '../utils/copy-clipboard.js';
+import { attachFormDraft } from '../utils/form-draft.js';
 
 /* ============================================
    BASE PATH DETECTION
@@ -239,13 +241,13 @@ const DRAWER_HTML = `
     </div>
   </div>
   <div class="drawer__foot">
-    <a href="tel:02112345678" class="drawer__contact" aria-label="تماس با پشتیبانی">
+    <a href="tel:09362582236" class="drawer__contact" aria-label="تماس با پشتیبانی">
       <span class="drawer__contact-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
       </span>
       <span class="drawer__contact-text">
         <span>پشتیبانی ۲۴ ساعته</span>
-        <span>۰۲۱-۱۲۳۴۵۶۷۸</span>
+        <span>۰۹۳۶۲۵۸۲۲۳۶</span>
       </span>
     </a>
   </div>
@@ -576,6 +578,15 @@ export function initLayout() {
     document.head.appendChild(formsLink);
   }
 
+  // Form Draft CSS (Phase B.11)
+  if (!document.getElementById('form-draft-css')) {
+    const draftLink = document.createElement('link');
+    draftLink.id = 'form-draft-css';
+    draftLink.rel = 'stylesheet';
+    draftLink.href = u('css/components/form-draft.css');
+    document.head.appendChild(draftLink);
+  }
+
   // Preconnect
   const preconnect = document.createElement('link');
   preconnect.rel = 'preconnect';
@@ -640,6 +651,9 @@ export function initLayout() {
   // Final Touch (Phase 6)
   initFinalTouch();
 
+  // Auto-attach drafts (Phase B.11)
+  autoInitFormDrafts();
+
   syncBadges();
   onChange(KEYS.wishlist, syncBadges);
   onChange(KEYS.cart, () => {
@@ -664,5 +678,26 @@ function syncBadges() {
   document.querySelectorAll('.header__action-badge--cart, [data-badge="cart-drawer"]').forEach((el) => {
     el.textContent = cCount.toLocaleString('fa-IR');
     el.style.display = cCount > 0 ? '' : 'none';
+  });
+}
+
+/* ============================================
+   AUTO-INIT FORM DRAFTS (B.11)
+   ============================================ */
+
+function autoInitFormDrafts() {
+  document.querySelectorAll('[data-draft]').forEach((el) => {
+    const key = el.dataset.draft;
+    if (!key) return;
+
+    // Skip if already initialized
+    if (el.dataset.draftReady === 'true') return;
+    el.dataset.draftReady = 'true';
+
+    attachFormDraft(el, {
+      key,
+      debounceMs: 800,
+      showIndicator: true,
+    });
   });
 }
