@@ -1,8 +1,9 @@
 /* ============================================
    FLASH SALE — محصولات واقعی + Countdown زنده
+   با اصلاح منطق قیمت و استفاده از allProducts
    ============================================ */
 
-import { products, flashSaleProducts, formatPrice } from '../data/products.js';
+import { allProducts, flashSaleProducts, formatPrice } from '../data/products.js';
 
 const ICONS = {
   heart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`,
@@ -11,25 +12,32 @@ const ICONS = {
 
 /* ---------- ساخت کارت با محصول واقعی ---------- */
 function renderFlashCard(saleItem) {
-  const product = products.find((p) => p.id === saleItem.id);
-  if (!product || !product.variants?.length) return '';
+  // از allProducts استفاده می‌کنیم (حتی اگه عکس نداشته باشه)
+  const product = allProducts.find((p) => p.id === saleItem.id);
 
-  // ارزانترین واریانت
+  if (!product || !product.variants?.length) {
+    console.warn(`[FlashSale] محصول ${saleItem.id} پیدا نشد یا variant ندارد`);
+    return '';
+  }
+
+  // ارزان‌ترین واریانت
   const variant = [...product.variants].sort((a, b) => a.price - b.price)[0];
 
-  // تخفیف اضافی Flash Sale روی قیمت
-  const extra = saleItem.discountExtra || 0;
-  const flashPrice = Math.round(variant.price * (1 - extra / 100));
-  const oldPrice = variant.price;
+  // قیمت Flash Sale = قیمت فروش ویژه از saleItem
+  // قیمت قبل = قیمت اصلی محصول
+  const flashPrice = saleItem.price;
+  const oldPrice = saleItem.oldPrice || variant.price;
 
-  const totalStock = saleItem.totalStock;
-  const sold = saleItem.sold;
+  // درصد تخفیف کل
+  const totalDiscountPercent = saleItem.discount
+    || Math.round(((oldPrice - flashPrice) / oldPrice) * 100);
+
+  const totalStock = saleItem.totalStock || 0;
+  const sold = saleItem.sold || 0;
   const remaining = Math.max(totalStock - sold, 0);
-  const percentSold = Math.min(100, Math.round((sold / totalStock) * 100));
-
-  const totalDiscountPercent = Math.round(
-    ((oldPrice - flashPrice) / oldPrice) * 100
-  );
+  const percentSold = totalStock > 0
+    ? Math.min(100, Math.round((sold / totalStock) * 100))
+    : 0;
 
   const imgSrc = product.image || `assets/images/products/${product.id}.jpg`;
 
@@ -111,6 +119,8 @@ function initCountdown() {
   const minutesEl = el.querySelector('[data-cd="minutes"]');
   const secondsEl = el.querySelector('[data-cd="seconds"]');
 
+  if (!hoursEl || !minutesEl || !secondsEl) return;
+
   const endAt = getEndOfDay();
 
   const tick = () => {
@@ -132,6 +142,7 @@ function initCountdown() {
 export function initFlashSale() {
   const grid = document.getElementById('flash-sale-grid');
   if (!grid) return;
+
   grid.innerHTML = flashSaleProducts.map(renderFlashCard).join('');
   initCountdown();
 }

@@ -1,0 +1,54 @@
+{
+  "name": "موبایل استور — فروشگاه تخصصی موبایل و تبلت",
+  "short_name": "موبایل استور",
+  "description": "فروشگاه تخصصی موبایل و تبلت با ۱۰ برند معتبر جهانی، ضمانت اصالت کالا و ارسال سریع به سراسر کشور.",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#2386D7",
+  "background_color": "#FFFFFF",
+  "categories": ["shopping", "electronics"],
+  "icons": [
+    {
+      "src": "assets/images/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/images/favicon.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/images/favicon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "فروشگاه",
+      "short_name": "فروشگاه",
+      "url": "./category.html",
+      "description": "مشاهده همه محصولات"
+    },
+    {
+      "name": "سبد خرید",
+      "short_name": "سبد",
+      "url": "./cart.html",
+      "description": "مشاهده سبد خرید"
+    },
+    {
+      "name": "علاقه‌مندی‌ها",
+      "short_name": "علاقه‌مندی",
+      "url": "./wishlist.html",
+      "description": "مشاهده لیست علاقه‌مندی‌ها"
+    }
+  ]
+}

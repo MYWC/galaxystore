@@ -1,6 +1,7 @@
 /* ============================================
    PRODUCTS DATA
    با اتصال به Supabase + Fallback محلی
+   + Timeout برای جلوگیری از هنگ کردن صفحه
    + فیلتر محصولات بدون عکس
    ============================================ */
 
@@ -95,6 +96,19 @@ function mapSupabaseProduct(row) {
 }
 
 /* ============================================
+   TIMEOUT HELPER
+   ============================================ */
+
+function withTimeout(promise, ms = 3000) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('SUPABASE_TIMEOUT')), ms)
+    ),
+  ]);
+}
+
+/* ============================================
    Fetch Products
    ============================================ */
 
@@ -105,10 +119,12 @@ async function fetchProducts() {
       return FALLBACK_PRODUCTS;
     }
 
-    const { data, error } = await supabase
+    const query = supabase
       .from('products')
       .select('*')
       .eq('is_active', true);
+
+    const { data, error } = await withTimeout(query, 3000);
 
     if (error) {
       console.warn('%c⚠️  Supabase error — using fallback data:', 'color:#F59E0B;', error.message);
@@ -124,28 +140,33 @@ async function fetchProducts() {
     return data.map(mapSupabaseProduct);
 
   } catch (err) {
-    console.warn('%c⚠️  Failed to fetch products — using fallback data:', 'color:#F59E0B;', err);
+    if (err?.message === 'SUPABASE_TIMEOUT') {
+      console.warn('%c⚠️  Supabase timeout (>3s) — using fallback data', 'color:#F59E0B;font-weight:bold;');
+    } else {
+      console.warn('%c⚠️  Failed to fetch products — using fallback data:', 'color:#F59E0B;', err);
+    }
     return FALLBACK_PRODUCTS;
   }
 }
 
 /* ============================================
-   ALL PRODUCTS (برای صفحه محصول تنها)
+   LOAD (with top-level await — ES2022+)
    ============================================ */
 
 const allLoadedProducts = await fetchProducts();
 
 /* ============================================
-   ALL PRODUCTS (همه — حتی بدون عکس)
+   EXPORTS
    ============================================ */
 
+/** همه محصولات (حتی بدون عکس) */
 export const allProducts = allLoadedProducts;
 
-/* ============================================
-   PRODUCTS (فقط عکس‌دارها — برای نمایش)
-   ============================================ */
-
+/** فقط محصولاتی که عکس دارن — برای نمایش در گریدها */
 export const products = allLoadedProducts.filter((p) => hasImage(p.id));
+
+/** Promise ready — برای صفحاتی که می‌خوان مطمئن بشن همه چیز لود شده */
+export const productsReady = Promise.resolve(products);
 
 console.log(
   `%c✓ Visible products (with images): ${products.length} از ${allProducts.length}`,
