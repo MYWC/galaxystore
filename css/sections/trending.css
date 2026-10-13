@@ -209,3 +209,238 @@
     gap: 10px;
   }
 }
+/* ============================================
+   TRENDING BY VIEWS (C.2)
+   ============================================ */
+
+/* ---------- Hot Tab ---------- */
+
+.trending__tab--hot {
+  position: relative;
+  overflow: hidden;
+}
+
+.trending__tab--hot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255, 87, 34, 0.08) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.trending__tab--hot:hover::before {
+  opacity: 1;
+  animation: hotTabShimmer 1.5s linear infinite;
+}
+
+@keyframes hotTabShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.trending__tab--hot.is-active {
+  background: linear-gradient(135deg, #FFF3E6, #FFE4C7);
+  color: #EF6C1F;
+  box-shadow: 0 4px 14px -6px rgba(239, 108, 31, 0.35);
+}
+
+.trending__tab--hot.is-active .trending__tab-count {
+  background: #EF6C1F;
+  color: #fff;
+}
+
+.trending__tab-fire {
+  display: inline-block;
+  font-size: 13px;
+  line-height: 1;
+  margin-inline-end: 4px;
+  animation: fireFlicker 1.6s ease-in-out infinite;
+  filter: drop-shadow(0 0 4px rgba(255, 87, 34, 0.5));
+  transform-origin: center bottom;
+}
+
+@keyframes fireFlicker {
+  0%, 100% { transform: scale(1) rotate(-2deg); }
+  50%      { transform: scale(1.12) rotate(2deg); }
+}
+
+/* ---------- View Badge on Cards ---------- */
+
+.p-card__views {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: rgba(23, 32, 42, 0.82);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  z-index: 3;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.25);
+  animation: viewBadgePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.p-card__views svg {
+  width: 11px;
+  height: 11px;
+  stroke-width: 2;
+  flex-shrink: 0;
+  color: #FFB84D;
+}
+
+@keyframes viewBadgePop {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) translateY(-4px);
+  }
+  60% {
+    transform: scale(1.08) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* هماهنگی با badge های تخفیف (اگه هردو باشن) */
+.p-card__media .p-card__badges {
+  z-index: 2;
+}
+
+.p-card__media .p-card__actions {
+  z-index: 4;
+}
+
+/* ---------- Skeleton ---------- */
+
+.trending-view-skeleton {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+/* ---------- Empty State ---------- */
+
+.trending-view-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  padding: 60px 24px;
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 18px;
+}
+
+.trending-view-empty__icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #FFF3E6, #FFE4C7);
+  color: #EF6C1F;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.trending-view-empty__icon svg {
+  width: 36px;
+  height: 36px;
+  stroke-width: 1.8;
+}
+
+.trending-view-empty__title {
+  font-size: 20px;
+  font-weight: var(--fw-black);
+  color: var(--text);
+  letter-spacing: -0.4px;
+}
+
+.trending-view-empty__text {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  line-height: 1.8;
+  max-width: 420px;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1200px) {
+  .trending-view-skeleton {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .trending-view-skeleton {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .p-card__views {
+    top: 8px;
+    left: 8px;
+    padding: 3px 7px;
+    font-size: 9px;
+  }
+
+  .p-card__views svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .trending-view-empty {
+    padding: 40px 20px;
+  }
+
+  .trending-view-empty__icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+  }
+
+  .trending-view-empty__icon svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .trending-view-empty__title {
+    font-size: 17px;
+  }
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .trending__tab-fire,
+  .p-card__views,
+  .trending__tab--hot:hover::before {
+    animation: none !important;
+  }
+
+  .p-card__views {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
