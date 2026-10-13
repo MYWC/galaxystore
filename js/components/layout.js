@@ -1,6 +1,8 @@
 /* ============================================
    LAYOUT — Header + Nav + Footer + Common UI
-   با Base Path + SEO + Performance + A11y + Effects + Motion + Cinema + Story
+   با Base Path + SEO + Performance + A11y
+   + Effects (1) + Motion (2) + Cinema (3)
+   + Story (4) + Showcase (5) + Final Touch (6)
    ============================================ */
 
 import { initDrawer } from '../sections/drawer.js';
@@ -18,6 +20,8 @@ import { initA11y, announceCartUpdate } from '../utils/a11y.js';
 import { initEffects, toggleTheme } from '../utils/effects.js';
 import { initMotion } from '../utils/motion.js';
 import { initStory } from '../utils/story.js';
+import { initShowcase } from '../utils/showcase.js';
+import { initFinalTouch } from '../utils/final-touch.js';
 
 /* ============================================
    BASE PATH DETECTION
@@ -460,6 +464,24 @@ export function initLayout() {
     document.head.appendChild(storyLink);
   }
 
+  // Showcase CSS (Phase 5)
+  if (!document.getElementById('showcase-css')) {
+    const showcaseLink = document.createElement('link');
+    showcaseLink.id = 'showcase-css';
+    showcaseLink.rel = 'stylesheet';
+    showcaseLink.href = u('css/effects/showcase.css');
+    document.head.appendChild(showcaseLink);
+  }
+
+  // Final Touch CSS (Phase 6)
+  if (!document.getElementById('final-css')) {
+    const finalLink = document.createElement('link');
+    finalLink.id = 'final-css';
+    finalLink.rel = 'stylesheet';
+    finalLink.href = u('css/effects/final-touch.css');
+    document.head.appendChild(finalLink);
+  }
+
   // Preconnect
   const preconnect = document.createElement('link');
   preconnect.rel = 'preconnect';
@@ -511,6 +533,12 @@ export function initLayout() {
 
   // Story (Phase 4)
   initStory();
+
+  // Showcase (Phase 5)
+  initShowcase();
+
+  // Final Touch (Phase 6)
+  initFinalTouch();
 
   // Theme Toggle
   const themeToggle = document.getElementById('theme-toggle');
