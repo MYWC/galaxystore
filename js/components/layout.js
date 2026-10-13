@@ -6,7 +6,8 @@
    + Empty State (A.7) + Breadcrumb (B.1) + Voice (B.4)
    + Compare Bar (B.5) + Wishlist Feedback (B.6)
    + Copy Clipboard (B.8) + Password Strength (B.9)
-   + Form Draft (B.11)
+   + Form Draft (B.11) + Recently Viewed (B.12)
+   + Recommendations (C.3)
    (بدون Dark Mode)
    ============================================ */
 
@@ -585,6 +586,24 @@ export function initLayout() {
     draftLink.rel = 'stylesheet';
     draftLink.href = u('css/components/form-draft.css');
     document.head.appendChild(draftLink);
+  }
+
+  // Recently Viewed CSS (Phase B.12)
+  if (!document.getElementById('recently-viewed-css')) {
+    const rvLink = document.createElement('link');
+    rvLink.id = 'recently-viewed-css';
+    rvLink.rel = 'stylesheet';
+    rvLink.href = u('css/components/recently-viewed.css');
+    document.head.appendChild(rvLink);
+  }
+
+  // Recommendations CSS (Phase C.3)
+  if (!document.getElementById('recommendations-css')) {
+    const recLink = document.createElement('link');
+    recLink.id = 'recommendations-css';
+    recLink.rel = 'stylesheet';
+    recLink.href = u('css/components/recommendations.css');
+    document.head.appendChild(recLink);
   }
 
   // Preconnect

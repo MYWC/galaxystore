@@ -1,6 +1,7 @@
 /* ============================================
    HOME PAGE — Entry Point
    با Skeleton (A.2) + Error System (A.3)
+   + Recommendations (C.3)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -15,6 +16,7 @@ import { initMagazine } from '../sections/magazine.js';
 import { initBrandStrip } from '../sections/brand-strip.js';
 
 import { toast } from '../components/toast.js';
+import { mountRecommendations } from '../components/recommendations.js';
 import { cart, wishlist, compare, onChange, KEYS } from '../store/state.js';
 import { products, formatPrice } from '../data/products.js';
 import { openCart } from '../components/cart-drawer.js';
@@ -48,6 +50,31 @@ initBuyingGuides();
 initShopByBrand();
 initReviews();
 initMagazine();
+
+/* ============================================
+   RECOMMENDATIONS (C.3)
+   ============================================ */
+function initRecommendationsHome() {
+  const magazine = document.getElementById('magazine');
+  if (!magazine) return;
+
+  // اگه قبلاً ساخته شده
+  if (document.getElementById('recommendations-home')) return;
+
+  const section = document.createElement('section');
+  section.id = 'recommendations-home';
+  section.hidden = true; // mountRecommendations خودش بازش می‌کنه
+
+  magazine.parentNode.insertBefore(section, magazine);
+
+  mountRecommendations(section, {
+    limit: 4,
+    showViewAll: true,
+    viewAllHref: 'category.html',
+  });
+}
+
+initRecommendationsHome();
 
 /* ============================================
    BADGE SYNC
@@ -127,7 +154,12 @@ document.addEventListener('click', (e) => {
     const storage = flashAdd.dataset.flashStorage;
     const ram = flashAdd.dataset.flashRam;
 
-    cart.add({
+    // B.10: stock رو بگیر
+    const variant = (product.variants || []).find((v) => v.storage === storage)
+      || product.variants?.[0];
+    const stock = variant?.stock;
+
+    const result = cart.add({
       id: `${product.id}-${storage}-flash`,
       brand: product.brand,
       name: product.name,
@@ -136,7 +168,20 @@ document.addEventListener('click', (e) => {
       price: flashPrice,
       oldPrice: null,
       image: product.image,
+      stock,
     }, 1);
+
+    // B.10: چک محدودیت
+    if (result?.limited && result.error) {
+      toast({
+        type: 'warning',
+        title: 'محدودیت تعداد',
+        message: result.error,
+        duration: 3000,
+      });
+      setTimeout(() => openCart(), 400);
+      return;
+    }
 
     flyToCart(flashAdd);
 
@@ -207,7 +252,8 @@ document.addEventListener('click', (e) => {
     const variantIndex = card ? Number(card.dataset.activeVariant || 0) : 0;
     const variant = product.variants[variantIndex] || product.variants[0];
 
-    cart.add({
+    // B.10: stock رو بگیر
+    const result = cart.add({
       id: `${product.id}-${variant.storage}`,
       brand: product.brand,
       name: product.name,
@@ -216,7 +262,20 @@ document.addEventListener('click', (e) => {
       price: variant.price,
       oldPrice: variant.oldPrice || null,
       image: product.image,
+      stock: variant.stock,
     }, 1);
+
+    // B.10: چک محدودیت
+    if (result?.limited && result.error) {
+      toast({
+        type: 'warning',
+        title: 'محدودیت تعداد',
+        message: result.error,
+        duration: 3000,
+      });
+      setTimeout(() => openCart(), 400);
+      return;
+    }
 
     flyToCart(add);
 
@@ -236,4 +295,4 @@ document.addEventListener('click', (e) => {
   }
 });
 
-console.log('%c✓ Home page loaded', 'color:#18B981;font-weight:bold;');
+console.log('%c✓ Home page loaded (C.3)', 'color:#18B981;font-weight:bold;');
