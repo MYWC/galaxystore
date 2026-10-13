@@ -7,6 +7,7 @@ import { cart, onChange, KEYS } from '../store/state.js';
 import { formatPrice } from '../data/products.js';
 import { toast } from '../components/toast.js';
 import { createOrder } from '../services/orders.js';
+import { withButtonLoading } from '../utils/button-loading.js';
 
 /* ============================================
    INIT LAYOUT
@@ -371,20 +372,12 @@ async function submitOrder() {
   }
 
   const btn = document.getElementById('checkout-submit');
-  const originalHTML = btn.innerHTML;
+  if (!btn) return;
 
   isSubmitting = true;
-  btn.disabled = true;
-  btn.innerHTML = `
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;animation:rotateSlow 0.8s linear infinite;">
-      <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
-    </svg>
-    در حال ثبت سفارش...
-  `;
 
   const { subtotal, discount, shipping, total } = calcTotal();
 
-  // ساخت اطلاعات سفارش
   const orderData = {
     customer: {
       firstName: formData.firstName.trim(),
@@ -409,38 +402,36 @@ async function submitOrder() {
     total,
   };
 
-  try {
-    const { order, saved } = await createOrder(orderData);
+  await withButtonLoading(btn, async () => {
+    try {
+      const { order } = await createOrder(orderData);
 
-    toast({
-      type: 'success',
-      title: 'سفارش ثبت شد',
-      message: `شماره سفارش: ${order.orderNumber}`,
-      duration: 3500,
-    });
+      toast({
+        type: 'success',
+        title: 'سفارش ثبت شد',
+        message: `شماره سفارش: ${order.orderNumber}`,
+        duration: 3500,
+      });
 
-    // پاک کردن سبد
-    cart.clear();
+      cart.clear();
 
-    // هدایت به صفحه موفقیت
-    setTimeout(() => {
-      window.location.href = `success.html?order=${order.orderNumber}`;
-    }, 1000);
+      setTimeout(() => {
+        window.location.href = `success.html?order=${order.orderNumber}`;
+      }, 1000);
 
-  } catch (err) {
-    console.error('Submit order error:', err);
+    } catch (err) {
+      console.error('Submit order error:', err);
 
-    isSubmitting = false;
-    btn.disabled = false;
-    btn.innerHTML = originalHTML;
+      isSubmitting = false;
 
-    toast({
-      type: 'error',
-      title: 'خطا در ثبت سفارش',
-      message: 'لطفاً دوباره تلاش کنید',
-      duration: 3500,
-    });
-  }
+      toast({
+        type: 'error',
+        title: 'خطا در ثبت سفارش',
+        message: 'لطفاً دوباره تلاش کنید',
+        duration: 3500,
+      });
+    }
+  });
 }
 
 /* ============================================

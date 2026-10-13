@@ -57,3 +57,114 @@
 .btn:active {
   transform: scale(0.98);
 }
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* ============================================
+   LOADING STATE — Phase A.6
+   ============================================ */
+
+/* Position context for spinner */
+.btn,
+.checkout-submit,
+.return-submit,
+.product-info__add-cart,
+.cart-drawer__checkout,
+.qv-modal__add,
+.profile-card__actions .btn,
+.address-modal__actions .btn {
+  position: relative;
+}
+
+/* Loading — disable interactions */
+.btn.is-loading,
+.checkout-submit.is-loading,
+.return-submit.is-loading,
+.product-info__add-cart.is-loading,
+.cart-drawer__checkout.is-loading,
+.qv-modal__add.is-loading {
+  pointer-events: none;
+  cursor: wait;
+}
+
+/* Hide inner content */
+.btn.is-loading > *,
+.checkout-submit.is-loading > *,
+.return-submit.is-loading > *,
+.product-info__add-cart.is-loading > *,
+.cart-drawer__checkout.is-loading > *,
+.qv-modal__add.is-loading > * {
+  visibility: hidden !important;
+}
+
+/* Spinner via ::after (no HTML changes) */
+.btn.is-loading::after,
+.checkout-submit.is-loading::after,
+.return-submit.is-loading::after,
+.product-info__add-cart.is-loading::after,
+.cart-drawer__checkout.is-loading::after,
+.qv-modal__add.is-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border-radius: 50%;
+  border: 2.5px solid currentColor;
+  border-top-color: transparent;
+  animation: btnLoadingSpin 0.7s linear infinite;
+  pointer-events: none;
+}
+
+/* Keep brand color when disabled+loading (avoid grey bg) */
+.checkout-submit.is-loading,
+.checkout-submit.is-loading:disabled {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 12px 28px -10px rgba(35, 134, 215, 0.5);
+}
+
+.product-info__add-cart.is-loading,
+.product-info__add-cart.is-loading:disabled {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 12px 28px -10px rgba(35, 134, 215, 0.45);
+}
+
+.return-submit.is-loading,
+.return-submit.is-loading:disabled {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 12px 28px -10px rgba(35, 134, 215, 0.5);
+}
+
+/* Prevent press animation while loading */
+.btn.is-loading:active,
+.checkout-submit.is-loading:active,
+.return-submit.is-loading:active,
+.product-info__add-cart.is-loading:active {
+  transform: none;
+}
+
+@keyframes btnLoadingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .btn.is-loading::after,
+  .checkout-submit.is-loading::after,
+  .return-submit.is-loading::after,
+  .product-info__add-cart.is-loading::after,
+  .cart-drawer__checkout.is-loading::after,
+  .qv-modal__add.is-loading::after {
+    animation-duration: 1.6s;
+  }
+}

@@ -1,5 +1,5 @@
 /* ============================================
-   PROFILE PAGE — Refactored with Auth Service
+   PROFILE PAGE — with Button Loading
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -9,6 +9,7 @@ import {
   signOut,
   isSupabaseConfigured,
 } from '../services/auth.js';
+import { withButtonLoading } from '../utils/button-loading.js';
 
 /* ============================================
    INIT LAYOUT
@@ -293,33 +294,33 @@ function bindInfoForm(user) {
     if (!valid) return;
 
     const btn = document.getElementById('save-info');
-    btn.disabled = true;
 
-    // آپدیت در localStorage
-    const users = getUsers();
-    const idx = users.findIndex((u) => u.id === user.id);
-    if (idx !== -1) {
-      users[idx].firstName = firstName;
-      users[idx].lastName = lastName;
-      users[idx].email = email;
-      users[idx].birthDate = birthDate;
-      saveUsers(users);
-    }
+    await withButtonLoading(btn, async () => {
+      // شبیه‌سازی تأخیر
+      await new Promise((r) => setTimeout(r, 600));
 
-    // آپدیت کاربر جاری
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.email = email;
+      const users = getUsers();
+      const idx = users.findIndex((u) => u.id === user.id);
+      if (idx !== -1) {
+        users[idx].firstName = firstName;
+        users[idx].lastName = lastName;
+        users[idx].email = email;
+        users[idx].birthDate = birthDate;
+        saveUsers(users);
+      }
 
-    renderHero(user);
+      user.firstName = firstName;
+      user.lastName = lastName;
+      user.email = email;
 
-    btn.disabled = false;
+      renderHero(user);
 
-    toast({
-      type: 'success',
-      title: 'اطلاعات ذخیره شد',
-      message: 'تغییرات شما با موفقیت ثبت شد',
-      duration: 2500,
+      toast({
+        type: 'success',
+        title: 'اطلاعات ذخیره شد',
+        message: 'تغییرات شما با موفقیت ثبت شد',
+        duration: 2500,
+      });
     });
   });
 
@@ -404,7 +405,7 @@ function bindPasswordForm() {
     if (el) el.addEventListener('input', () => clearError(id));
   });
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const currentPw = document.getElementById('pw-current').value;
@@ -440,14 +441,13 @@ function bindPasswordForm() {
     if (!valid) return;
 
     const btn = document.getElementById('save-password');
-    btn.disabled = true;
-    btn.style.opacity = '0.7';
 
-    setTimeout(() => {
+    await withButtonLoading(btn, async () => {
+      // شبیه‌سازی تأخیر
+      await new Promise((r) => setTimeout(r, 700));
+
       form.reset();
       if (strength) strength.hidden = true;
-      btn.disabled = false;
-      btn.style.opacity = '';
 
       toast({
         type: 'success',
@@ -455,7 +455,7 @@ function bindPasswordForm() {
         message: 'از این پس با رمز جدید وارد شوید',
         duration: 3000,
       });
-    }, 700);
+    });
   });
 }
 
@@ -520,17 +520,19 @@ function bindLogoutAll() {
   btn.addEventListener('click', async () => {
     if (!confirm('آیا از خروج از همه دستگاه‌ها مطمئن هستید؟')) return;
 
-    await signOut();
+    await withButtonLoading(btn, async () => {
+      await signOut();
 
-    toast({
-      type: 'success',
-      title: 'خروج از همه دستگاه‌ها',
-      duration: 2000,
+      toast({
+        type: 'success',
+        title: 'خروج از همه دستگاه‌ها',
+        duration: 2000,
+      });
+
+      setTimeout(() => {
+        window.location.href = '../index.html';
+      }, 1200);
     });
-
-    setTimeout(() => {
-      window.location.href = '../index.html';
-    }, 1200);
   });
 }
 
@@ -546,30 +548,31 @@ function bindDeleteAccount() {
     if (!confirm('آیا از حذف کامل حساب مطمئن هستید؟ این عمل قابل بازگشت نیست.')) return;
     if (!confirm('آخرین هشدار: تمام اطلاعات شما حذف خواهد شد. مطمئن هستید؟')) return;
 
-    // خروج + پاک کردن دیتای محلی
-    await signOut();
+    await withButtonLoading(btn, async () => {
+      await signOut();
 
-    try {
-      localStorage.removeItem('ms_cart');
-      localStorage.removeItem('ms_wishlist');
-      localStorage.removeItem('ms_compare');
-      localStorage.removeItem('ms_addresses');
-      localStorage.removeItem('ms_preferences');
-      localStorage.removeItem('ms_orders');
-      localStorage.removeItem('ms_notifications');
-      localStorage.removeItem('ms_last_login');
-    } catch {}
+      try {
+        localStorage.removeItem('ms_cart');
+        localStorage.removeItem('ms_wishlist');
+        localStorage.removeItem('ms_compare');
+        localStorage.removeItem('ms_addresses');
+        localStorage.removeItem('ms_preferences');
+        localStorage.removeItem('ms_orders');
+        localStorage.removeItem('ms_notifications');
+        localStorage.removeItem('ms_last_login');
+      } catch {}
 
-    toast({
-      type: 'success',
-      title: 'حساب کاربری حذف شد',
-      message: 'به امید دیدار!',
-      duration: 2500,
+      toast({
+        type: 'success',
+        title: 'حساب کاربری حذف شد',
+        message: 'به امید دیدار!',
+        duration: 2500,
+      });
+
+      setTimeout(() => {
+        window.location.href = '../index.html';
+      }, 1500);
     });
-
-    setTimeout(() => {
-      window.location.href = '../index.html';
-    }, 1500);
   });
 }
 

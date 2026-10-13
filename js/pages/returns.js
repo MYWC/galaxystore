@@ -4,6 +4,7 @@
 
 import { initLayout } from '../components/layout.js';
 import { toast } from '../components/toast.js';
+import { withButtonLoading } from '../utils/button-loading.js';
 
 /* ============================================
    INIT LAYOUT
@@ -104,7 +105,7 @@ function validateForm() {
    SUBMIT
    ============================================ */
 
-function handleSubmit(e) {
+async function handleSubmit(e) {
   e.preventDefault();
 
   if (!validateForm()) {
@@ -121,10 +122,11 @@ function handleSubmit(e) {
   }
 
   const btn = document.getElementById('return-submit');
-  btn.disabled = true;
-  btn.style.opacity = '0.7';
 
-  setTimeout(() => {
+  await withButtonLoading(btn, async () => {
+    // شبیه‌سازی تأخیر شبکه (بعداً با API واقعی جایگزین شود)
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
     const data = {
       id: generateReturnId(),
       orderNumber: document.getElementById('r-orderNumber').value.trim(),
@@ -145,7 +147,7 @@ function handleSubmit(e) {
       message: `کد پیگیری: ${data.id}`,
       duration: 4000,
     });
-  }, 800);
+  });
 }
 
 /* ============================================

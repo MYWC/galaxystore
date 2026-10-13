@@ -1,5 +1,5 @@
 /* ============================================
-   PRODUCT DETAIL PAGE — with Cinema
+   PRODUCT DETAIL PAGE — with Cinema + Button Loading
    ============================================ */
 
 import { allProducts, formatPrice } from '../data/products.js';
@@ -11,6 +11,7 @@ import { injectProductSchema, setPageMeta, injectBreadcrumbSchema, SITE_URL } fr
 import { getProductReviews, addReview, getUserReviewForProduct } from '../services/reviews.js';
 import { getCurrentUser } from '../services/auth.js';
 import { initCinema } from '../utils/cinema.js';
+import { withButtonLoading } from '../utils/button-loading.js';
 
 const ICONS = {
   cart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`,
@@ -182,7 +183,6 @@ function renderGallery(p) {
            onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<div class=\\'ph ph--square\\'>${displayName}</div>';" />
     `;
 
-    // Re-init 360 for new image
     setTimeout(() => {
       if (typeof window.__reinit360 === 'function') window.__reinit360();
     }, 100);
@@ -343,40 +343,36 @@ function bindInfoEvents(p) {
 
   const addBtn = document.getElementById('add-to-cart-btn');
   if (addBtn) {
-    addBtn.addEventListener('click', () => {
+    addBtn.addEventListener('click', async () => {
       const v = p.variants[currentVariantIndex];
       if (v.stock === 0) return;
 
-      const cartItem = {
-        id: `${p.id}-${v.storage}`,
-        brand: p.brand,
-        name: p.name,
-        ram: v.ram,
-        storage: v.storage,
-        color: currentColor || null,
-        price: v.price,
-        oldPrice: v.oldPrice || null,
-        image: getImageSrc(p),
-      };
+      await withButtonLoading(addBtn, async () => {
+        const cartItem = {
+          id: `${p.id}-${v.storage}`,
+          brand: p.brand,
+          name: p.name,
+          ram: v.ram,
+          storage: v.storage,
+          color: currentColor || null,
+          price: v.price,
+          oldPrice: v.oldPrice || null,
+          image: getImageSrc(p),
+        };
 
-      cart.add(cartItem, 1);
+        cart.add(cartItem, 1);
 
-      const original = addBtn.innerHTML;
-      addBtn.classList.add('is-added');
-      addBtn.innerHTML = `${ICONS.check} اضافه شد`;
+        toast({
+          type: 'success',
+          title: 'به سبد خرید اضافه شد',
+          message: `${p.name} — ${v.storage}`,
+        });
 
-      toast({
-        type: 'success',
-        title: 'به سبد خرید اضافه شد',
-        message: `${p.name} — ${v.storage}`,
+        // تأخیر کوتاه برای اینکه کاربر انیمیشن اسپینر رو ببینه
+        await new Promise((r) => setTimeout(r, 400));
+
+        openCart();
       });
-
-      setTimeout(() => {
-        addBtn.classList.remove('is-added');
-        addBtn.innerHTML = original;
-      }, 1600);
-
-      setTimeout(() => openCart(), 500);
     });
   }
 
@@ -736,44 +732,34 @@ function bindReviewForm(product, existingReview) {
       return;
     }
 
-    const originalHTML = submitBtn.innerHTML;
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = `
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;animation:rotateSlow 0.8s linear infinite;">
-        <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
-      </svg>
-      در حال ارسال...
-    `;
-
-    const result = await addReview({
-      productId: product.id,
-      rating: selectedRating,
-      comment,
-    });
-
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = originalHTML;
-
-    if (result.error) {
-      toast({
-        type: 'error',
-        title: 'خطا',
-        message: result.error.message,
-        duration: 3500,
+    await withButtonLoading(submitBtn, async () => {
+      const result = await addReview({
+        productId: product.id,
+        rating: selectedRating,
+        comment,
       });
-      return;
-    }
 
-    toast({
-      type: 'success',
-      title: 'نظر شما ثبت شد',
-      message: 'ممنون از وقتی که گذاشتید ❤️',
-      duration: 3000,
+      if (result.error) {
+        toast({
+          type: 'error',
+          title: 'خطا',
+          message: result.error.message,
+          duration: 3500,
+        });
+        return;
+      }
+
+      toast({
+        type: 'success',
+        title: 'نظر شما ثبت شد',
+        message: 'ممنون از وقتی که گذاشتید ❤️',
+        duration: 3000,
+      });
+
+      setTimeout(() => {
+        renderTabContent(product, 'reviews');
+      }, 500);
     });
-
-    setTimeout(() => {
-      renderTabContent(product, 'reviews');
-    }, 500);
   });
 }
 
@@ -781,9 +767,7 @@ function renderSimilar(p) {
   const grid = document.getElementById('similar-grid');
   if (!grid) return;
 
-  const { products } = window.MS_PRODUCTS_CONTEXT || {};
-
-  const similar = (products || allProducts)
+  const similar = allProducts
     .filter((x) => x.id !== p.id)
     .filter((x) => x.category === p.category || x.type === p.type)
     .slice(0, 4);
