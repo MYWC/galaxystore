@@ -1,6 +1,6 @@
 /* ============================================
    LAYOUT — Header + Nav + Footer + Common UI
-   با Base Path + SEO + Performance + A11y + Effects + Motion
+   با Base Path + SEO + Performance + A11y + Effects + Motion + Cinema
    ============================================ */
 
 import { initDrawer } from '../sections/drawer.js';
@@ -439,6 +439,15 @@ export function initLayout() {
     motionLink.rel = 'stylesheet';
     motionLink.href = u('css/effects/motion.css');
     document.head.appendChild(motionLink);
+  }
+
+  // Cinema CSS (Phase 3)
+  if (!document.getElementById('cinema-css')) {
+    const cinemaLink = document.createElement('link');
+    cinemaLink.id = 'cinema-css';
+    cinemaLink.rel = 'stylesheet';
+    cinemaLink.href = u('css/effects/cinema.css');
+    document.head.appendChild(cinemaLink);
   }
 
   // Preconnect

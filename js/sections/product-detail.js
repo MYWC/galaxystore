@@ -1,5 +1,5 @@
 /* ============================================
-   PRODUCT DETAIL PAGE — با SEO + Reviews
+   PRODUCT DETAIL PAGE — with Cinema
    ============================================ */
 
 import { allProducts, formatPrice } from '../data/products.js';
@@ -10,6 +10,7 @@ import { renderProductCard } from '../components/product-card.js';
 import { injectProductSchema, setPageMeta, injectBreadcrumbSchema, SITE_URL } from '../utils/seo.js';
 import { getProductReviews, addReview, getUserReviewForProduct } from '../services/reviews.js';
 import { getCurrentUser } from '../services/auth.js';
+import { initCinema } from '../utils/cinema.js';
 
 const ICONS = {
   cart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`,
@@ -21,18 +22,10 @@ const ICONS = {
   return: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>`,
 };
 
-/* ============================================
-   STATE
-   ============================================ */
-
 let currentProduct = null;
 let currentColor = null;
 let currentVariantIndex = 0;
 let currentTab = 'specs';
-
-/* ============================================
-   HELPERS
-   ============================================ */
 
 function getProductIdFromUrl() {
   const params = new URLSearchParams(window.location.search);
@@ -118,10 +111,6 @@ function getImageSrc(product) {
   return `${BASE}assets/images/products/${product.id}.jpg`;
 }
 
-/* ============================================
-   BREADCRUMB
-   ============================================ */
-
 function renderBreadcrumb(p) {
   const el = document.getElementById('breadcrumb-current');
   if (el) el.textContent = p.name;
@@ -139,10 +128,6 @@ function renderBreadcrumb(p) {
     { name: p.name, url: `${SITE_URL}/product.html?id=${p.id}` },
   ]);
 }
-
-/* ============================================
-   GALLERY
-   ============================================ */
 
 function renderGallery(p) {
   const mainEl = document.getElementById('gallery-main');
@@ -196,12 +181,13 @@ function renderGallery(p) {
       <img src="${images[idx].src}" alt="${p.name}"
            onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<div class=\\'ph ph--square\\'>${displayName}</div>';" />
     `;
+
+    // Re-init 360 for new image
+    setTimeout(() => {
+      if (typeof window.__reinit360 === 'function') window.__reinit360();
+    }, 100);
   });
 }
-
-/* ============================================
-   INFO
-   ============================================ */
 
 function renderInfo(p) {
   const el = document.getElementById('product-info');
@@ -455,10 +441,6 @@ function updatePriceAndStock(p) {
   }
 }
 
-/* ============================================
-   TABS
-   ============================================ */
-
 function renderTabs(p) {
   const nav = document.querySelector('.product-tabs__nav');
   if (!nav) return;
@@ -677,10 +659,6 @@ async function renderTabContent(p, tab) {
   }
 }
 
-/* ============================================
-   BIND REVIEW FORM
-   ============================================ */
-
 function bindReviewForm(product, existingReview) {
   const addBtn = document.getElementById('add-review-btn');
   const form = document.getElementById('review-form');
@@ -799,15 +777,10 @@ function bindReviewForm(product, existingReview) {
   });
 }
 
-/* ============================================
-   SIMILAR PRODUCTS
-   ============================================ */
-
 function renderSimilar(p) {
   const grid = document.getElementById('similar-grid');
   if (!grid) return;
 
-  // فقط محصولات عکس‌دار
   const { products } = window.MS_PRODUCTS_CONTEXT || {};
 
   const similar = (products || allProducts)
@@ -817,10 +790,6 @@ function renderSimilar(p) {
 
   grid.innerHTML = similar.map(renderProductCard).join('');
 }
-
-/* ============================================
-   INIT
-   ============================================ */
 
 export function initProductDetail() {
   const page = document.getElementById('product-page');
@@ -839,7 +808,6 @@ export function initProductDetail() {
     return;
   }
 
-  // ✅ از allProducts استفاده می‌کنیم (نه products فیلتر‌شده)
   const p = allProducts.find((x) => x.id === id);
 
   if (!p) {
@@ -872,4 +840,7 @@ export function initProductDetail() {
   renderInfo(p);
   renderTabs(p);
   renderSimilar(p);
+
+  // ===== Cinema (Phase 3) =====
+  setTimeout(() => initCinema(), 200);
 }
