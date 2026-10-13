@@ -1,14 +1,20 @@
 /* ============================================
-   LIVE SEARCH — با Base Path
+   LIVE SEARCH — با Base Path + Recent Searches (B.3)
    ============================================ */
 
 import { products, formatPrice } from '../data/products.js';
 
 const MAX_RESULTS = 6;
+const RECENT_KEY = 'ms_recent_searches';
+const MAX_RECENT_IN_DROPDOWN = 4;
+const MAX_RECENT_TOTAL = 10;
 
 const ICONS = {
   search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
   phone:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`,
+  clock:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+  close:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  arrow:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>`,
 };
 
 /* ============================================
@@ -72,6 +78,57 @@ function search(query) {
 }
 
 /* ============================================
+   RECENT SEARCHES — Shared with search page
+   ============================================ */
+
+function getRecent() {
+  try {
+    const raw = localStorage.getItem(RECENT_KEY);
+    if (!raw) return [];
+
+    const parsed = JSON.parse(raw);
+    // Backward compat: old format was array of strings
+    return parsed.map((item) => {
+      if (typeof item === 'string') {
+        return { q: item, ts: Date.now(), type: 'keyword' };
+      }
+      return item;
+    }).filter((item) => item && item.q);
+  } catch {
+    return [];
+  }
+}
+
+function removeRecent(query) {
+  const list = getRecent();
+  const filtered = list.filter((item) => normalize(item.q) !== normalize(query));
+  try {
+    localStorage.setItem(RECENT_KEY, JSON.stringify(filtered));
+  } catch {}
+  return filtered;
+}
+
+function clearRecent() {
+  try {
+    localStorage.removeItem(RECENT_KEY);
+  } catch {}
+}
+
+function formatRelativeTime(ts) {
+  if (!ts) return '';
+  const diffMs = Date.now() - ts;
+  const diffMin = Math.floor(diffMs / 60000);
+
+  if (diffMin < 1) return 'الان';
+  if (diffMin < 60) return `${diffMin} دقیقه`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr} ساعت`;
+  const diffDay = Math.floor(diffHr / 24);
+  if (diffDay < 7) return `${diffDay} روز`;
+  return '';
+}
+
+/* ============================================
    RENDER ITEM
    ============================================ */
 
@@ -94,17 +151,62 @@ function renderItem(p) {
   `;
 }
 
+function renderRecentItem(item) {
+  const timeLabel = formatRelativeTime(item.ts);
+  return `
+    <button type="button" class="search-recent-item" data-recent="${item.q}">
+      <span class="search-recent-item__icon">${ICONS.clock}</span>
+      <span class="search-recent-item__text">${item.q}</span>
+      ${timeLabel ? `<span class="search-recent-item__time">${timeLabel}</span>` : ''}
+      <span class="search-recent-item__remove" data-recent-remove="${item.q}" role="button" aria-label="حذف">
+        ${ICONS.close}
+      </span>
+    </button>
+  `;
+}
+
 /* ============================================
    RENDER DROPDOWN
    ============================================ */
 
-function renderDropdown(dropdown, query) {
+function renderDropdown(dropdown, query, basePath) {
+  // اگه query خالیه → Recent searches
   if (!query) {
-    dropdown.classList.remove('is-open');
-    dropdown.innerHTML = '';
+    const recent = getRecent().slice(0, MAX_RECENT_IN_DROPDOWN);
+
+    if (!recent.length) {
+      dropdown.classList.remove('is-open');
+      dropdown.innerHTML = '';
+      return;
+    }
+
+    dropdown.innerHTML = `
+      <div class="search-dropdown__section">
+        <div class="search-dropdown__title">
+          <span>جستجوهای اخیر</span>
+          <button type="button" class="search-dropdown__title-action" data-clear-all-recent>
+            پاک کردن
+          </button>
+        </div>
+        <div class="search-dropdown__recent">
+          ${recent.map(renderRecentItem).join('')}
+        </div>
+      </div>
+
+      <div class="search-dropdown__footer">
+        <span>${recent.length} مورد اخیر</span>
+        <span>
+          بستن با
+          <kbd>Esc</kbd>
+        </span>
+      </div>
+    `;
+
+    dropdown.classList.add('is-open');
     return;
   }
 
+  // Query داره → نتایج
   const results = search(query);
 
   if (!results.length) {
@@ -125,6 +227,14 @@ function renderDropdown(dropdown, query) {
     <div class="search-dropdown__section">
       <div class="search-dropdown__title">نتایج جستجو</div>
       ${results.map(renderItem).join('')}
+    </div>
+
+    <div class="search-dropdown__section">
+      <button type="button" class="search-recent-item" data-show-all="${query}">
+        <span class="search-recent-item__icon">${ICONS.search}</span>
+        <span class="search-recent-item__text">مشاهده همه نتایج برای «${query}»</span>
+        <span class="search-recent-item__icon">${ICONS.arrow}</span>
+      </button>
     </div>
 
     <div class="search-dropdown__footer">
@@ -149,6 +259,8 @@ export function initSearch() {
   const inputs = document.querySelectorAll('.header__search-input');
   if (!inputs.length) return;
 
+  const basePath = getBasePath();
+
   inputs.forEach((input) => {
     const wrapper = input.closest('.header__search');
     if (!wrapper) return;
@@ -166,18 +278,17 @@ export function initSearch() {
       clearTimeout(debounceTimer);
       const val = e.target.value;
       debounceTimer = setTimeout(() => {
-        renderDropdown(dropdown, val.trim());
+        renderDropdown(dropdown, val.trim(), basePath);
       }, 180);
     });
 
     input.addEventListener('focus', () => {
-      if (input.value.trim()) {
-        renderDropdown(dropdown, input.value.trim());
-      }
+      const val = input.value.trim();
+      renderDropdown(dropdown, val, basePath);
     });
 
     input.addEventListener('blur', () => {
-      setTimeout(() => dropdown.classList.remove('is-open'), 180);
+      setTimeout(() => dropdown.classList.remove('is-open'), 200);
     });
 
     input.addEventListener('keydown', (e) => {
@@ -188,11 +299,69 @@ export function initSearch() {
     });
   });
 
+  /* ---------- Global click delegation ---------- */
+
   document.addEventListener('click', (e) => {
+    // Close dropdown on outside click
     if (!e.target.closest('.header__search')) {
       document
         .querySelectorAll('.search-dropdown.is-open')
         .forEach((d) => d.classList.remove('is-open'));
+      return;
+    }
+
+    // Remove individual recent
+    const removeBtn = e.target.closest('[data-recent-remove]');
+    if (removeBtn) {
+      e.stopPropagation();
+      e.preventDefault();
+      const q = removeBtn.dataset.recentRemove;
+      removeRecent(q);
+
+      // re-render
+      const dd = removeBtn.closest('.search-dropdown');
+      const input = removeBtn.closest('.header__search')?.querySelector('.header__search-input');
+      if (dd && input) {
+        renderDropdown(dd, input.value.trim(), basePath);
+      }
+      return;
+    }
+
+    // Clear all recent
+    const clearBtn = e.target.closest('[data-clear-all-recent]');
+    if (clearBtn) {
+      e.stopPropagation();
+      e.preventDefault();
+      clearRecent();
+
+      const dd = clearBtn.closest('.search-dropdown');
+      if (dd) {
+        dd.classList.remove('is-open');
+        dd.innerHTML = '';
+      }
+      return;
+    }
+
+    // Click on a recent item → fill input + go to results
+    const recentItem = e.target.closest('[data-recent]');
+    if (recentItem) {
+      e.preventDefault();
+      const q = recentItem.dataset.recent;
+      const input = recentItem.closest('.header__search')?.querySelector('.header__search-input');
+      const dd = recentItem.closest('.search-dropdown');
+
+      if (input) input.value = q;
+      if (dd) renderDropdown(dd, q, basePath);
+      return;
+    }
+
+    // Show all results for query → navigate
+    const showAll = e.target.closest('[data-show-all]');
+    if (showAll) {
+      e.preventDefault();
+      const q = showAll.dataset.showAll;
+      window.location.href = `${basePath}search.html?q=${encodeURIComponent(q)}`;
+      return;
     }
   });
 }

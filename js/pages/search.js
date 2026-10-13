@@ -1,5 +1,5 @@
 /* ============================================
-   SEARCH PAGE — with Empty State (A.7)
+   SEARCH PAGE — with Enhanced Recent Searches (B.3)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -21,7 +21,7 @@ initLayout();
    ============================================ */
 
 const RECENT_KEY = 'ms_recent_searches';
-const MAX_RECENT = 8;
+const MAX_RECENT = 10;
 const PER_PAGE = 12;
 
 const POPULAR_TERMS = [
@@ -36,6 +36,12 @@ const POPULAR_TERMS = [
   'Redmi Note',
   'هواوی',
 ];
+
+const ICONS = {
+  clock: `<svg class="recent-chip__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+  search: `<svg class="recent-chip__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
+  close: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+};
 
 /* ============================================
    STATE
@@ -63,6 +69,188 @@ function normalize(str) {
 }
 
 /* ============================================
+   RECENT SEARCHES — with timestamp + type
+   ============================================ */
+
+function getRecent() {
+  try {
+    const raw = localStorage.getItem(RECENT_KEY);
+    if (!raw) return [];
+
+    const parsed = JSON.parse(raw);
+    // Backward compat: old format was array of strings
+    return parsed.map((item) => {
+      if (typeof item === 'string') {
+        return { q: item, ts: Date.now(), type: 'keyword' };
+      }
+      return item;
+    }).filter((item) => item && item.q);
+  } catch {
+    return [];
+  }
+}
+
+function detectType(query) {
+  const q = normalize(query);
+  if (!q) return 'keyword';
+
+  // Brand?
+  const brandMatches = products.some((p) =>
+    normalize(p.brand).includes(q) || q.includes(normalize(p.brand))
+  );
+  if (brandMatches && q.length >= 3) return 'brand';
+
+  // Direct product?
+  const productMatch = products.find((p) =>
+    normalize(p.name).includes(q) || normalize(p.model).includes(q)
+  );
+  if (productMatch) return 'product';
+
+  return 'keyword';
+}
+
+function saveRecent(query) {
+  const q = query.trim();
+  if (!q) return;
+
+  const type = detectType(q);
+
+  let list = getRecent();
+  // Remove duplicates (by normalized text)
+  list = list.filter((item) => normalize(item.q) !== normalize(q));
+  // Add to front
+  list.unshift({
+    q,
+    ts: Date.now(),
+    type,
+  });
+  // Limit
+  list = list.slice(0, MAX_RECENT);
+
+  try {
+    localStorage.setItem(RECENT_KEY, JSON.stringify(list));
+  } catch {}
+}
+
+function removeRecent(query) {
+  const list = getRecent().filter((item) => normalize(item.q) !== normalize(query));
+  try {
+    localStorage.setItem(RECENT_KEY, JSON.stringify(list));
+  } catch {}
+  return list;
+}
+
+function clearRecent() {
+  try {
+    localStorage.removeItem(RECENT_KEY);
+  } catch {}
+}
+
+/* ============================================
+   TIME GROUPING
+   ============================================ */
+
+function getTimeGroup(ts) {
+  const now = Date.now();
+  const diff = now - ts;
+  const day = 24 * 60 * 60 * 1000;
+
+  if (diff < day) return 'today';
+  if (diff < 2 * day) return 'yesterday';
+  if (diff < 7 * day) return 'week';
+  return 'older';
+}
+
+const GROUP_LABELS = {
+  today: 'امروز',
+  yesterday: 'دیروز',
+  week: 'این هفته',
+  older: 'قدیمی‌تر',
+};
+
+function groupRecent(list) {
+  const groups = {
+    today: [],
+    yesterday: [],
+    week: [],
+    older: [],
+  };
+
+  list.forEach((item) => {
+    const group = getTimeGroup(item.ts || Date.now());
+    groups[group].push(item);
+  });
+
+  return Object.keys(groups)
+    .filter((key) => groups[key].length > 0)
+    .map((key) => ({
+      label: GROUP_LABELS[key],
+      items: groups[key],
+    }));
+}
+
+/* ============================================
+   RENDER — RECENT CHIP
+   ============================================ */
+
+function renderRecentChip(item) {
+  const icon = item.type === 'brand' ? ICONS.search : ICONS.clock;
+
+  return `
+    <button type="button" class="recent-chip" data-recent="${item.q}">
+      ${icon}
+      <span class="recent-chip__text">${item.q}</span>
+      <span class="recent-chip__remove" data-recent-remove="${item.q}" role="button" aria-label="حذف">
+        ${ICONS.close}
+      </span>
+    </button>
+  `;
+}
+
+/* ============================================
+   RENDER — RECENT SEARCHES
+   ============================================ */
+
+function renderRecent() {
+  const wrap = document.getElementById('recent-searches');
+  const list = document.getElementById('recent-list');
+  if (!wrap || !list) return;
+
+  const recent = getRecent();
+
+  if (!recent.length) {
+    wrap.hidden = true;
+    return;
+  }
+
+  wrap.hidden = false;
+
+  const groups = groupRecent(recent);
+
+  list.innerHTML = groups.map((group) => `
+    <div class="recent-searches__group">
+      <div class="recent-searches__group-title">${group.label}</div>
+      <div class="recent-searches__list">
+        ${group.items.map(renderRecentChip).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ============================================
+   POPULAR SEARCHES
+   ============================================ */
+
+function renderPopular() {
+  const list = document.getElementById('popular-list');
+  if (!list) return;
+
+  list.innerHTML = POPULAR_TERMS.map((t) => `
+    <button class="popular-chip" data-popular="${t}">${t}</button>
+  `).join('');
+}
+
+/* ============================================
    SEARCH
    ============================================ */
 
@@ -72,7 +260,7 @@ function searchProducts(query) {
 
   const tokens = q.split(' ').filter(Boolean);
 
-  const results = products
+  return products
     .map((p) => {
       const haystack = normalize([
         p.name,
@@ -102,8 +290,6 @@ function searchProducts(query) {
     .filter((r) => r.allMatch || r.score > 0)
     .sort((a, b) => b.score - a.score)
     .map((r) => r.product);
-
-  return results;
 }
 
 /* ============================================
@@ -130,18 +316,6 @@ function minPrice(p) {
   return Math.min(...p.variants.map((v) => v.price));
 }
 
-function maxDiscount(p) {
-  if (!p.variants?.length) return 0;
-  let max = 0;
-  p.variants.forEach((v) => {
-    if (v.oldPrice && v.oldPrice > v.price) {
-      const d = Math.round(((v.oldPrice - v.price) / v.oldPrice) * 100);
-      if (d > max) max = d;
-    }
-  });
-  return max;
-}
-
 function sortResults(list) {
   const sorted = [...list];
 
@@ -158,79 +332,9 @@ function sortResults(list) {
     case 'popular':
       sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
       break;
-    case 'relevance':
-    default:
-      break;
   }
 
   return sorted;
-}
-
-/* ============================================
-   RECENT SEARCHES
-   ============================================ */
-
-function getRecent() {
-  try {
-    const raw = localStorage.getItem(RECENT_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveRecent(query) {
-  const q = query.trim();
-  if (!q) return;
-
-  let recent = getRecent();
-  recent = recent.filter((r) => normalize(r) !== normalize(q));
-  recent.unshift(q);
-  recent = recent.slice(0, MAX_RECENT);
-
-  try {
-    localStorage.setItem(RECENT_KEY, JSON.stringify(recent));
-  } catch {}
-}
-
-function clearRecent() {
-  try {
-    localStorage.removeItem(RECENT_KEY);
-  } catch {}
-}
-
-function renderRecent() {
-  const wrap = document.getElementById('recent-searches');
-  const list = document.getElementById('recent-list');
-  if (!wrap || !list) return;
-
-  const recent = getRecent();
-
-  if (!recent.length) {
-    wrap.hidden = true;
-    return;
-  }
-
-  wrap.hidden = false;
-  list.innerHTML = recent.map((r) => `
-    <button class="recent-chip" data-recent="${r}">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      ${r}
-    </button>
-  `).join('');
-}
-
-/* ============================================
-   POPULAR SEARCHES
-   ============================================ */
-
-function renderPopular() {
-  const list = document.getElementById('popular-list');
-  if (!list) return;
-
-  list.innerHTML = POPULAR_TERMS.map((t) => `
-    <button class="popular-chip" data-popular="${t}">${t}</button>
-  `).join('');
 }
 
 /* ============================================
@@ -248,7 +352,6 @@ function renderResults() {
 
   if (!grid) return;
 
-  // No query yet — show start state
   if (!state.query) {
     info.hidden = true;
     grid.innerHTML = '';
@@ -256,11 +359,11 @@ function renderResults() {
     if (empty) empty.hidden = true;
     start.hidden = false;
     pagination.innerHTML = '';
+    renderRecent();
     renderSuggested();
     return;
   }
 
-  // Show info bar
   info.hidden = false;
   start.hidden = true;
   if (queryEl) queryEl.textContent = state.query;
@@ -271,7 +374,6 @@ function renderResults() {
 
   if (countEl) countEl.textContent = sorted.length.toLocaleString('fa-IR');
 
-  // Empty — use unified component
   if (!sorted.length) {
     grid.innerHTML = '';
     grid.hidden = true;
@@ -293,7 +395,6 @@ function renderResults() {
   hideEmptyState(empty);
   grid.hidden = false;
 
-  // Pagination
   const totalPages = Math.ceil(sorted.length / PER_PAGE);
   if (state.page > totalPages) state.page = 1;
   const startIdx = (state.page - 1) * PER_PAGE;
@@ -305,7 +406,7 @@ function renderResults() {
 }
 
 /* ============================================
-   SUGGESTED (Start state)
+   SUGGESTED
    ============================================ */
 
 function renderSuggested() {
@@ -441,9 +542,11 @@ function bindSearchForm() {
 
       if (clearBtn) clearBtn.hidden = !val;
 
-      const recent = document.getElementById('recent-searches');
-      if (recent && !val) {
-        renderRecent();
+      if (!val) {
+        const recent = document.getElementById('recent-searches');
+        if (recent) {
+          renderRecent();
+        }
       }
 
       debounceTimer = setTimeout(() => {
@@ -478,6 +581,18 @@ function bindRecentSearches() {
 
   if (list) {
     list.addEventListener('click', (e) => {
+      // Remove individual chip
+      const removeBtn = e.target.closest('[data-recent-remove]');
+      if (removeBtn) {
+        e.stopPropagation();
+        e.preventDefault();
+        const q = removeBtn.dataset.recentRemove;
+        removeRecent(q);
+        renderRecent();
+        return;
+      }
+
+      // Click on chip itself
       const chip = e.target.closest('[data-recent]');
       if (!chip) return;
       performSearch(chip.dataset.recent);
@@ -542,7 +657,6 @@ function bindSort() {
    ============================================ */
 
 document.addEventListener('click', (e) => {
-  // Storage pill
   const storageBtn = e.target.closest('.p-card__storage');
   if (storageBtn && !storageBtn.disabled) {
     e.preventDefault();
@@ -583,7 +697,6 @@ document.addEventListener('click', (e) => {
     return;
   }
 
-  // Wishlist
   const wish = e.target.closest('[data-wishlist]');
   if (wish) {
     e.preventDefault();
@@ -603,7 +716,6 @@ document.addEventListener('click', (e) => {
     return;
   }
 
-  // Compare
   const cmp = e.target.closest('[data-compare]');
   if (cmp) {
     e.preventDefault();
@@ -623,7 +735,6 @@ document.addEventListener('click', (e) => {
     return;
   }
 
-  // Add to cart
   const add = e.target.closest('[data-add-to-cart]');
   if (add) {
     e.preventDefault();
@@ -686,7 +797,7 @@ function init() {
     renderResults();
   }
 
-  console.log('%c✓ Search page loaded', 'color:#18B981;font-weight:bold;');
+  console.log('%c✓ Search page loaded (B.3)', 'color:#18B981;font-weight:bold;');
 }
 
 init();
