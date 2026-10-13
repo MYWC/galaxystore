@@ -1,6 +1,7 @@
 /* ============================================
    CART PAGE — Full Cart + Coupons + Copy (B.8)
    + Quantity Limits (B.10) + Form Draft (B.11)
+   + Recently Viewed (B.12)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -10,6 +11,11 @@ import { renderProductCard } from '../components/product-card.js';
 import { toast } from '../components/toast.js';
 import { copyText } from '../utils/copy-clipboard.js';
 import { attachFormDraft } from '../utils/form-draft.js';
+import {
+  getRecentlyViewed,
+  clearRecentlyViewed,
+  removeFromRecentlyViewed,
+} from '../utils/recently-viewed.js';
 
 initLayout();
 
@@ -55,6 +61,7 @@ const ICONS = {
   check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
   close: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
   info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+  clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
 };
 
 /* ============================================
@@ -366,6 +373,114 @@ function renderRecommended() {
 }
 
 /* ============================================
+   RENDER — RECENTLY VIEWED (B.12)
+   داینامیک تزریق میشه — نیازی به HTML نیست
+   ============================================ */
+
+function renderRecentlyViewedCart() {
+  // حذف نسخه قبلی
+  const old = document.getElementById('cart-recently-viewed-dynamic');
+  if (old) old.remove();
+
+  // اگه سبد خالیه، نمایش نده
+  if (!cart.get().length) return;
+
+  const cartIds = cart.get().map((i) => i.id.split('-').slice(0, -1).join('-'));
+
+  const items = getRecentlyViewed({ limit: 6 })
+    .filter((p) => !cartIds.includes(p.id)); // محصولات داخل سبد رو نشون نده
+
+  if (items.length < 2) return;
+
+  const container = document.querySelector('.cart-page .container');
+  if (!container) return;
+
+  const section = document.createElement('section');
+  section.id = 'cart-recently-viewed-dynamic';
+  section.className = 'cart-recently-viewed reveal';
+
+  section.innerHTML = `
+    <div class="recently-viewed">
+      <div class="recently-viewed__head">
+        <div class="recently-viewed__title-wrap">
+          <span class="recently-viewed__icon">
+            ${ICONS.clock}
+          </span>
+          <h2 class="recently-viewed__title">اخیراً بازدید کرده‌اید</h2>
+          <span class="recently-viewed__count">${items.length.toLocaleString('fa-IR')}</span>
+        </div>
+
+        <button type="button" class="recently-viewed__clear" id="rv-cart-clear-btn">
+          ${ICONS.trash}
+          <span>پاک کردن</span>
+        </button>
+      </div>
+
+      <div class="recently-viewed__scroller">
+        ${items.map((p) => {
+          const imgSrc = p.image || `${getBasePath()}assets/images/products/${p.id}.jpg`;
+          const cheapest = [...(p.variants || [])].sort((a, b) => a.price - b.price)[0];
+          if (!cheapest) return '';
+
+          const displayName = (p.model || p.name || '').replace(/'/g, '');
+
+          return `
+            <a href="${getBasePath()}product.html?id=${p.id}" class="recently-item" data-rv-id="${p.id}">
+              <button type="button" class="recently-item__remove" data-rv-remove="${p.id}" aria-label="حذف از لیست">
+                ${ICONS.close}
+              </button>
+
+              <div class="recently-item__img">
+                <img src="${imgSrc}" alt="${p.name}" loading="lazy"
+                  onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'ph ph--square\\'>${displayName}</div>';" />
+              </div>
+
+              <div class="recently-item__info">
+                <span class="recently-item__brand">${p.brand}</span>
+                <span class="recently-item__name">${p.name}</span>
+                <span class="recently-item__price">
+                  ${formatPrice(cheapest.price)}
+                  <span>تومان</span>
+                </span>
+              </div>
+            </a>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+
+  // جای‌گذاری: قبل از cart-recommended اگه وجود داشت، وگرنه آخر container
+  const recommended = document.getElementById('cart-recommended');
+  if (recommended && recommended.parentNode) {
+    recommended.parentNode.insertBefore(section, recommended);
+  } else {
+    container.appendChild(section);
+  }
+
+  // Clear all
+  const clearBtn = document.getElementById('rv-cart-clear-btn');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      if (!confirm('آیا از پاک کردن لیست بازدیدهای اخیر مطمئن هستید؟')) return;
+      clearRecentlyViewed();
+      renderRecentlyViewedCart();
+    });
+  }
+
+  // Remove individual
+  section.querySelectorAll('[data-rv-remove]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const id = btn.dataset.rvRemove;
+      removeFromRecentlyViewed(id);
+      renderRecentlyViewedCart();
+    });
+  });
+}
+
+/* ============================================
    RENDER — FULL
    ============================================ */
 
@@ -386,6 +501,10 @@ function render() {
     if (recEl) recEl.hidden = true;
     if (clearBtn) clearBtn.hidden = true;
     if (subtitle) subtitle.textContent = 'محصولات انتخابی شما';
+
+    // B.12: حذف سکشن بازدیدهای اخیر وقتی سبد خالیه
+    const old = document.getElementById('cart-recently-viewed-dynamic');
+    if (old) old.remove();
     return;
   }
 
@@ -403,6 +522,7 @@ function render() {
 
   renderSummary();
   renderFreeShipping();
+  renderRecentlyViewedCart(); // B.12
   renderRecommended();
 }
 
@@ -622,7 +742,7 @@ function init() {
   render();
   bindEvents();
 
-  console.log('%c✓ Cart page loaded (B.11)', 'color:#18B981;font-weight:bold;');
+  console.log('%c✓ Cart page loaded (B.12)', 'color:#18B981;font-weight:bold;');
 }
 
 init();

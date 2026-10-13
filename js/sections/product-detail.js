@@ -1,7 +1,7 @@
 /* ============================================
    PRODUCT DETAIL PAGE
    with Cinema (Phase 3) + Loading (A.6) + Sticky Cart (B.2)
-   + Quantity Limits (B.10)
+   + Quantity Limits (B.10) + Recently Viewed (B.12)
    ============================================ */
 
 import { allProducts, formatPrice } from '../data/products.js';
@@ -15,6 +15,12 @@ import { getCurrentUser } from '../services/auth.js';
 import { initCinema } from '../utils/cinema.js';
 import { withButtonLoading } from '../utils/button-loading.js';
 import { initStickyAddToCart } from '../utils/sticky-add-to-cart.js';
+import {
+  trackView,
+  getRecentlyViewed,
+  clearRecentlyViewed,
+  removeFromRecentlyViewed,
+} from '../utils/recently-viewed.js';
 
 const ICONS = {
   cart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`,
@@ -821,6 +827,114 @@ function renderSimilar(p) {
   grid.innerHTML = similar.map(renderProductCard).join('');
 }
 
+/* ============================================
+   RECENTLY VIEWED (B.12)
+   ============================================ */
+
+function renderRecentlyViewed(currentProductId) {
+  const section = document.getElementById('product-recently-viewed');
+  if (!section) return;
+
+  const items = getRecentlyViewed({
+    limit: 8,
+    excludeId: currentProductId,
+  });
+
+  if (!items.length) {
+    section.hidden = true;
+    section.innerHTML = '';
+    return;
+  }
+
+  section.hidden = false;
+
+  section.innerHTML = `
+    <div class="recently-viewed">
+      <div class="recently-viewed__head">
+        <div class="recently-viewed__title-wrap">
+          <span class="recently-viewed__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </span>
+          <h2 class="recently-viewed__title">اخیراً بازدید کرده‌اید</h2>
+          <span class="recently-viewed__count">${items.length.toLocaleString('fa-IR')}</span>
+        </div>
+
+        <button type="button" class="recently-viewed__clear" id="rv-clear-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+          <span>پاک کردن</span>
+        </button>
+      </div>
+
+      <div class="recently-viewed__scroller">
+        ${items.map((p) => {
+          const imgSrc = getImageSrc(p);
+          const cheapest = [...(p.variants || [])].sort((a, b) => a.price - b.price)[0];
+          if (!cheapest) return '';
+
+          const displayName = (p.model || p.name || '').replace(/'/g, '');
+
+          return `
+            <a href="product.html?id=${p.id}" class="recently-item" data-rv-id="${p.id}">
+              <button type="button" class="recently-item__remove" data-rv-remove="${p.id}" aria-label="حذف از لیست">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+
+              <div class="recently-item__img">
+                <img src="${imgSrc}" alt="${p.name}" loading="lazy"
+                  onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'ph ph--square\\'>${displayName}</div>';" />
+              </div>
+
+              <div class="recently-item__info">
+                <span class="recently-item__brand">${p.brand}</span>
+                <span class="recently-item__name">${p.name}</span>
+                <span class="recently-item__price">
+                  ${formatPrice(cheapest.price)}
+                  <span>تومان</span>
+                </span>
+              </div>
+            </a>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+
+  // Clear all
+  const clearBtn = document.getElementById('rv-clear-btn');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      if (!confirm('آیا از پاک کردن لیست بازدیدهای اخیر مطمئن هستید؟')) return;
+      clearRecentlyViewed();
+      section.hidden = true;
+      section.innerHTML = '';
+    });
+  }
+
+  // Remove individual
+  section.querySelectorAll('[data-rv-remove]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const id = btn.dataset.rvRemove;
+      removeFromRecentlyViewed(id);
+      renderRecentlyViewed(currentProductId);
+    });
+  });
+}
+
+/* ============================================
+   INIT
+   ============================================ */
+
 export function initProductDetail() {
   const page = document.getElementById('product-page');
   if (!page) return;
@@ -865,11 +979,17 @@ export function initProductDetail() {
 
   injectProductSchema(p, v.price);
 
+  // === B.12: Track view ===
+  trackView(p);
+
   renderBreadcrumb(p);
   renderGallery(p);
   renderInfo(p);
   renderTabs(p);
   renderSimilar(p);
+
+  // === B.12: Recently Viewed ===
+  renderRecentlyViewed(p.id);
 
   // ===== Sticky Add to Cart (Phase B.2) =====
   setTimeout(() => {
@@ -883,7 +1003,6 @@ export function initProductDetail() {
       },
     });
 
-    // مقدار اولیه
     if (stickyCart && p.variants[currentVariantIndex]) {
       stickyCart.update(p.variants[currentVariantIndex]);
     }
