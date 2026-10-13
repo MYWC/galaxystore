@@ -2,7 +2,7 @@
    LAYOUT — Header + Nav + Footer + Common UI
    با Base Path + SEO + Performance + A11y
    + Effects + Motion + Story + Showcase + Final Touch
-   + Skeleton (A.2)
+   + Skeleton (A.2) + Offline (A.3) + Forms (A.5)
    (بدون Dark Mode)
    ============================================ */
 
@@ -474,6 +474,24 @@ export function initLayout() {
     skeletonLink.rel = 'stylesheet';
     skeletonLink.href = u('css/components/skeleton.css');
     document.head.appendChild(skeletonLink);
+  }
+
+  // Offline CSS (Phase A.3)
+  if (!document.getElementById('offline-css')) {
+    const offlineLink = document.createElement('link');
+    offlineLink.id = 'offline-css';
+    offlineLink.rel = 'stylesheet';
+    offlineLink.href = u('css/components/offline.css');
+    document.head.appendChild(offlineLink);
+  }
+
+  // Forms CSS (Phase A.5)
+  if (!document.getElementById('forms-css')) {
+    const formsLink = document.createElement('link');
+    formsLink.id = 'forms-css';
+    formsLink.rel = 'stylesheet';
+    formsLink.href = u('css/components/forms.css');
+    document.head.appendChild(formsLink);
   }
 
   // Preconnect
