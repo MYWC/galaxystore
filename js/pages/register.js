@@ -1,10 +1,11 @@
 /* ============================================
-   REGISTER PAGE — Fixed Redirect
+   REGISTER PAGE — with Unified Password Strength (B.9)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
 import { toast } from '../components/toast.js';
 import { signUp, isSupabaseConfigured } from '../services/auth.js';
+import { attachPasswordStrength, analyzePassword } from '../utils/password-strength.js';
 
 initLayout();
 
@@ -35,18 +36,6 @@ function isPhone(str) {
   return /^09\d{9}$/.test((str || '').replace(/\D/g, ''));
 }
 
-function checkPasswordStrength(password) {
-  let level = 0;
-  if (!password) return { level: 0, label: '—' };
-  if (password.length >= 6) level++;
-  if (password.length >= 8) level++;
-  if (/[A-Za-z]/.test(password) && /\d/.test(password)) level++;
-  if (/[^A-Za-z0-9]/.test(password) || password.length >= 12) level++;
-  level = Math.min(level, 4);
-  const labels = ['—', 'ضعیف', 'متوسط', 'خوب', 'قوی'];
-  return { level, label: labels[level] };
-}
-
 /* ============================================
    ERRORS
    ============================================ */
@@ -71,25 +60,24 @@ function clearAllErrors() {
 }
 
 /* ============================================
-   PASSWORD STRENGTH
+   PASSWORD STRENGTH — B.9
    ============================================ */
+
+let passwordAnalysis = { level: 0 };
 
 function bindPasswordStrength() {
   const input = document.getElementById('reg-password');
-  const wrap = document.getElementById('password-strength');
-  const text = document.getElementById('password-strength-text');
-  if (!input || !wrap || !text) return;
+  if (!input) return;
 
-  input.addEventListener('input', () => {
-    const { level, label } = checkPasswordStrength(input.value);
-    if (!input.value) {
-      wrap.hidden = true;
-      wrap.removeAttribute('data-level');
-      return;
-    }
-    wrap.hidden = false;
-    wrap.setAttribute('data-level', level);
-    text.textContent = label;
+  attachPasswordStrength(input, {
+    onChange: (analysis) => {
+      passwordAnalysis = analysis;
+
+      // اگه فیلد خطای قبلی داشت، پاک کن
+      if (analysis.level >= 3) {
+        clearError('password');
+      }
+    },
   });
 }
 
@@ -176,13 +164,19 @@ function validate() {
     setError('email', 'فرمت ایمیل صحیح نیست');
     valid = false;
   }
+
+  // Password — from analyzer
   if (!password || password.length < 8) {
     setError('password', 'رمز عبور باید حداقل ۸ کاراکتر باشد');
+    valid = false;
+  } else if (passwordAnalysis.level < 2) {
+    setError('password', 'رمز عبور بسیار ضعیف است — حرف و عدد اضافه کنید');
     valid = false;
   } else if (!/[A-Za-z]/.test(password) || !/\d/.test(password)) {
     setError('password', 'رمز عبور باید شامل حرف و عدد باشد');
     valid = false;
   }
+
   if (password !== confirmPassword) {
     setError('confirmPassword', 'رمز و تکرار آن یکسان نیستند');
     valid = false;
@@ -395,7 +389,7 @@ function init() {
     );
   }
 
-  console.log('%c✓ Register page loaded', 'color:#18B981;font-weight:bold;');
+  console.log('%c✓ Register page loaded (B.9)', 'color:#18B981;font-weight:bold;');
 }
 
 init();

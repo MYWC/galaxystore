@@ -5,7 +5,7 @@
    + Skeleton (A.2) + Offline (A.3) + Forms (A.5)
    + Empty State (A.7) + Breadcrumb (B.1) + Voice (B.4)
    + Compare Bar (B.5) + Wishlist Feedback (B.6)
-   + Copy Clipboard (B.8)
+   + Copy Clipboard (B.8) + Password Strength (B.9)
    (بدون Dark Mode)
    ============================================ */
 
@@ -547,6 +547,15 @@ export function initLayout() {
     copyLink.rel = 'stylesheet';
     copyLink.href = u('css/components/copy-button.css');
     document.head.appendChild(copyLink);
+  }
+
+  // Password Strength CSS (Phase B.9)
+  if (!document.getElementById('password-strength-css')) {
+    const pwLink = document.createElement('link');
+    pwLink.id = 'password-strength-css';
+    pwLink.rel = 'stylesheet';
+    pwLink.href = u('css/components/password-strength.css');
+    document.head.appendChild(pwLink);
   }
 
   // Offline CSS (Phase A.3)

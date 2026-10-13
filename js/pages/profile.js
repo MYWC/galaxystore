@@ -1,5 +1,5 @@
 /* ============================================
-   PROFILE PAGE — with Button Loading
+   PROFILE PAGE — with Button Loading (A.6) + Password Strength (B.9)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -10,6 +10,7 @@ import {
   isSupabaseConfigured,
 } from '../services/auth.js';
 import { withButtonLoading } from '../utils/button-loading.js';
+import { attachPasswordStrength } from '../utils/password-strength.js';
 
 /* ============================================
    INIT LAYOUT
@@ -94,18 +95,6 @@ function formatDate(dateString) {
 
 function isEmail(str) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str);
-}
-
-function checkPasswordStrength(pw) {
-  let level = 0;
-  if (!pw) return { level: 0, label: '—' };
-  if (pw.length >= 6) level++;
-  if (pw.length >= 8) level++;
-  if (/[A-Za-z]/.test(pw) && /\d/.test(pw)) level++;
-  if (/[^A-Za-z0-9]/.test(pw) || pw.length >= 12) level++;
-  level = Math.min(level, 4);
-  const labels = ['—', 'ضعیف', 'متوسط', 'خوب', 'قوی'];
-  return { level, label: labels[level] };
 }
 
 function getCurrentDevice() {
@@ -296,7 +285,6 @@ function bindInfoForm(user) {
     const btn = document.getElementById('save-info');
 
     await withButtonLoading(btn, async () => {
-      // شبیه‌سازی تأخیر
       await new Promise((r) => setTimeout(r, 600));
 
       const users = getUsers();
@@ -347,13 +335,14 @@ function bindInfoForm(user) {
 }
 
 /* ============================================
-   PASSWORD FORM
+   PASSWORD FORM — with B.9
    ============================================ */
 
 function bindPasswordForm() {
   const form = document.getElementById('password-form');
   if (!form) return;
 
+  // Toggle password buttons
   document.querySelectorAll('[data-toggle-password]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const inputId = btn.dataset.togglePassword;
@@ -372,29 +361,17 @@ function bindPasswordForm() {
     });
   });
 
+  // Password strength meter (unified B.9)
   const newPw = document.getElementById('pw-new');
-  const strength = document.getElementById('pw-strength');
-  const strengthText = document.getElementById('pw-strength-text');
-
   if (newPw) {
-    newPw.addEventListener('input', () => {
-      const { level, label } = checkPasswordStrength(newPw.value);
-
-      if (!newPw.value) {
-        if (strength) strength.hidden = true;
-        return;
-      }
-
-      if (strength) {
-        strength.hidden = false;
-        strength.setAttribute('data-level', level);
-      }
-      if (strengthText) strengthText.textContent = label;
-
-      clearError('newPassword');
+    attachPasswordStrength(newPw, {
+      onChange: (analysis) => {
+        if (analysis.level >= 3) clearError('newPassword');
+      },
     });
   }
 
+  // Clear errors
   ['currentPassword', 'newPassword', 'confirmPassword'].forEach((id) => {
     const map = {
       currentPassword: 'pw-current',
@@ -405,6 +382,7 @@ function bindPasswordForm() {
     if (el) el.addEventListener('input', () => clearError(id));
   });
 
+  // Submit
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -443,10 +421,12 @@ function bindPasswordForm() {
     const btn = document.getElementById('save-password');
 
     await withButtonLoading(btn, async () => {
-      // شبیه‌سازی تأخیر
       await new Promise((r) => setTimeout(r, 700));
 
       form.reset();
+
+      // Reset strength meter
+      const strength = document.getElementById('pw-strength');
       if (strength) strength.hidden = true;
 
       toast({
@@ -645,7 +625,7 @@ async function init() {
   }
 
   console.log(
-    `%c✓ Profile loaded — ${user.firstName || 'User'}`,
+    `%c✓ Profile loaded — ${user.firstName || 'User'} (B.9)`,
     'color:#18B981;font-weight:bold;'
   );
 }
