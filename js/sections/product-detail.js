@@ -3,6 +3,7 @@
    with Cinema (Phase 3) + Loading (A.6) + Sticky Cart (B.2)
    + Quantity Limits (B.10) + Recently Viewed (B.12)
    + Product Views Counter (C.1) + Stock Alert (C.4)
+   + User Activity Tracking (C.6)
    ============================================ */
 
 import { allProducts, formatPrice } from '../data/products.js';
@@ -25,6 +26,7 @@ import {
 import { trackProductView, getProductViewCount } from '../services/views.js';
 import { openStockModal, isSubscribed } from '../components/stock-alert.js';
 import { cancelStockAlert } from '../services/stock-alerts.js';
+import { trackActivity, ACTIONS } from '../services/user-activity.js';
 
 const ICONS = {
   cart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`,
@@ -448,6 +450,15 @@ function bindInfoEvents(p) {
         message: p.name,
         duration: 2200,
       });
+
+      // === C.6: Track activity (فقط وقتی اضافه شد) ===
+      if (added) {
+        trackActivity({
+          action: ACTIONS.WISHLIST,
+          targetId: p.id,
+          targetName: p.name,
+        }).catch(() => {});
+      }
     });
   }
 
@@ -501,7 +512,7 @@ function bindStockAlertBtn(p) {
 }
 
 /* ============================================
-   ADD TO CART — with B.10
+   ADD TO CART — with B.10 + C.6
    ============================================ */
 
 async function addCurrentVariantToCart(p, btn) {
@@ -560,6 +571,14 @@ async function addCurrentVariantToCart(p, btn) {
       message: `${p.name} — ${v.storage}`,
     });
 
+    // === C.6: Track activity ===
+    trackActivity({
+      action: ACTIONS.ADD_TO_CART,
+      targetId: p.id,
+      targetName: p.name,
+      meta: { storage: v.storage, ram: v.ram },
+    }).catch(() => {});
+
     await new Promise((r) => setTimeout(r, 400));
     openCart();
   });
@@ -604,14 +623,12 @@ function updatePriceAndStock(p) {
     storageLabel.textContent = `${v.storage} • ${v.ram}`;
   }
 
-  // === به‌جای add-btn، اگه ناموجود بود، stock-alert-btn رو بازسازی کن ===
   const ctaWrap = document.querySelector('.product-info__cta');
   if (ctaWrap) {
     const oldAddBtn = ctaWrap.querySelector('#add-to-cart-btn');
     const oldAlertBtn = ctaWrap.querySelector('#stock-alert-btn');
 
     if (v.stock === 0 && !oldAlertBtn) {
-      // تبدیل add → stock-alert
       if (oldAddBtn) {
         const temp = document.createElement('div');
         temp.innerHTML = renderStockAlertBtn(p, v);
@@ -620,7 +637,6 @@ function updatePriceAndStock(p) {
         bindStockAlertBtn(p);
       }
     } else if (v.stock > 0 && !oldAddBtn) {
-      // تبدیل stock-alert → add
       if (oldAlertBtn) {
         const newAddBtn = document.createElement('button');
         newAddBtn.className = 'product-info__add-cart';
@@ -632,7 +648,6 @@ function updatePriceAndStock(p) {
         oldAlertBtn.replaceWith(newAddBtn);
       }
     } else if (oldAlertBtn) {
-      // فقط آپدیت دکمه alert (اگه وضعیت مشترک بودن عوض شده)
       const wasSubscribed = oldAlertBtn.classList.contains('is-subscribed');
       const isNowSubscribed = isSubscribed(p.id, v);
 
@@ -977,6 +992,14 @@ function bindReviewForm(product, existingReview) {
         duration: 3000,
       });
 
+      // === C.6: Track activity ===
+      trackActivity({
+        action: ACTIONS.REVIEW,
+        targetId: product.id,
+        targetName: product.name,
+        meta: { rating: selectedRating },
+      }).catch(() => {});
+
       setTimeout(() => {
         renderTabContent(product, 'reviews');
       }, 500);
@@ -1159,6 +1182,13 @@ export function initProductDetail() {
       updateViewsBadge(p.id);
     }
   });
+
+  // === C.6: Track user activity ===
+  trackActivity({
+    action: ACTIONS.VIEW,
+    targetId: p.id,
+    targetName: p.name,
+  }).catch(() => {});
 
   renderBreadcrumb(p);
   renderGallery(p);

@@ -8,6 +8,7 @@
    + Copy Clipboard (B.8) + Password Strength (B.9)
    + Form Draft (B.11) + Recently Viewed (B.12)
    + Recommendations (C.3) + Stock Alert (C.4)
+   + User Activity (C.6)
    (بدون Dark Mode)
    ============================================ */
 
@@ -613,6 +614,15 @@ export function initLayout() {
     stockLink.rel = 'stylesheet';
     stockLink.href = u('css/components/stock-alert.css');
     document.head.appendChild(stockLink);
+  }
+
+  // User Activity CSS (Phase C.6)
+  if (!document.getElementById('user-activity-css')) {
+    const actLink = document.createElement('link');
+    actLink.id = 'user-activity-css';
+    actLink.rel = 'stylesheet';
+    actLink.href = u('css/components/user-activity.css');
+    document.head.appendChild(actLink);
   }
 
   // Preconnect

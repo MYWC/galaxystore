@@ -1,7 +1,7 @@
 /* ============================================
    CHECKOUT PAGE — Multi-step Wizard (B.7)
    with Supabase Orders + Button Loading (A.6)
-   + Form Draft (B.11)
+   + Form Draft (B.11) + Activity Tracking (C.6)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -11,6 +11,7 @@ import { toast } from '../components/toast.js';
 import { createOrder } from '../services/orders.js';
 import { withButtonLoading } from '../utils/button-loading.js';
 import { saveDraft, loadDraft, clearDraft, debounce } from '../utils/form-draft.js';
+import { trackActivity, ACTIONS } from '../services/user-activity.js';
 
 /* ============================================
    INIT LAYOUT
@@ -112,7 +113,6 @@ function populateForm() {
   const prov = document.getElementById('province');
   if (prov) prov.value = formData.province || '';
 
-  // Shipping radio
   const shipInput = document.querySelector(`input[name="shipping"][value="${formData.shipping}"]`);
   if (shipInput) {
     shipInput.checked = true;
@@ -120,7 +120,6 @@ function populateForm() {
     shipInput.closest('.shipping-option')?.classList.add('is-selected');
   }
 
-  // Payment radio
   const payInput = document.querySelector(`input[name="payment"][value="${formData.payment}"]`);
   if (payInput) {
     payInput.checked = true;
@@ -553,7 +552,7 @@ function bindForm() {
       }
 
       clearError(id);
-      persistDraft(); // ← B.11
+      persistDraft();
     });
   });
 
@@ -562,7 +561,7 @@ function bindForm() {
     addressEl.addEventListener('input', (e) => {
       formData.address = e.target.value;
       clearError('address');
-      persistDraft(); // ← B.11
+      persistDraft();
     });
   }
 
@@ -570,7 +569,7 @@ function bindForm() {
   if (noteEl) {
     noteEl.addEventListener('input', (e) => {
       formData.note = e.target.value;
-      persistDraft(); // ← B.11
+      persistDraft();
     });
   }
 
@@ -582,7 +581,7 @@ function bindForm() {
     provEl.addEventListener('change', (e) => {
       formData.province = e.target.value;
       clearError('province');
-      persistDraft(); // ← B.11
+      persistDraft();
     });
   }
 
@@ -597,7 +596,7 @@ function bindForm() {
 
       formData.shipping = input.value;
       renderSummary();
-      persistDraft(); // ← B.11
+      persistDraft();
     });
   }
 
@@ -611,7 +610,7 @@ function bindForm() {
       input.closest('.payment-option').classList.add('is-selected');
 
       formData.payment = input.value;
-      persistDraft(); // ← B.11
+      persistDraft();
     });
   }
 }
@@ -640,7 +639,7 @@ function bindWizard() {
 }
 
 /* ============================================
-   SUBMIT ORDER
+   SUBMIT ORDER — with C.6
    ============================================ */
 
 async function submitOrder() {
@@ -703,6 +702,14 @@ async function submitOrder() {
     try {
       const { order } = await createOrder(orderData);
 
+      // === C.6: Track activity ===
+      trackActivity({
+        action: ACTIONS.ORDER,
+        targetId: order.orderNumber,
+        targetName: order.orderNumber,
+        meta: { total: order.total },
+      }).catch(() => {});
+
       // === B.11: پاک کردن پیش‌نویس بعد از ثبت موفق ===
       clearDraft(DRAFT_KEY);
 
@@ -754,7 +761,6 @@ function init() {
   bindSubmit();
   updateStepUI();
 
-  // === B.11: اگه بازیابی شد، فرم رو پر کن + پیام بده ===
   if (restored) {
     populateForm();
     renderSummary();
@@ -771,7 +777,7 @@ function init() {
 
   onChange(KEYS.cart, render);
 
-  console.log('%c✓ Checkout page loaded (B.11)', 'color:#18B981;font-weight:bold;');
+  console.log('%c✓ Checkout page loaded (C.6)', 'color:#18B981;font-weight:bold;');
 }
 
 init();

@@ -1,5 +1,6 @@
 /* ============================================
    ACCOUNT DASHBOARD — with Supabase Orders
+   + Activity Timeline (C.6)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -12,6 +13,7 @@ import {
   isSupabaseConfigured,
 } from '../services/auth.js';
 import { getRecentOrders } from '../services/orders.js';
+import { mountActivityTimeline } from '../components/activity-timeline.js';
 
 /* ============================================
    INIT LAYOUT
@@ -93,9 +95,9 @@ function getOrderStatus(order) {
 function getOrderStatusLabel(status) {
   const map = {
     processing: { label: 'در حال پردازش', class: 'processing' },
-    shipped: { label: 'ارسال شده', class: 'shipped' },
-    delivered: { label: 'تحویل شده', class: 'delivered' },
-    canceled: { label: 'لغو شده', class: 'canceled' },
+    shipped:    { label: 'ارسال شده',      class: 'shipped' },
+    delivered:  { label: 'تحویل شده',      class: 'delivered' },
+    canceled:   { label: 'لغو شده',        class: 'canceled' },
   };
   return map[status] || map.processing;
 }
@@ -303,6 +305,18 @@ function renderAddressesPreview() {
 }
 
 /* ============================================
+   RENDER — ACTIVITY TIMELINE (C.6)
+   ============================================ */
+
+async function renderActivityCard() {
+  // چک کن اگه container هست
+  let container = document.getElementById('activity-timeline');
+  if (!container) return;
+
+  await mountActivityTimeline(container, { limit: 8 });
+}
+
+/* ============================================
    LOGOUT
    ============================================ */
 
@@ -390,12 +404,12 @@ async function init() {
   const user = await checkAuth();
   if (!user) return;
 
-  // لود سفارش‌ها از Supabase/local
+  // لود سفارش‌ها
   try {
     recentOrders = await getRecentOrders(3);
     ordersCount = recentOrders.length >= 3
       ? recentOrders.length
-      : (await getRecentOrders(100)).length; // برای شمارش کامل، تعداد بیشتری می‌گیریم
+      : (await getRecentOrders(100)).length;
   } catch (err) {
     console.error('Load orders error:', err);
     recentOrders = [];
@@ -408,6 +422,9 @@ async function init() {
   renderWishlistPreview();
   renderAddressesPreview();
   bindLogout();
+
+  // === C.6: Activity Timeline ===
+  await renderActivityCard();
 
   onChange(KEYS.wishlist, () => {
     renderStats();
@@ -423,7 +440,7 @@ async function init() {
   }
 
   console.log(
-    `%c✓ Dashboard loaded — Welcome ${user.firstName || 'User'}!`,
+    `%c✓ Dashboard loaded — Welcome ${user.firstName || 'User'}! (C.6)`,
     'color:#18B981;font-weight:bold;'
   );
 }
