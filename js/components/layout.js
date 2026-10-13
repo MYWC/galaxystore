@@ -1,6 +1,6 @@
 /* ============================================
    LAYOUT — Header + Nav + Footer + Common UI
-   با Base Path + SEO + Performance + A11y + Effects
+   با Base Path + SEO + Performance + A11y + Effects + Motion
    ============================================ */
 
 import { initDrawer } from '../sections/drawer.js';
@@ -16,6 +16,7 @@ import { injectSiteSchema } from '../utils/seo.js';
 import { initPerformance } from '../utils/performance.js';
 import { initA11y, announceCartUpdate } from '../utils/a11y.js';
 import { initEffects, toggleTheme } from '../utils/effects.js';
+import { initMotion } from '../utils/motion.js';
 
 /* ============================================
    BASE PATH DETECTION
@@ -422,13 +423,22 @@ export function initLayout() {
     document.head.appendChild(appleTouch);
   }
 
-  // Effects CSS
+  // Effects CSS (Phase 1)
   if (!document.getElementById('effects-css')) {
     const effectsLink = document.createElement('link');
     effectsLink.id = 'effects-css';
     effectsLink.rel = 'stylesheet';
     effectsLink.href = u('css/effects/effects.css');
     document.head.appendChild(effectsLink);
+  }
+
+  // Motion CSS (Phase 2)
+  if (!document.getElementById('motion-css')) {
+    const motionLink = document.createElement('link');
+    motionLink.id = 'motion-css';
+    motionLink.rel = 'stylesheet';
+    motionLink.href = u('css/effects/motion.css');
+    document.head.appendChild(motionLink);
   }
 
   // Preconnect
@@ -476,6 +486,9 @@ export function initLayout() {
 
   // Effects (Phase 1)
   initEffects();
+
+  // Motion (Phase 2)
+  initMotion();
 
   // Theme Toggle
   const themeToggle = document.getElementById('theme-toggle');

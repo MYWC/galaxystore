@@ -1,0 +1,426 @@
+/* ============================================
+   MOTION — Phase 2
+   Text Reveal + Parallax + Magnetic + Tilt + Marquee
+   ============================================ */
+
+/* ============================================
+   1. TEXT REVEAL
+   ============================================ */
+
+.reveal-text {
+  overflow: hidden;
+  display: block;
+}
+
+.reveal-text__word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+}
+
+.reveal-text__word-inner {
+  display: inline-block;
+  transform: translate3d(0, 110%, 0);
+  opacity: 0;
+  transition:
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
+}
+
+.reveal-text.is-visible .reveal-text__word-inner {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+}
+
+/* Stagger per word */
+.reveal-text.is-visible .reveal-text__word:nth-child(1) .reveal-text__word-inner { transition-delay: 0.03s; }
+.reveal-text.is-visible .reveal-text__word:nth-child(2) .reveal-text__word-inner { transition-delay: 0.06s; }
+.reveal-text.is-visible .reveal-text__word:nth-child(3) .reveal-text__word-inner { transition-delay: 0.09s; }
+.reveal-text.is-visible .reveal-text__word:nth-child(4) .reveal-text__word-inner { transition-delay: 0.12s; }
+.reveal-text.is-visible .reveal-text__word:nth-child(5) .reveal-text__word-inner { transition-delay: 0.15s; }
+.reveal-text.is-visible .reveal-text__word:nth-child(6) .reveal-text__word-inner { transition-delay: 0.18s; }
+.reveal-text.is-visible .reveal-text__word:nth-child(7) .reveal-text__word-inner { transition-delay: 0.21s; }
+.reveal-text.is-visible .reveal-text__word:nth-child(8) .reveal-text__word-inner { transition-delay: 0.24s; }
+.reveal-text.is-visible .reveal-text__word:nth-child(9) .reveal-text__word-inner { transition-delay: 0.27s; }
+.reveal-text.is-visible .reveal-text__word:nth-child(10) .reveal-text__word-inner { transition-delay: 0.30s; }
+.reveal-text.is-visible .reveal-text__word:nth-child(n+11) .reveal-text__word-inner { transition-delay: 0.33s; }
+
+/* Char-level (for titles) */
+.reveal-text--char .reveal-text__word-inner {
+  transition-duration: 0.6s;
+}
+
+/* ============================================
+   2. PARALLAX LAYERS
+   ============================================ */
+
+[data-parallax] {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+/* ============================================
+   3. MAGNETIC BUTTONS
+   ============================================ */
+
+[data-magnetic] {
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+[data-magnetic] > * {
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+/* ============================================
+   4. 3D TILT CARDS
+   ============================================ */
+
+[data-tilt] {
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+[data-tilt] * {
+  transform-style: preserve-3d;
+}
+
+[data-tilt] .tilt-inner {
+  transform: translateZ(40px);
+}
+
+/* Shine effect when tilting */
+[data-tilt]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at var(--tilt-x, 50%) var(--tilt-y, 50%),
+    rgba(255, 255, 255, 0.15),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+[data-tilt].is-tilting::after {
+  opacity: 1;
+}
+
+/* ============================================
+   5. MARQUEE
+   ============================================ */
+
+.marquee-advanced {
+  display: flex;
+  overflow: hidden;
+  gap: 60px;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  padding-block: 8px;
+}
+
+.marquee-advanced__track {
+  display: flex;
+  gap: 60px;
+  flex-shrink: 0;
+  animation: marqueeScroll 40s linear infinite;
+  will-change: transform;
+}
+
+.marquee-advanced:hover .marquee-advanced__track {
+  animation-play-state: paused;
+}
+
+.marquee-advanced__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+  color: var(--text-muted);
+  white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+.marquee-advanced__item:hover {
+  color: var(--primary);
+}
+
+.marquee-advanced__item::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+@keyframes marqueeScroll {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+/* ============================================
+   6. HOVER REVEAL
+   ============================================ */
+
+.hover-reveal {
+  position: relative;
+  overflow: hidden;
+}
+
+.hover-reveal__hidden {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 20px;
+  background: linear-gradient(
+    to top,
+    rgba(23, 32, 42, 0.95),
+    rgba(23, 32, 42, 0.85) 60%,
+    transparent
+  );
+  color: #fff;
+  transform: translateY(100%);
+  opacity: 0;
+  transition:
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.hover-reveal:hover .hover-reveal__hidden,
+.hover-reveal:focus-within .hover-reveal__hidden {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.hover-reveal__title {
+  font-size: var(--fs-md);
+  font-weight: var(--fw-bold);
+  margin-bottom: 6px;
+}
+
+.hover-reveal__desc {
+  font-size: var(--fs-xs);
+  line-height: 1.7;
+  opacity: 0.85;
+}
+
+/* Slide from side */
+.hover-reveal--side .hover-reveal__hidden {
+  inset: 0;
+  transform: translateX(100%);
+  background: rgba(23, 32, 42, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24px;
+}
+
+.hover-reveal--side:hover .hover-reveal__hidden,
+.hover-reveal--side:focus-within .hover-reveal__hidden {
+  transform: translateX(0);
+}
+
+/* ============================================
+   7. MAGNETIC ICON BUTTONS
+   ============================================ */
+
+.magnetic-icon {
+  position: relative;
+}
+
+.magnetic-icon::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  background: var(--primary);
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.magnetic-icon:hover::before {
+  opacity: 0.15;
+  transform: scale(1);
+}
+
+/* ============================================
+   8. ADVANCED SCROLL REVEAL
+   ============================================ */
+
+.reveal-up {
+  opacity: 0;
+  transform: translate3d(0, 60px, 0);
+  transition:
+    opacity 1s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
+}
+
+.reveal-up.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Zoom Reveal */
+.reveal-zoom {
+  opacity: 0;
+  transform: scale(0.9);
+  transition:
+    opacity 0.9s ease,
+    transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-zoom.is-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Clip Path Reveal */
+.reveal-clip {
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-clip.is-visible {
+  clip-path: inset(0 0 0 0);
+}
+
+/* ============================================
+   9. VIEW TRANSITIONS
+   ============================================ */
+
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: pageOut 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+::view-transition-new(root) {
+  animation: pageIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes pageOut {
+  to {
+    opacity: 0;
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+@keyframes pageIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* ============================================
+   10. RIPPLE ON CLICK
+   ============================================ */
+
+.click-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(35, 134, 215, 0.35);
+  transform: scale(0);
+  animation: clickRipple 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes clickRipple {
+  to {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   11. CURSOR FOLLOWER FOR HERO
+   ============================================ */
+
+.hero-cursor-glow {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(35, 134, 215, 0.15), transparent 70%);
+  pointer-events: none;
+  transform: translate3d(-50%, -50%, 0);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 1;
+  filter: blur(40px);
+}
+
+.hero:hover .hero-cursor-glow {
+  opacity: 1;
+}
+
+/* ============================================
+   12. REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-text__word-inner,
+  .reveal-up,
+  .reveal-zoom,
+  .reveal-clip,
+  [data-tilt],
+  [data-magnetic] {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .marquee-advanced__track {
+    animation: none !important;
+  }
+
+  .hover-reveal__hidden {
+    position: static;
+    transform: none;
+    opacity: 1;
+    background: transparent;
+    color: inherit;
+  }
+}
+
+/* ============================================
+   13. MOBILE
+   ============================================ */
+
+@media (max-width: 768px) {
+  [data-tilt],
+  [data-magnetic] {
+    transform: none !important;
+  }
+
+  .reveal-text__word-inner {
+    transition-duration: 0.6s;
+  }
+}
