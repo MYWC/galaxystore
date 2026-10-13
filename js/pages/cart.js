@@ -1,5 +1,5 @@
 /* ============================================
-   CART PAGE — Full Cart with Coupons + Summary
+   CART PAGE — Full Cart + Coupons + Copy (B.8)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -7,6 +7,7 @@ import { allProducts, products, formatPrice } from '../data/products.js';
 import { cart, wishlist, onChange, KEYS } from '../store/state.js';
 import { renderProductCard } from '../components/product-card.js';
 import { toast } from '../components/toast.js';
+import { copyText } from '../utils/copy-clipboard.js';
 
 initLayout();
 
@@ -324,7 +325,6 @@ function renderRecommended() {
 
   const cartIds = cart.get().map((i) => i.id.split('-').slice(0, -1).join('-'));
 
-  // ✅ از products (فقط عکس‌دارها)
   const recommended = products
     .filter((p) => !cartIds.includes(p.id))
     .filter((p) => p.rating >= 4.5)
@@ -546,10 +546,20 @@ function bindEvents() {
     });
   }
 
-  document.addEventListener('click', (e) => {
+  // Copy coupon code + apply (Phase B.8)
+  document.addEventListener('click', async (e) => {
     const sample = e.target.closest('[data-coupon]');
     if (!sample) return;
+
     const code = sample.dataset.coupon;
+
+    // Copy to clipboard with visual feedback
+    const copied = await copyText(code);
+    if (copied) {
+      sample.classList.add('is-copied');
+      setTimeout(() => sample.classList.remove('is-copied'), 1600);
+    }
+
     if (couponInput) couponInput.value = code;
     applyCoupon(code);
   });
@@ -565,7 +575,7 @@ function init() {
   render();
   bindEvents();
 
-  console.log('%c✓ Cart page loaded', 'color:#18B981;font-weight:bold;');
+  console.log('%c✓ Cart page loaded (B.8)', 'color:#18B981;font-weight:bold;');
 }
 
 init();

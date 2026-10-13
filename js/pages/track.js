@@ -1,11 +1,12 @@
 /* ============================================
-   TRACK ORDER PAGE — with Supabase Orders
+   TRACK ORDER PAGE — with Supabase Orders + Copy (B.8)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
 import { formatPrice } from '../data/products.js';
 import { toast } from '../components/toast.js';
 import { getOrderByNumber, getOrderByPhone } from '../services/orders.js';
+import { copyWithFeedback } from '../utils/copy-clipboard.js';
 
 /* ============================================
    INIT LAYOUT
@@ -66,6 +67,8 @@ const STATUS_LABELS = {
   delivered: { label: 'تحویل شده', class: 'delivered' },
   canceled: { label: 'لغو شده', class: 'canceled' },
 };
+
+const COPY_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
 
 /* ============================================
    HELPERS
@@ -218,7 +221,28 @@ function renderOrder(order) {
   if (result) result.hidden = false;
 
   const numberEl = document.getElementById('order-number');
-  if (numberEl) numberEl.textContent = order.orderNumber;
+  if (numberEl) {
+    numberEl.innerHTML = `
+      <span id="track-order-number-text">${order.orderNumber}</span>
+      <button type="button" class="track-card__order-copy" id="copy-order-number" aria-label="کپی شماره سفارش">
+        ${COPY_ICON}
+      </button>
+    `;
+
+    // Bind copy
+    const copyBtn = document.getElementById('copy-order-number');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        await copyWithFeedback({
+          text: order.orderNumber,
+          btn: copyBtn,
+          tooltipText: 'شماره سفارش کپی شد!',
+        });
+      });
+    }
+  }
 
   const statusId = getOrderStatus(order);
   const statusLabel = getStatusLabel(statusId);
@@ -464,7 +488,7 @@ function init() {
   bindForm();
   checkUrlQuery();
 
-  console.log('%c✓ Track order page loaded', 'color:#18B981;font-weight:bold;');
+  console.log('%c✓ Track order page loaded (B.8)', 'color:#18B981;font-weight:bold;');
 }
 
 init();
