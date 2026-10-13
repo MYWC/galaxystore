@@ -53,7 +53,6 @@ function renderStock(variant) {
 function getImagePath(product, id) {
   const BASE = window.MS_BASE_PATH || './';
 
-  // اگه product.image ست شده، از اون استفاده کن
   if (product.image) {
     if (product.image.startsWith('http') || product.image.startsWith('/')) {
       return product.image;
@@ -61,7 +60,6 @@ function getImagePath(product, id) {
     return BASE + product.image;
   }
 
-  // وگرنه از id استفاده کن
   return `${BASE}assets/images/products/${id}.jpg`;
 }
 
@@ -86,15 +84,15 @@ export function renderProductCard(product) {
     .join('');
 
   const imgSrc = getImagePath(product, id);
+  const fallbackText = (displayModel || displayName).replace(/'/g, '');
 
-  // عکس با fallback خودکار به placeholder
   const imageHTML = `
     <img
       src="${imgSrc}"
       alt="${displayName}"
       loading="lazy"
       decoding="async"
-      onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<div class=\\'ph ph--square\\'>${(displayModel || displayName).replace(/'/g, '')}</div>';"
+      onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<div class=\\'ph ph--square\\'>${fallbackText}</div>';"
     />
   `;
 
