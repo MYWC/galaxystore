@@ -1,5 +1,5 @@
 /* ============================================
-   BRAND PAGE
+   BRAND PAGE — with Unified Empty State (A.7)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -10,6 +10,7 @@ import { toast } from '../components/toast.js';
 import { openCart } from '../components/cart-drawer.js';
 import { flyToCart } from '../utils/micro.js';
 import { brands } from '../data/brands.js';
+import { mountEmptyState, hideEmptyState } from '../components/empty-state.js';
 
 /* ============================================
    INIT LAYOUT
@@ -17,90 +18,40 @@ import { brands } from '../data/brands.js';
 initLayout();
 
 /* ============================================
-   BRAND DATA — تکمیل اطلاعات برندها
+   BRAND DATA
    ============================================ */
 
 const BRAND_DATA = {
-  apple: {
-    id: 'apple',
-    name: 'Apple',
-    fa: 'اپل',
-    color: '#1A1F28',
+  apple: { id: 'apple', name: 'Apple', fa: 'اپل', color: '#1A1F28',
     tagline: 'جدیدترین آیفون‌ها و آیپدها با ضمانت اصالت و خدمات پس از فروش',
-    category: 'apple',
-  },
-  samsung: {
-    id: 'samsung',
-    name: 'Samsung',
-    fa: 'سامسونگ',
-    color: '#2386D7',
+    category: 'apple' },
+  samsung: { id: 'samsung', name: 'Samsung', fa: 'سامسونگ', color: '#2386D7',
     tagline: 'پرچمداران گلکسی، سری Z تاشو و تبلت‌های قدرتمند سامسونگ',
-    category: 'samsung',
-  },
-  xiaomi: {
-    id: 'xiaomi',
-    name: 'Xiaomi',
-    fa: 'شیائومی',
-    color: '#F59E0B',
+    category: 'samsung' },
+  xiaomi: { id: 'xiaomi', name: 'Xiaomi', fa: 'شیائومی', color: '#F59E0B',
     tagline: 'گوشی‌ها و تبلت‌های شیائومی، ردمی و پوکو با بهترین قیمت',
-    category: 'xiaomi',
-  },
-  google: {
-    id: 'google',
-    name: 'Google',
-    fa: 'گوگل',
-    color: '#4285F4',
+    category: 'xiaomi' },
+  google: { id: 'google', name: 'Google', fa: 'گوگل', color: '#4285F4',
     tagline: 'پیکسل‌های گوگل با دوربین حرفه‌ای و اندروید خالص',
-    category: 'google',
-  },
-  oneplus: {
-    id: 'oneplus',
-    name: 'OnePlus',
-    fa: 'وان‌پلاس',
-    color: '#16B5A5',
+    category: 'google' },
+  oneplus: { id: 'oneplus', name: 'OnePlus', fa: 'وان‌پلاس', color: '#16B5A5',
     tagline: 'سرعت، روانی و شارژ سریع — تجربه‌ای متفاوت از وان‌پلاس',
-    category: 'oneplus',
-  },
-  honor: {
-    id: 'honor',
-    name: 'Honor',
-    fa: 'آنر',
-    color: '#7C5CFF',
+    category: 'oneplus' },
+  honor: { id: 'honor', name: 'Honor', fa: 'آنر', color: '#7C5CFF',
     tagline: 'محصولات قدرتمند آنر با طراحی مدرن و قیمت مناسب',
-    category: 'honor',
-  },
-  huawei: {
-    id: 'huawei',
-    name: 'Huawei',
-    fa: 'هواوی',
-    color: '#CF0A2C',
+    category: 'honor' },
+  huawei: { id: 'huawei', name: 'Huawei', fa: 'هواوی', color: '#CF0A2C',
     tagline: 'تکنولوژی پیشرفته هواوی در دوربین، باتری و طراحی',
-    category: 'huawei',
-  },
-  oppo: {
-    id: 'oppo',
-    name: 'OPPO',
-    fa: 'اوپو',
-    color: '#1E7A47',
+    category: 'huawei' },
+  oppo: { id: 'oppo', name: 'OPPO', fa: 'اوپو', color: '#1E7A47',
     tagline: 'سری Find و Reno — نوآوری و طراحی زیبا',
-    category: 'oppo',
-  },
-  vivo: {
-    id: 'vivo',
-    name: 'vivo',
-    fa: 'ویوو',
-    color: '#415FFF',
+    category: 'oppo' },
+  vivo: { id: 'vivo', name: 'vivo', fa: 'ویوو', color: '#415FFF',
     tagline: 'دوربین حرفه‌ای و باتری قدرتمند در گوشی‌های vivo',
-    category: 'vivo',
-  },
-  transsion: {
-    id: 'transsion',
-    name: 'Transsion',
-    fa: 'ترنسیون',
-    color: '#E4002B',
+    category: 'vivo' },
+  transsion: { id: 'transsion', name: 'Transsion', fa: 'ترنسیون', color: '#E4002B',
     tagline: 'تکنو، اینفینیکس و آی‌تل — انتخاب‌های اقتصادی',
-    category: 'transsion',
-  },
+    category: 'transsion' },
 };
 
 /* ============================================
@@ -159,7 +110,6 @@ function renderBrandHero() {
   const phoneCount = brandProducts.filter((p) => p.type === 'phone').length;
   const tabletCount = brandProducts.filter((p) => p.type === 'tablet').length;
 
-  // Set CSS custom property for brand color
   const hero = document.getElementById('brand-hero');
   if (hero) hero.style.setProperty('--brand-color', data.color);
 
@@ -178,7 +128,6 @@ function renderBrandHero() {
   const tabletEl = document.getElementById('brand-count-tablets');
   if (tabletEl) tabletEl.textContent = tabletCount.toLocaleString('fa-IR');
 
-  // Breadcrumb
   const bcEl = document.getElementById('breadcrumb-current');
   if (bcEl) bcEl.textContent = data.name;
 
@@ -247,15 +196,34 @@ function renderGrid() {
   if (!sorted.length) {
     grid.innerHTML = '';
     grid.hidden = true;
-    empty.hidden = false;
     pagination.innerHTML = '';
+
+    mountEmptyState(empty, {
+      icon: 'package',
+      title: 'محصولی یافت نشد',
+      text: `در حال حاضر محصولی از ${BRAND_DATA[state.brandId]?.name || 'این برند'} در این دسته موجود نیست.`,
+      variant: 'warning',
+      compact: true,
+      actions: [
+        { id: 'show-all', label: 'نمایش همه محصولات برند', variant: 'primary' },
+        { label: 'مشاهده همه برندها', href: 'category.html', variant: 'outline' },
+      ],
+    }, {
+      'show-all': () => {
+        state.tab = 'all';
+        state.page = 1;
+        document.querySelectorAll('.brand-tab').forEach((b) => {
+          b.classList.toggle('is-active', b.dataset.brandTab === 'all');
+        });
+        renderGrid();
+      },
+    });
     return;
   }
 
+  hideEmptyState(empty);
   grid.hidden = false;
-  empty.hidden = true;
 
-  // Pagination
   const totalPages = Math.ceil(sorted.length / PER_PAGE);
   if (state.page > totalPages) state.page = 1;
   const start = (state.page - 1) * PER_PAGE;
@@ -327,7 +295,7 @@ function renderPagination(container, totalPages) {
 }
 
 /* ============================================
-   TABS
+   TABS + SORT
    ============================================ */
 
 function bindTabs() {
@@ -346,10 +314,6 @@ function bindTabs() {
     renderGrid();
   });
 }
-
-/* ============================================
-   SORT
-   ============================================ */
 
 function bindSort() {
   const select = document.getElementById('brand-sort-select');
@@ -386,7 +350,6 @@ function renderRelatedBrands() {
    ============================================ */
 
 document.addEventListener('click', (e) => {
-  // Storage pill
   const storageBtn = e.target.closest('.p-card__storage');
   if (storageBtn && !storageBtn.disabled) {
     e.preventDefault();
@@ -427,7 +390,6 @@ document.addEventListener('click', (e) => {
     return;
   }
 
-  // Wishlist
   const wish = e.target.closest('[data-wishlist]');
   if (wish) {
     e.preventDefault();
@@ -447,7 +409,6 @@ document.addEventListener('click', (e) => {
     return;
   }
 
-  // Compare
   const cmp = e.target.closest('[data-compare]');
   if (cmp) {
     e.preventDefault();
@@ -467,7 +428,6 @@ document.addEventListener('click', (e) => {
     return;
   }
 
-  // Add to cart
   const add = e.target.closest('[data-add-to-cart]');
   if (add) {
     e.preventDefault();
@@ -515,7 +475,6 @@ document.addEventListener('click', (e) => {
 function init() {
   state.brandId = getBrandFromUrl();
 
-  // اگر برند وجود نداشت، برگرد به apple
   if (!BRAND_DATA[state.brandId]) {
     state.brandId = 'apple';
   }

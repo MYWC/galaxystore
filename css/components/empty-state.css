@@ -1,0 +1,181 @@
+/* ============================================
+   EMPTY STATE — Phase A.7
+   Unified empty state component
+   ============================================ */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 16px;
+  padding: 64px 24px;
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 22px;
+}
+
+.empty-state__icon {
+  width: 96px;
+  height: 96px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #EAF4FD, #D6E8FA);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-bottom: 4px;
+}
+
+.empty-state__icon svg {
+  width: 44px;
+  height: 44px;
+  stroke-width: 1.6;
+}
+
+.empty-state__title {
+  font-size: 22px;
+  font-weight: var(--fw-black);
+  color: var(--text);
+  letter-spacing: -0.4px;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.empty-state__text {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  line-height: 1.85;
+  max-width: 460px;
+  margin: 0;
+}
+
+.empty-state__actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+/* ============ VARIANTS ============ */
+
+.empty-state--danger .empty-state__icon {
+  background: linear-gradient(135deg, #FDECEC, #FCDADA);
+  color: var(--discount);
+}
+
+.empty-state--success .empty-state__icon {
+  background: linear-gradient(135deg, #E6F7F1, #D6F5EB);
+  color: var(--success);
+}
+
+.empty-state--warning .empty-state__icon {
+  background: linear-gradient(135deg, #FFF7E6, #FFE9C7);
+  color: var(--warning);
+}
+
+.empty-state--purple .empty-state__icon {
+  background: linear-gradient(135deg, #EFEBFF, #DCD2FF);
+  color: #7C5CFF;
+}
+
+.empty-state--teal .empty-state__icon {
+  background: linear-gradient(135deg, #E6F7F1, #D0F0E8);
+  color: var(--secondary);
+}
+
+/* ============ SIZES ============ */
+
+.empty-state--compact {
+  padding: 40px 20px;
+  gap: 12px;
+  border-radius: 18px;
+}
+
+.empty-state--compact .empty-state__icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+}
+
+.empty-state--compact .empty-state__icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.empty-state--compact .empty-state__title {
+  font-size: 18px;
+}
+
+/* ============ PLAIN (inside cards) ============ */
+
+.empty-state--plain {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 40px 20px;
+}
+
+/* ============ FULL-HEIGHT ============ */
+
+.empty-state--full {
+  min-height: 400px;
+}
+
+/* ============ RESPONSIVE ============ */
+
+@media (max-width: 640px) {
+  .empty-state {
+    padding: 44px 18px;
+    gap: 14px;
+    border-radius: 18px;
+  }
+
+  .empty-state__icon {
+    width: 76px;
+    height: 76px;
+    border-radius: 22px;
+  }
+
+  .empty-state__icon svg {
+    width: 34px;
+    height: 34px;
+  }
+
+  .empty-state__title {
+    font-size: 18px;
+  }
+
+  .empty-state__text {
+    font-size: var(--fs-xs);
+  }
+
+  .empty-state__actions {
+    flex-direction: column;
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .empty-state__actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .empty-state--compact {
+    padding: 32px 16px;
+  }
+
+  .empty-state--compact .empty-state__icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 18px;
+  }
+
+  .empty-state--compact .empty-state__icon svg {
+    width: 26px;
+    height: 26px;
+  }
+}

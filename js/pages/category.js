@@ -1,5 +1,6 @@
 /* ============================================
    CATEGORY PAGE — Filters + Sort + Pagination
+   with Unified Empty State (A.7)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -9,6 +10,7 @@ import { cart, wishlist, compare, onChange, KEYS } from '../store/state.js';
 import { toast } from '../components/toast.js';
 import { openCart } from '../components/cart-drawer.js';
 import { flyToCart } from '../utils/micro.js';
+import { mountEmptyState, hideEmptyState } from '../components/empty-state.js';
 
 /* ============================================
    INIT LAYOUT
@@ -97,24 +99,20 @@ function hasStock(p) {
 function filterProducts() {
   let list = [...products];
 
-  /* ---------- Type ---------- */
   if (state.type.length) {
     list = list.filter((p) => state.type.includes(p.type));
   }
 
-  /* ---------- Brand ---------- */
   if (state.brand.length) {
     list = list.filter((p) => state.brand.includes(p.category));
   }
 
-  /* ---------- Storage ---------- */
   if (state.storage.length) {
     list = list.filter((p) =>
       p.variants?.some((v) => state.storage.includes(v.storage))
     );
   }
 
-  /* ---------- Status ---------- */
   if (state.status.includes('discount')) {
     list = list.filter((p) => maxDiscount(p) > 0);
   }
@@ -128,7 +126,6 @@ function filterProducts() {
     list = list.filter((p) => minPrice(p) <= 50000000);
   }
 
-  /* ---------- Price ---------- */
   if (state.priceMin != null) {
     list = list.filter((p) => minPrice(p) >= state.priceMin);
   }
@@ -182,36 +179,42 @@ function renderGrid() {
   const filtered = filterProducts();
   const sorted = sortProducts(filtered);
 
-  // Update count
   if (count) {
     count.textContent = `${sorted.length.toLocaleString('fa-IR')} محصول`;
   }
 
-  // Empty state
   if (!sorted.length) {
     grid.innerHTML = '';
     grid.hidden = true;
-    empty.hidden = false;
     pagination.innerHTML = '';
+
+    mountEmptyState(empty, {
+      icon: 'filter',
+      title: 'محصولی یافت نشد',
+      text: 'با این فیلترها محصولی پیدا نکردیم. می‌توانید فیلترها را تغییر دهید یا پاک کنید.',
+      variant: 'warning',
+      actions: [
+        { id: 'clear', label: 'پاک کردن فیلترها', variant: 'primary', icon: 'filter' },
+        { label: 'مشاهده همه محصولات', href: 'category.html', variant: 'outline' },
+      ],
+    }, {
+      clear: () => resetFilters(),
+    });
     return;
   }
 
+  hideEmptyState(empty);
   grid.hidden = false;
-  empty.hidden = true;
 
-  // Pagination
   const totalPages = Math.ceil(sorted.length / PER_PAGE);
   if (state.page > totalPages) state.page = 1;
-  const start = (state.page - 1) * PER_PAGE;
-  const paged = sorted.slice(start, start + PER_PAGE);
+  const startIdx = (state.page - 1) * PER_PAGE;
+  const paged = sorted.slice(startIdx, startIdx + PER_PAGE);
 
-  // Render
   grid.innerHTML = paged.map(renderProductCard).join('');
 
-  // Pagination
   renderPagination(pagination, totalPages);
 
-  // Scroll to top on page change
   window.scrollTo({ top: 200, behavior: 'smooth' });
 }
 
@@ -261,7 +264,6 @@ function renderPagination(container, totalPages) {
 
   container.innerHTML = prev + pages.join('') + next;
 
-  // Events
   container.onclick = (e) => {
     const btn = e.target.closest('[data-page]');
     if (!btn || btn.disabled) return;
@@ -422,7 +424,6 @@ function bindFilters() {
   const sidebar = document.getElementById('category-sidebar');
   if (!sidebar) return;
 
-  /* ---------- Checkboxes ---------- */
   sidebar.addEventListener('change', (e) => {
     const input = e.target.closest('[data-filter]');
     if (!input) return;
@@ -441,7 +442,6 @@ function bindFilters() {
     renderGrid();
   });
 
-  /* ---------- Collapsible groups ---------- */
   sidebar.querySelectorAll('.filter-group__head').forEach((head) => {
     head.addEventListener('click', () => {
       const expanded = head.getAttribute('aria-expanded') === 'true';
@@ -449,7 +449,6 @@ function bindFilters() {
     });
   });
 
-  /* ---------- Clear all ---------- */
   const clearBtn = document.getElementById('clear-filters');
   if (clearBtn) {
     clearBtn.addEventListener('click', () => {
@@ -457,7 +456,6 @@ function bindFilters() {
     });
   }
 
-  /* ---------- Active filter chips remove ---------- */
   const activeWrap = document.getElementById('active-filters');
   if (activeWrap) {
     activeWrap.addEventListener('click', (e) => {
@@ -473,7 +471,6 @@ function bindFilters() {
         if (input) input.value = '';
       } else if (Array.isArray(state[key])) {
         state[key] = state[key].filter((v) => v !== value);
-        // Uncheck input
         sidebar.querySelectorAll(`input[data-filter="${key}"][value="${value}"]`).forEach((i) => {
           i.checked = false;
         });
@@ -485,7 +482,6 @@ function bindFilters() {
     });
   }
 
-  /* ---------- Price apply ---------- */
   const applyPrice = document.getElementById('apply-price');
   if (applyPrice) {
     applyPrice.addEventListener('click', () => {
@@ -501,7 +497,6 @@ function bindFilters() {
     });
   }
 
-  /* ---------- Mobile filter toggle ---------- */
   const toggle = document.getElementById('filter-toggle');
   if (toggle) {
     toggle.addEventListener('click', () => {
@@ -510,7 +505,6 @@ function bindFilters() {
     });
   }
 
-  /* ---------- Mobile apply ---------- */
   const mobileApply = document.getElementById('apply-filters-mobile');
   if (mobileApply) {
     mobileApply.addEventListener('click', () => {
@@ -519,7 +513,6 @@ function bindFilters() {
     });
   }
 
-  /* ---------- Close on overlay click ---------- */
   document.body.addEventListener('click', (e) => {
     if (
       document.body.classList.contains('filter-open') &&
@@ -531,7 +524,6 @@ function bindFilters() {
     }
   });
 
-  /* ---------- Sort ---------- */
   const sortSelect = document.getElementById('sort-select');
   if (sortSelect) {
     sortSelect.value = state.sort;
@@ -542,7 +534,6 @@ function bindFilters() {
     });
   }
 
-  /* ---------- Empty clear ---------- */
   const emptyClear = document.getElementById('empty-clear');
   if (emptyClear) {
     emptyClear.addEventListener('click', resetFilters);
@@ -562,7 +553,6 @@ function resetFilters() {
   state.priceMax = null;
   state.page = 1;
 
-  // Uncheck all
   document.querySelectorAll('[data-filter]').forEach((i) => (i.checked = false));
 
   const minInput = document.getElementById('price-min');
@@ -605,7 +595,6 @@ function updateTitle() {
    ============================================ */
 
 document.addEventListener('click', (e) => {
-  // Storage pill
   const storageBtn = e.target.closest('.p-card__storage');
   if (storageBtn && !storageBtn.disabled) {
     e.preventDefault();
@@ -646,7 +635,6 @@ document.addEventListener('click', (e) => {
     return;
   }
 
-  // Wishlist
   const wish = e.target.closest('[data-wishlist]');
   if (wish) {
     e.preventDefault();
@@ -666,7 +654,6 @@ document.addEventListener('click', (e) => {
     return;
   }
 
-  // Compare
   const cmp = e.target.closest('[data-compare]');
   if (cmp) {
     e.preventDefault();
@@ -686,7 +673,6 @@ document.addEventListener('click', (e) => {
     return;
   }
 
-  // Add to cart
   const add = e.target.closest('[data-add-to-cart]');
   if (add) {
     e.preventDefault();
@@ -741,7 +727,6 @@ function init() {
   renderActiveFilters();
   renderGrid();
 
-  // Restore checked state for checkboxes
   document.querySelectorAll('[data-filter="type"]').forEach((i) => {
     i.checked = state.type.includes(i.value);
   });

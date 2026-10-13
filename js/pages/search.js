@@ -1,5 +1,5 @@
 /* ============================================
-   SEARCH PAGE
+   SEARCH PAGE — with Empty State (A.7)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -9,6 +9,7 @@ import { cart, wishlist, compare } from '../store/state.js';
 import { toast } from '../components/toast.js';
 import { openCart } from '../components/cart-drawer.js';
 import { flyToCart } from '../utils/micro.js';
+import { mountEmptyState, hideEmptyState } from '../components/empty-state.js';
 
 /* ============================================
    INIT LAYOUT
@@ -83,14 +84,12 @@ function searchProducts(query) {
         ...(p.variants || []).map((v) => v.ram),
       ].filter(Boolean).join(' '));
 
-      // امتیاز: هر کلمه‌ای که match شود
       let score = 0;
       let allMatch = true;
 
       tokens.forEach((t) => {
         if (haystack.includes(t)) {
           score += 1;
-          // bonus اگر با نام شروع شود
           if (normalize(p.name).startsWith(t)) score += 2;
           if (normalize(p.brand).startsWith(t)) score += 1;
         } else {
@@ -161,7 +160,6 @@ function sortResults(list) {
       break;
     case 'relevance':
     default:
-      // Already sorted by relevance from searchProducts
       break;
   }
 
@@ -245,17 +243,17 @@ function renderResults() {
   const info = document.getElementById('search-info');
   const start = document.getElementById('search-start');
   const pagination = document.getElementById('search-pagination');
-  const emptyQuery = document.getElementById('empty-query');
   const countEl = document.getElementById('search-count');
   const queryEl = document.getElementById('search-query');
 
   if (!grid) return;
 
-  // If no query yet
+  // No query yet — show start state
   if (!state.query) {
     info.hidden = true;
     grid.innerHTML = '';
-    empty.hidden = true;
+    grid.hidden = true;
+    if (empty) empty.hidden = true;
     start.hidden = false;
     pagination.innerHTML = '';
     renderSuggested();
@@ -273,18 +271,27 @@ function renderResults() {
 
   if (countEl) countEl.textContent = sorted.length.toLocaleString('fa-IR');
 
-  // Empty
+  // Empty — use unified component
   if (!sorted.length) {
     grid.innerHTML = '';
     grid.hidden = true;
-    empty.hidden = false;
     pagination.innerHTML = '';
-    if (emptyQuery) emptyQuery.textContent = state.query;
+
+    mountEmptyState(empty, {
+      icon: 'search',
+      title: 'نتیجه‌ای یافت نشد',
+      text: `متأسفانه برای «<strong>${state.query}</strong>» محصولی پیدا نکردیم. لطفاً کلمه دیگری امتحان کنید یا دسته‌بندی‌ها را مرور کنید.`,
+      variant: 'warning',
+      actions: [
+        { label: 'مشاهده همه محصولات', href: 'category.html', variant: 'primary', icon: 'package' },
+        { label: 'بازگشت به خانه', href: 'index.html', variant: 'outline' },
+      ],
+    });
     return;
   }
 
+  hideEmptyState(empty);
   grid.hidden = false;
-  empty.hidden = true;
 
   // Pagination
   const totalPages = Math.ceil(sorted.length / PER_PAGE);
@@ -305,7 +312,6 @@ function renderSuggested() {
   const grid = document.getElementById('suggested-grid');
   if (!grid) return;
 
-  // محصولات با تخفیف + امتیاز بالا
   const suggested = products
     .filter((p) => p.rating >= 4.5)
     .sort((a, b) => (b.rating || 0) - (a.rating || 0))
@@ -382,7 +388,6 @@ function performSearch(query, save = true) {
   state.query = query.trim();
   state.page = 1;
 
-  // Update URL
   const url = new URL(window.location);
   if (state.query) {
     url.searchParams.set('q', state.query);
@@ -391,25 +396,21 @@ function performSearch(query, save = true) {
   }
   window.history.replaceState(null, '', url);
 
-  // Update input
   const input = document.getElementById('search-input');
   if (input && input.value !== state.query) {
     input.value = state.query;
   }
 
-  // Show/hide clear button
   const clearBtn = document.getElementById('search-clear');
   if (clearBtn) {
     clearBtn.hidden = !state.query;
   }
 
-  // Save to recent
   if (save && state.query) {
     saveRecent(state.query);
     renderRecent();
   }
 
-  // Hide recent when searching
   const recent = document.getElementById('recent-searches');
   if (recent && state.query) recent.hidden = true;
 
@@ -433,16 +434,13 @@ function bindSearchForm() {
   }
 
   if (input) {
-    // Live search (debounced)
     let debounceTimer;
     input.addEventListener('input', () => {
       clearTimeout(debounceTimer);
       const val = input.value.trim();
 
-      // Show/hide clear button
       if (clearBtn) clearBtn.hidden = !val;
 
-      // Show recent if empty
       const recent = document.getElementById('recent-searches');
       if (recent && !val) {
         renderRecent();
@@ -671,7 +669,6 @@ document.addEventListener('click', (e) => {
    ============================================ */
 
 function init() {
-  // Read from URL
   const params = new URLSearchParams(window.location.search);
   const q = params.get('q') || '';
 
