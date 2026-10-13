@@ -1,5 +1,6 @@
 /* ============================================
-   CHECKOUT PAGE — with Supabase Orders
+   CHECKOUT PAGE — Multi-step Wizard (B.7)
+   with Supabase Orders + Button Loading (A.6)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -20,6 +21,7 @@ initLayout();
    ============================================ */
 
 const FREE_SHIPPING_THRESHOLD = 5000000;
+const TOTAL_STEPS = 3;
 
 const PROVINCES = [
   'تهران', 'اصفهان', 'فارس', 'خراسان رضوی', 'آذربایجان شرقی',
@@ -31,9 +33,26 @@ const PROVINCES = [
   'خراسان شمالی', 'خراسان جنوبی', 'ایلام',
 ];
 
+const SHIPPING_LABELS = {
+  express: 'ارسال سریع (پست پیشتاز)',
+  normal: 'ارسال عادی (پست سفارشی)',
+  sameDay: 'ارسال همان روز (تهران)',
+};
+
+const PAYMENT_LABELS = {
+  online: 'پرداخت آنلاین (زرین‌پال)',
+  cod: 'پرداخت در محل',
+  wallet: 'کیف پول موبایل استور',
+};
+
 /* ============================================
    STATE
    ============================================ */
+
+const state = {
+  currentStep: 1,
+  submitting: false,
+};
 
 const formData = {
   firstName: '',
@@ -49,8 +68,6 @@ const formData = {
   payment: 'online',
   note: '',
 };
-
-let isSubmitting = false;
 
 /* ============================================
    HELPERS
@@ -94,7 +111,7 @@ function calcTotal() {
 }
 
 /* ============================================
-   RENDER ITEMS
+   RENDER — ITEMS
    ============================================ */
 
 function renderItems() {
@@ -134,7 +151,7 @@ function renderItems() {
 }
 
 /* ============================================
-   RENDER SUMMARY
+   RENDER — SUMMARY
    ============================================ */
 
 function renderSummary() {
@@ -176,29 +193,221 @@ function renderSummary() {
 }
 
 /* ============================================
-   RENDER
+   RENDER — REVIEW (Step 3)
+   ============================================ */
+
+function renderReview() {
+  const wrap = document.getElementById('checkout-review');
+  if (!wrap) return;
+
+  const addressParts = [
+    formData.province,
+    formData.city,
+    formData.address,
+    formData.plateNumber,
+  ].filter(Boolean);
+
+  wrap.innerHTML = `
+    <div class="review-block">
+      <div class="review-block__head">
+        <span class="review-block__title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          اطلاعات تماس
+        </span>
+        <button type="button" class="review-block__edit" data-goto-step="1">ویرایش</button>
+      </div>
+      <div class="review-block__body">
+        <p><strong>${formData.firstName} ${formData.lastName}</strong></p>
+        <p dir="ltr" style="text-align: right;">${formData.phone}</p>
+        ${formData.email ? `<p dir="ltr" style="text-align: right;">${formData.email}</p>` : ''}
+      </div>
+    </div>
+
+    <div class="review-block">
+      <div class="review-block__head">
+        <span class="review-block__title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          آدرس ارسال
+        </span>
+        <button type="button" class="review-block__edit" data-goto-step="1">ویرایش</button>
+      </div>
+      <div class="review-block__body">
+        <p>${addressParts.join('، ')}</p>
+        <p>کد پستی: <span dir="ltr">${formData.postalCode}</span></p>
+      </div>
+    </div>
+
+    <div class="review-block">
+      <div class="review-block__head">
+        <span class="review-block__title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          روش ارسال
+        </span>
+        <button type="button" class="review-block__edit" data-goto-step="2">ویرایش</button>
+      </div>
+      <div class="review-block__body">
+        <p>${SHIPPING_LABELS[formData.shipping] || '—'}</p>
+      </div>
+    </div>
+
+    <div class="review-block">
+      <div class="review-block__head">
+        <span class="review-block__title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          روش پرداخت
+        </span>
+        <button type="button" class="review-block__edit" data-goto-step="3">ویرایش</button>
+      </div>
+      <div class="review-block__body">
+        <p>${PAYMENT_LABELS[formData.payment] || '—'}</p>
+      </div>
+    </div>
+
+    ${formData.note ? `
+      <div class="review-block">
+        <div class="review-block__head">
+          <span class="review-block__title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            یادداشت
+          </span>
+        </div>
+        <div class="review-block__body">
+          <p>${formData.note}</p>
+        </div>
+      </div>
+    ` : ''}
+  `;
+
+  // Edit buttons
+  wrap.querySelectorAll('[data-goto-step]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const step = Number(btn.dataset.gotoStep);
+      goToStep(step);
+    });
+  });
+}
+
+/* ============================================
+   RENDER — FULL
    ============================================ */
 
 function render() {
   const items = cart.get();
   const empty = document.getElementById('checkout-empty');
   const layout = document.getElementById('checkout-layout');
+  const stepsEl = document.getElementById('checkout-steps');
 
   if (!items.length) {
     if (empty) empty.hidden = false;
     if (layout) layout.hidden = true;
+    if (stepsEl) stepsEl.hidden = true;
     return;
   }
 
   if (empty) empty.hidden = true;
   if (layout) layout.hidden = false;
+  if (stepsEl) stepsEl.hidden = false;
 
   renderItems();
   renderSummary();
+  renderReview();
 }
 
 /* ============================================
-   FORM VALIDATION
+   WIZARD — NAVIGATION
+   ============================================ */
+
+function updateStepUI() {
+  // Indicators
+  document.querySelectorAll('[data-step-indicator]').forEach((el) => {
+    const stepNum = Number(el.dataset.stepIndicator);
+    el.classList.toggle('is-active', stepNum === state.currentStep);
+    el.classList.toggle('is-done', stepNum < state.currentStep);
+  });
+
+  // Step lines
+  const lines = document.querySelectorAll('.checkout-step__line');
+  lines.forEach((line, i) => {
+    line.classList.toggle('is-done', i + 1 < state.currentStep);
+  });
+
+  // Panels
+  document.querySelectorAll('.checkout-wizard-step').forEach((panel) => {
+    panel.classList.toggle('is-active', Number(panel.dataset.step) === state.currentStep);
+  });
+
+  // Buttons
+  const backBtn = document.getElementById('wizard-back');
+  const nextBtn = document.getElementById('wizard-next');
+  const submitBtn = document.getElementById('checkout-submit');
+
+  if (backBtn) backBtn.hidden = state.currentStep === 1;
+
+  if (nextBtn) {
+    if (state.currentStep === TOTAL_STEPS) {
+      nextBtn.hidden = true;
+    } else {
+      nextBtn.hidden = false;
+      const label = nextBtn.querySelector('span');
+      if (label) label.textContent = 'مرحله بعد';
+    }
+  }
+
+  if (submitBtn) {
+    submitBtn.hidden = state.currentStep !== TOTAL_STEPS;
+  }
+
+  // Scroll to top of wizard
+  const wizardTop = document.getElementById('checkout-steps');
+  if (wizardTop) {
+    const offset = 100;
+    const top = wizardTop.getBoundingClientRect().top + window.scrollY - offset;
+    if (Math.abs(window.scrollY - top) > 50) {
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  }
+}
+
+function goToStep(step) {
+  if (step < 1 || step > TOTAL_STEPS) return;
+
+  // اگه جلو می‌ریم، ولیدیت کن
+  if (step > state.currentStep) {
+    for (let s = state.currentStep; s < step; s++) {
+      if (!validateStep(s)) {
+        toast({
+          type: 'error',
+          title: 'اطلاعات ناقص',
+          message: 'لطفاً خطاهای این مرحله را برطرف کنید',
+          duration: 3000,
+        });
+        return;
+      }
+    }
+  }
+
+  state.currentStep = step;
+  updateStepUI();
+
+  // پاک کردن خطاهای مرحله بعد
+  if (step === 3) {
+    renderReview();
+  }
+}
+
+function goNext() {
+  if (state.currentStep >= TOTAL_STEPS) return;
+  goToStep(state.currentStep + 1);
+}
+
+function goBack() {
+  if (state.currentStep <= 1) return;
+  state.currentStep -= 1;
+  updateStepUI();
+}
+
+/* ============================================
+   VALIDATION
    ============================================ */
 
 function setError(fieldName, message) {
@@ -215,48 +424,61 @@ function clearError(fieldName) {
   if (errEl) errEl.textContent = '';
 }
 
-function validateForm() {
+function validateStep(step) {
   let valid = true;
 
-  if (!formData.firstName.trim() || formData.firstName.trim().length < 2) {
-    setError('firstName', 'نام را وارد کنید (حداقل ۲ کاراکتر)');
-    valid = false;
-  } else clearError('firstName');
+  if (step === 1) {
+    if (!formData.firstName.trim() || formData.firstName.trim().length < 2) {
+      setError('firstName', 'نام را وارد کنید (حداقل ۲ کاراکتر)');
+      valid = false;
+    } else clearError('firstName');
 
-  if (!formData.lastName.trim() || formData.lastName.trim().length < 2) {
-    setError('lastName', 'نام خانوادگی را وارد کنید');
-    valid = false;
-  } else clearError('lastName');
+    if (!formData.lastName.trim() || formData.lastName.trim().length < 2) {
+      setError('lastName', 'نام خانوادگی را وارد کنید');
+      valid = false;
+    } else clearError('lastName');
 
-  if (!/^09\d{9}$/.test(formData.phone)) {
-    setError('phone', 'شماره موبایل باید با ۰۹ شروع شود و ۱۱ رقم باشد');
-    valid = false;
-  } else clearError('phone');
+    if (!/^09\d{9}$/.test(formData.phone)) {
+      setError('phone', 'شماره موبایل باید با ۰۹ شروع شود و ۱۱ رقم باشد');
+      valid = false;
+    } else clearError('phone');
 
-  if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-    setError('email', 'ایمیل معتبر نیست');
-    valid = false;
-  } else clearError('email');
+    if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      setError('email', 'ایمیل معتبر نیست');
+      valid = false;
+    } else clearError('email');
 
-  if (!formData.province) {
-    setError('province', 'استان را انتخاب کنید');
-    valid = false;
-  } else clearError('province');
+    if (!formData.province) {
+      setError('province', 'استان را انتخاب کنید');
+      valid = false;
+    } else clearError('province');
 
-  if (!formData.city.trim() || formData.city.trim().length < 2) {
-    setError('city', 'شهر را وارد کنید');
-    valid = false;
-  } else clearError('city');
+    if (!formData.city.trim() || formData.city.trim().length < 2) {
+      setError('city', 'شهر را وارد کنید');
+      valid = false;
+    } else clearError('city');
 
-  if (!formData.address.trim() || formData.address.trim().length < 10) {
-    setError('address', 'آدرس کامل را وارد کنید (حداقل ۱۰ کاراکتر)');
-    valid = false;
-  } else clearError('address');
+    if (!formData.address.trim() || formData.address.trim().length < 10) {
+      setError('address', 'آدرس کامل را وارد کنید (حداقل ۱۰ کاراکتر)');
+      valid = false;
+    } else clearError('address');
 
-  if (!/^\d{10}$/.test(formData.postalCode)) {
-    setError('postalCode', 'کد پستی باید ۱۰ رقم باشد');
-    valid = false;
-  } else clearError('postalCode');
+    if (!/^\d{10}$/.test(formData.postalCode)) {
+      setError('postalCode', 'کد پستی باید ۱۰ رقم باشد');
+      valid = false;
+    } else clearError('postalCode');
+  }
+
+  // Step 2 و Step 3 نیازی به validation جداگانه ندارن
+  // (shipping و payment همیشه یه گزینه انتخاب شده دارن)
+
+  if (!valid) {
+    // Scroll to first error
+    const firstError = document.querySelector('.form-field.has-error');
+    if (firstError) {
+      firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
 
   return valid;
 }
@@ -341,11 +563,35 @@ function bindForm() {
 }
 
 /* ============================================
+   BIND WIZARD
+   ============================================ */
+
+function bindWizard() {
+  const nextBtn = document.getElementById('wizard-next');
+  const backBtn = document.getElementById('wizard-back');
+
+  if (nextBtn) nextBtn.addEventListener('click', goNext);
+  if (backBtn) backBtn.addEventListener('click', goBack);
+
+  // Enter key در input ها → مرحله بعد
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    if (state.currentStep >= TOTAL_STEPS) return;
+
+    const target = e.target;
+    if (target && (target.tagName === 'INPUT' || target.tagName === 'SELECT')) {
+      e.preventDefault();
+      goNext();
+    }
+  });
+}
+
+/* ============================================
    SUBMIT ORDER
    ============================================ */
 
 async function submitOrder() {
-  if (isSubmitting) return;
+  if (state.submitting) return;
 
   if (!cart.get().length) {
     toast({
@@ -356,25 +602,24 @@ async function submitOrder() {
     return;
   }
 
-  if (!validateForm()) {
-    const firstError = document.querySelector('.form-field.has-error');
-    if (firstError) {
-      firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // Validate all steps
+  for (let s = 1; s <= TOTAL_STEPS; s++) {
+    if (!validateStep(s)) {
+      goToStep(s);
+      toast({
+        type: 'error',
+        title: 'اطلاعات ناقص',
+        message: 'لطفاً خطاهای مشخص‌شده را برطرف کنید',
+        duration: 3000,
+      });
+      return;
     }
-
-    toast({
-      type: 'error',
-      title: 'اطلاعات ناقص است',
-      message: 'لطفاً فیلدهای الزامی را تکمیل کنید',
-      duration: 3000,
-    });
-    return;
   }
 
   const btn = document.getElementById('checkout-submit');
   if (!btn) return;
 
-  isSubmitting = true;
+  state.submitting = true;
 
   const { subtotal, discount, shipping, total } = calcTotal();
 
@@ -422,7 +667,7 @@ async function submitOrder() {
     } catch (err) {
       console.error('Submit order error:', err);
 
-      isSubmitting = false;
+      state.submitting = false;
 
       toast({
         type: 'error',
@@ -433,10 +678,6 @@ async function submitOrder() {
     }
   });
 }
-
-/* ============================================
-   BIND SUBMIT
-   ============================================ */
 
 function bindSubmit() {
   const btn = document.getElementById('checkout-submit');
@@ -452,11 +693,13 @@ function bindSubmit() {
 function init() {
   render();
   bindForm();
+  bindWizard();
   bindSubmit();
+  updateStepUI();
 
   onChange(KEYS.cart, render);
 
-  console.log('%c✓ Checkout page loaded', 'color:#18B981;font-weight:bold;');
+  console.log('%c✓ Checkout page loaded (B.7 — Multi-step)', 'color:#18B981;font-weight:bold;');
 }
 
 init();

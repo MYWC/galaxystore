@@ -1,6 +1,7 @@
 /* ============================================
-   TOAST NOTIFICATION SYSTEM — Phase A.1
-   Enhanced with positions, actions, promises, stacking
+   TOAST NOTIFICATION SYSTEM — Phase A.1 + B.6
+   Enhanced with positions, actions, promises, stacking,
+   custom icons (heart for wishlist)
    ============================================ */
 
 /* ============================================
@@ -13,6 +14,9 @@ const ICONS = {
   warning: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
   info:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
   close:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  heart:   `<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`,
+  cart:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`,
+  bell:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>`,
 };
 
 /* ============================================
@@ -69,11 +73,9 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
-/* Allow links in messages — escape everything except <a> tags and <strong> */
 function sanitizeMessage(message) {
   if (!message) return '';
   const str = String(message);
-  // If message contains HTML tags we trust (a, strong, br), keep them
   if (/<a\s|<strong|<br/i.test(str)) {
     return str;
   }
@@ -105,6 +107,7 @@ function createToastElement({
   showProgress = true,
   duration = DEFAULT_DURATION,
   html = null,
+  icon = null,
 }) {
   const el = document.createElement('div');
   el.className = `toast toast--${type} is-entering`;
@@ -116,12 +119,14 @@ function createToastElement({
   let iconHTML = '';
   if (type === 'loading') {
     iconHTML = `<div class="toast__spinner"></div>`;
+  } else if (icon && ICONS[icon]) {
+    iconHTML = ICONS[icon];
   } else {
     const iconKey = ICONS[type] ? type : 'info';
     iconHTML = ICONS[iconKey];
   }
 
-  /* -------- Custom HTML or default content -------- */
+  /* -------- Body -------- */
   let bodyHTML = '';
   if (html) {
     bodyHTML = html;
@@ -132,7 +137,7 @@ function createToastElement({
     `;
   }
 
-  /* -------- Action button -------- */
+  /* -------- Action -------- */
   let actionHTML = '';
   if (action && action.label) {
     actionHTML = `
@@ -143,12 +148,12 @@ function createToastElement({
     `;
   }
 
-  /* -------- Close button -------- */
+  /* -------- Close -------- */
   const closeHTML = showClose
     ? `<button type="button" class="toast__close" data-toast-close aria-label="بستن">${ICONS.close}</button>`
     : '';
 
-  /* -------- Progress bar -------- */
+  /* -------- Progress -------- */
   const progressHTML = showProgress && duration > 0 && type !== 'loading'
     ? `<div class="toast__progress"><div class="toast__progress-bar"></div></div>`
     : '';
@@ -171,19 +176,19 @@ function createToastElement({
 /**
  * نمایش یک Toast
  * @param {Object} options
- * @param {'success'|'error'|'warning'|'info'|'loading'} [options.type='info']
+ * @param {'success'|'error'|'warning'|'info'|'loading'|'wishlist'} [options.type='info']
  * @param {string} [options.title]
  * @param {string} [options.message]
+ * @param {string} [options.icon] — آیکون سفارشی (heart, cart, bell, ...)
  * @param {number} [options.duration=3500]
  * @param {'top-left'|'top-right'|'top-center'|'bottom-left'|'bottom-right'|'bottom-center'} [options.position='top-left']
- * @param {Object} [options.action] - { label, onClick, icon }
+ * @param {Object} [options.action] — { label, onClick, icon }
  * @param {boolean} [options.showClose=true]
  * @param {boolean} [options.showProgress=true]
- * @param {string} [options.html] - custom HTML (overrides title/message)
+ * @param {string} [options.html] — custom HTML
  * @returns {string} toastId
  */
 export function toast(options = {}) {
-  // Backward compatibility: allow `toast({ type, title, message, duration })`
   const {
     type = 'info',
     title = '',
@@ -194,6 +199,7 @@ export function toast(options = {}) {
     showClose = true,
     showProgress = true,
     html = null,
+    icon = null,
     pauseOnHover = true,
     onClick = null,
   } = options;
@@ -211,6 +217,7 @@ export function toast(options = {}) {
     showProgress,
     duration,
     html,
+    icon,
   });
 
   container.appendChild(el);
@@ -237,7 +244,7 @@ export function toast(options = {}) {
     });
   }
 
-  // Setup dismiss timer
+  // Dismiss timer
   let timer = null;
   let remaining = duration;
   let startTime = Date.now();
@@ -338,7 +345,6 @@ export function removeToast(id) {
     el.remove();
     activeToasts.delete(id);
 
-    // Remove empty container
     if (container && !container.querySelector('.toast')) {
       containers.delete(container.dataset.position);
       container.remove();
@@ -365,15 +371,14 @@ export function updateToast(id, options = {}) {
     showClose = true,
     showProgress = true,
     html = null,
+    icon = null,
   } = options;
 
-  // Remove old
   el.classList.add('is-leaving');
   setTimeout(() => {
     el.remove();
     activeToasts.delete(id);
 
-    // Create new with same id? No — just create new
     toast({
       type,
       title,
@@ -384,6 +389,7 @@ export function updateToast(id, options = {}) {
       showClose,
       showProgress,
       html,
+      icon,
     });
   }, 200);
 
@@ -414,6 +420,9 @@ toast.warning = (title, options = {}) =>
 toast.info = (title, options = {}) =>
   toast({ type: 'info', title, ...options });
 
+toast.wishlist = (title, options = {}) =>
+  toast({ type: 'wishlist', icon: 'heart', title, ...options });
+
 toast.loading = (title, options = {}) =>
   toast({ type: 'loading', title, duration: 0, showClose: false, showProgress: false, ...options });
 
@@ -425,12 +434,6 @@ toast.dismissAll = dismissAllToasts;
    PROMISE API
    ============================================ */
 
-/**
- * نمایش loading تا resolve شدن promise
- * @param {Promise} promise
- * @param {Object} messages - { loading, success, error }
- * @returns {Promise}
- */
 toast.promise = function (promise, messages = {}) {
   const {
     loading = 'در حال انجام...',
@@ -469,11 +472,10 @@ toast.promise = function (promise, messages = {}) {
    AUTO INIT
    ============================================ */
 
-// Close all on Escape
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && activeToasts.size) {
     dismissAllToasts();
   }
 });
 
-console.log('%c✓ Toast system ready (Phase A.1)', 'color:#18B981;font-weight:bold;');
+console.log('%c✓ Toast system ready (A.1 + B.6)', 'color:#18B981;font-weight:bold;');
