@@ -4,6 +4,7 @@
    + Effects + Motion + Story + Showcase + Final Touch
    + Skeleton (A.2) + Offline (A.3) + Forms (A.5)
    + Empty State (A.7) + Breadcrumb (B.1) + Voice (B.4)
+   + Compare Bar (B.5)
    (بدون Dark Mode)
    ============================================ */
 
@@ -25,6 +26,7 @@ import { initStory } from '../utils/story.js';
 import { initShowcase } from '../utils/showcase.js';
 import { initFinalTouch } from '../utils/final-touch.js';
 import { autoBreadcrumb } from './breadcrumb.js';
+import { initCompareBar } from '../utils/compare-bar.js';
 
 /* ============================================
    BASE PATH DETECTION
@@ -517,6 +519,15 @@ export function initLayout() {
     document.head.appendChild(voiceLink);
   }
 
+  // Compare Bar CSS (Phase B.5)
+  if (!document.getElementById('compare-bar-css')) {
+    const compareLink = document.createElement('link');
+    compareLink.id = 'compare-bar-css';
+    compareLink.rel = 'stylesheet';
+    compareLink.href = u('css/components/compare-bar.css');
+    document.head.appendChild(compareLink);
+  }
+
   // Offline CSS (Phase A.3)
   if (!document.getElementById('offline-css')) {
     const offlineLink = document.createElement('link');
@@ -568,6 +579,7 @@ export function initLayout() {
   initCartDrawer();
   initQuickView();
   initSearch();
+  initCompareBar();
   initFooter();
   initAnimations();
   initMicro();

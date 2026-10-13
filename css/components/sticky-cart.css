@@ -1,5 +1,6 @@
 /* ============================================
    STICKY ADD TO CART — Phase B.2
+   با هماهنگی Compare Bar (B.5)
    ============================================ */
 
 .sticky-cart {
@@ -24,6 +25,17 @@
   transform: translate3d(0, 0, 0);
   pointer-events: auto;
   visibility: visible;
+}
+
+/* ---------- Shift up when compare bar is visible ---------- */
+
+body.has-compare-bar .sticky-cart {
+  bottom: 72px;
+  transform: translate3d(0, calc(100% + 72px), 0);
+}
+
+body.has-compare-bar .sticky-cart.is-visible {
+  transform: translate3d(0, 0, 0);
 }
 
 .sticky-cart__inner {
@@ -185,7 +197,7 @@
   opacity: 1;
 }
 
-/* ---------- Loading state (uses A.6) ---------- */
+/* ---------- Loading state ---------- */
 
 .sticky-cart__cta.is-loading > * {
   visibility: hidden !important;
@@ -215,11 +227,10 @@
   to { transform: rotate(360deg); }
 }
 
-/* ---------- Shift Floating buttons ---------- */
+/* ---------- Floating buttons shift ---------- */
 
-body.has-sticky-cart .floating {
+body.has-sticky-cart:not(.has-compare-bar) .floating {
   bottom: 96px;
-  transition: bottom 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* ---------- Responsive ---------- */
@@ -260,6 +271,11 @@ body.has-sticky-cart .floating {
     width: 16px;
     height: 16px;
   }
+
+  body.has-compare-bar .sticky-cart {
+    bottom: 64px;
+    transform: translate3d(0, calc(100% + 64px), 0);
+  }
 }
 
 @media (max-width: 480px) {
@@ -292,11 +308,11 @@ body.has-sticky-cart .floating {
     opacity: 1;
   }
 
-  .sticky-cart__cta.is-loading::after {
-    animation-duration: 1.6s;
+  body.has-compare-bar .sticky-cart {
+    transform: none;
   }
 
-  body.has-sticky-cart .floating {
-    transition: none;
+  .sticky-cart__cta.is-loading::after {
+    animation-duration: 1.6s;
   }
 }

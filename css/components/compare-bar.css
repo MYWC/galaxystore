@@ -1,0 +1,315 @@
+/* ============================================
+   COMPARE FLOATING BAR — Phase B.5
+   ============================================ */
+
+.compare-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 490;
+  background: rgba(255, 255, 255, 0.96);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  backdrop-filter: saturate(180%) blur(18px);
+  border-top: 1px solid var(--border-soft);
+  box-shadow: 0 -8px 32px -12px rgba(23, 32, 42, 0.15);
+  transform: translate3d(0, 110%, 0);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.compare-bar.is-visible {
+  transform: translate3d(0, 0, 0);
+  pointer-events: auto;
+  visibility: visible;
+}
+
+/* ============================================
+   INNER LAYOUT
+   ============================================ */
+
+.compare-bar__inner {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding: 12px var(--container-pad);
+}
+
+/* ============================================
+   INFO SIDE
+   ============================================ */
+
+.compare-bar__info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.compare-bar__thumbs {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.compare-bar__thumb {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #F8FBFF, #EFF4FC);
+  border: 2px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px -4px rgba(23, 32, 42, 0.12);
+  margin-inline-start: -10px;
+  animation: compareThumbIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.compare-bar__thumb:first-child {
+  margin-inline-start: 0;
+}
+
+.compare-bar__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 4px;
+}
+
+.compare-bar__thumb--more {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  font-size: 12px;
+  font-weight: var(--fw-black);
+}
+
+@keyframes compareThumbIn {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.compare-bar__text {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  font-weight: var(--fw-medium);
+}
+
+.compare-bar__count {
+  font-size: var(--fs-md);
+  font-weight: var(--fw-black);
+  color: var(--primary);
+  letter-spacing: -0.3px;
+}
+
+.compare-bar__label {
+  white-space: nowrap;
+}
+
+/* ============================================
+   ACTIONS
+   ============================================ */
+
+.compare-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.compare-bar__clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding-inline: 14px;
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.compare-bar__clear:hover {
+  border-color: var(--discount);
+  color: var(--discount);
+  background: #FDECEC;
+}
+
+.compare-bar__clear svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+}
+
+.compare-bar__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding-inline: 20px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 10px;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 8px 20px -8px rgba(35, 134, 215, 0.5);
+  white-space: nowrap;
+}
+
+.compare-bar__cta:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px -10px rgba(35, 134, 215, 0.6);
+}
+
+.compare-bar__cta:active {
+  transform: scale(0.99);
+}
+
+.compare-bar__cta svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.2;
+  transition: transform 0.2s ease;
+}
+
+.compare-bar__cta:hover svg {
+  transform: translateX(-3px);
+}
+
+/* ============================================
+   FLOATING BUTTONS SHIFT
+   ============================================ */
+
+.floating {
+  transition: bottom 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Compare only */
+body.has-compare-bar:not(.has-sticky-cart) .floating {
+  bottom: 96px;
+}
+
+/* Both */
+body.has-compare-bar.has-sticky-cart .floating {
+  bottom: 168px;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .compare-bar__inner {
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    padding: 10px var(--container-pad);
+  }
+
+  .compare-bar__thumb {
+    width: 38px;
+    height: 38px;
+    border-radius: 9px;
+    margin-inline-start: -8px;
+  }
+
+  .compare-bar__label {
+    display: none;
+  }
+
+  .compare-bar__count {
+    font-size: var(--fs-sm);
+  }
+
+  .compare-bar__clear {
+    height: 36px;
+    padding-inline: 10px;
+    gap: 4px;
+  }
+
+  .compare-bar__clear span {
+    display: none;
+  }
+
+  .compare-bar__cta {
+    height: 36px;
+    padding-inline: 14px;
+    font-size: var(--fs-xs);
+  }
+
+  body.has-compare-bar:not(.has-sticky-cart) .floating {
+    bottom: 84px;
+  }
+
+  body.has-compare-bar.has-sticky-cart .floating {
+    bottom: 152px;
+  }
+}
+
+@media (max-width: 480px) {
+  .compare-bar__cta span {
+    display: none;
+  }
+
+  .compare-bar__cta {
+    width: 40px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .compare-bar__cta svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .compare-bar {
+    transition: opacity 0.2s ease;
+    transform: none;
+    opacity: 0;
+  }
+
+  .compare-bar.is-visible {
+    opacity: 1;
+  }
+
+  .compare-bar__thumb {
+    animation: none;
+  }
+
+  .floating {
+    transition: none;
+  }
+}
