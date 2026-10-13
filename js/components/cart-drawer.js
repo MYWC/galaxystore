@@ -1,6 +1,5 @@
 /* ============================================
-   CART DRAWER
-   رندر + تعاملات
+   CART DRAWER — with Quantity Limits (B.10)
    ============================================ */
 
 import { cart, onChange, KEYS } from '../store/state.js';
@@ -16,6 +15,7 @@ const ICONS = {
   phone:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`,
   checkout:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`,
   empty:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`,
+  info:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
 };
 
 /* ---------- Render Card ---------- */
@@ -27,6 +27,10 @@ function renderItem(item) {
   const oldHTML = item.oldPrice
     ? `<span class="cart-item__old">${formatPrice(item.oldPrice)}</span>`
     : '';
+
+  // === B.10: چک محدودیت‌ها ===
+  const max = cart.getMaxQty(item);
+  const atMax = item.qty >= max;
 
   return `
     <div class="cart-item" data-id="${item.id}">
@@ -48,8 +52,20 @@ function renderItem(item) {
         <div class="cart-item__qty">
           <button class="cart-item__qty-btn" data-action="dec" aria-label="کاهش">${ICONS.minus}</button>
           <span class="cart-item__qty-value">${item.qty}</span>
-          <button class="cart-item__qty-btn" data-action="inc" aria-label="افزایش">${ICONS.plus}</button>
+          <button
+            class="cart-item__qty-btn"
+            data-action="inc"
+            aria-label="افزایش"
+            ${atMax ? 'disabled aria-disabled="true"' : ''}
+          >${ICONS.plus}</button>
         </div>
+
+        ${atMax ? `
+          <span class="cart-item__limit">
+            ${ICONS.info}
+            حداکثر ${max.toLocaleString('fa-IR')} عدد
+          </span>
+        ` : ''}
       </div>
 
       <button class="cart-item__remove" data-action="remove" aria-label="حذف">${ICONS.trash}</button>
@@ -59,10 +75,12 @@ function renderItem(item) {
 
 /* ---------- Render Drawer Body ---------- */
 function renderCart() {
-  const body   = document.getElementById('cart-drawer-body');
-  const foot   = document.getElementById('cart-drawer-foot');
+  const body    = document.getElementById('cart-drawer-body');
+  const foot    = document.getElementById('cart-drawer-foot');
   const countEl = document.querySelectorAll('.cart-drawer__count');
-  const badge  = document.querySelector('.header__action-badge--cart');
+  const badge   = document.querySelector('.header__action-badge--cart');
+
+  if (!body || !foot) return;
 
   const items = cart.get();
   const count = cart.count();
@@ -131,13 +149,8 @@ function renderCart() {
     </button>
   `;
 
-  // CTA
   document.getElementById('cart-checkout')?.addEventListener('click', () => {
-    toast({
-      type: 'info',
-      title: 'در حال انتقال به تسویه...',
-      message: 'این بخش در فاز ۱۲ ساخته می‌شود',
-    });
+    window.location.href = (window.MS_BASE_PATH || './') + 'cart.html';
   });
 }
 
@@ -189,7 +202,18 @@ export function initCartDrawer() {
     if (!current) return;
 
     if (action === 'inc') {
-      cart.updateQty(id, current.qty + 1);
+      if (e.target.disabled) return;
+
+      // === B.10 ===
+      const result = cart.updateQty(id, current.qty + 1);
+      if (result?.clamped && result.error) {
+        toast({
+          type: 'warning',
+          title: 'محدودیت تعداد',
+          message: result.error,
+          duration: 2500,
+        });
+      }
     } else if (action === 'dec') {
       cart.updateQty(id, current.qty - 1);
     } else if (action === 'remove') {

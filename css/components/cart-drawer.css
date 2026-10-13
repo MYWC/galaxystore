@@ -1,5 +1,5 @@
 /* ============================================
-   CART DRAWER
+   CART DRAWER — with Quantity Limits (B.10)
    ============================================ */
 
 .cart-overlay {
@@ -165,6 +165,10 @@ body.cart-open .cart-drawer {
   gap: 12px;
 }
 
+/* ============================================
+   CART ITEM
+   ============================================ */
+
 .cart-item {
   display: grid;
   grid-template-columns: 76px 1fr auto;
@@ -253,6 +257,10 @@ body.cart-open .cart-drawer {
   text-decoration: line-through;
 }
 
+/* ============================================
+   QUANTITY CONTROL
+   ============================================ */
+
 .cart-item__qty {
   display: inline-flex;
   align-items: center;
@@ -277,14 +285,20 @@ body.cart-open .cart-drawer {
   font-weight: var(--fw-bold);
 }
 
-.cart-item__qty-btn:hover {
+.cart-item__qty-btn:hover:not(:disabled) {
   background: var(--primary);
   color: #fff;
 }
 
 .cart-item__qty-btn:disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: not-allowed;
+  background: transparent;
+}
+
+.cart-item__qty-btn:disabled:hover {
+  background: transparent;
+  color: var(--text);
 }
 
 .cart-item__qty-btn svg {
@@ -300,6 +314,35 @@ body.cart-open .cart-drawer {
   font-weight: var(--fw-bold);
   color: var(--text);
 }
+
+/* ============================================
+   QUANTITY LIMIT HINT (B.10)
+   ============================================ */
+
+.cart-item__limit {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: var(--fw-semibold);
+  color: #B45309;
+  padding: 3px 8px;
+  background: #FFF7E6;
+  border-radius: 6px;
+  margin-top: 2px;
+  width: fit-content;
+  line-height: 1;
+}
+
+.cart-item__limit svg {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   REMOVE
+   ============================================ */
 
 .cart-item__remove {
   width: 30px;
@@ -324,6 +367,10 @@ body.cart-open .cart-drawer {
   height: 15px;
   stroke-width: 2;
 }
+
+/* ============================================
+   FOOT
+   ============================================ */
 
 .cart-drawer__foot {
   padding: 18px 20px;
@@ -418,6 +465,10 @@ body.cart-open .cart-drawer {
 body.cart-open {
   overflow: hidden;
 }
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 
 @media (max-width: 640px) {
   .cart-drawer {

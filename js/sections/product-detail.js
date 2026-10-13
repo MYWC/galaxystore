@@ -1,6 +1,7 @@
 /* ============================================
    PRODUCT DETAIL PAGE
    with Cinema (Phase 3) + Loading (A.6) + Sticky Cart (B.2)
+   + Quantity Limits (B.10)
    ============================================ */
 
 import { allProducts, formatPrice } from '../data/products.js';
@@ -368,15 +369,33 @@ function bindInfoEvents(p) {
 }
 
 /**
- * افزودن variant فعلی به سبد — هم از دکمه‌ی اصلی، هم از نوار شناور استفاده می‌شه
+ * افزودن variant فعلی به سبد — با Quantity Limits (B.10)
  */
 async function addCurrentVariantToCart(p, btn) {
   const v = p.variants[currentVariantIndex];
   if (!v || v.stock === 0) return;
 
+  const cartItemId = `${p.id}-${v.storage}`;
+
+  // === B.10: چک سبد فعلی ===
+  const existing = cart.get().find((i) => i.id === cartItemId);
+  const maxAllowed = cart.getMaxQty({ stock: v.stock });
+
+  if (existing && existing.qty >= maxAllowed) {
+    toast({
+      type: 'warning',
+      title: 'محدودیت تعداد',
+      message: v.stock <= cart.MAX_PER_ITEM
+        ? `فقط ${v.stock.toLocaleString('fa-IR')} عدد موجود است`
+        : `حداکثر ${cart.MAX_PER_ITEM.toLocaleString('fa-IR')} عدد از هر محصول`,
+      duration: 3000,
+    });
+    return;
+  }
+
   await withButtonLoading(btn, async () => {
     const cartItem = {
-      id: `${p.id}-${v.storage}`,
+      id: cartItemId,
       brand: p.brand,
       name: p.name,
       ram: v.ram,
@@ -385,9 +404,23 @@ async function addCurrentVariantToCart(p, btn) {
       price: v.price,
       oldPrice: v.oldPrice || null,
       image: getImageSrc(p),
+      stock: v.stock, // ← B.10
     };
 
-    cart.add(cartItem, 1);
+    const result = cart.add(cartItem, 1);
+
+    if (result?.limited && result.error) {
+      toast({
+        type: 'warning',
+        title: 'محدودیت تعداد',
+        message: result.error,
+        duration: 3000,
+      });
+
+      await new Promise((r) => setTimeout(r, 200));
+      openCart();
+      return;
+    }
 
     toast({
       type: 'success',
@@ -395,9 +428,7 @@ async function addCurrentVariantToCart(p, btn) {
       message: `${p.name} — ${v.storage}`,
     });
 
-    // تأخیر کوتاه برای دیدن اسپینر
     await new Promise((r) => setTimeout(r, 400));
-
     openCart();
   });
 }

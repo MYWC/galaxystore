@@ -1,5 +1,6 @@
 /* ============================================
    CART PAGE — Full Cart + Coupons + Copy (B.8)
+   + Quantity Limits (B.10)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -52,6 +53,7 @@ const ICONS = {
   minus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
   check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
   close: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+  info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
 };
 
 /* ============================================
@@ -150,7 +152,7 @@ function calcTotal(items) {
 }
 
 /* ============================================
-   RENDER — CART ITEM
+   RENDER — CART ITEM (with B.10)
    ============================================ */
 
 function renderCartItem(item) {
@@ -171,6 +173,11 @@ function renderCartItem(item) {
     `);
   }
 
+  // === B.10: چک محدودیت‌ها ===
+  const max = cart.getMaxQty(item);
+  const atMax = item.qty >= max;
+  const atMin = item.qty <= 1;
+
   return `
     <div class="cart-item" data-cart-id="${item.id}">
       <div class="cart-item__img">
@@ -190,14 +197,31 @@ function renderCartItem(item) {
 
         <div class="cart-item__actions">
           <div class="cart-qty">
-            <button class="cart-qty__btn" data-qty-dec="${item.id}" aria-label="کاهش">
+            <button
+              class="cart-qty__btn"
+              data-qty-dec="${item.id}"
+              aria-label="کاهش"
+              ${atMin ? 'disabled aria-disabled="true"' : ''}
+            >
               ${ICONS.minus}
             </button>
             <span class="cart-qty__value">${item.qty.toLocaleString('fa-IR')}</span>
-            <button class="cart-qty__btn" data-qty-inc="${item.id}" aria-label="افزایش">
+            <button
+              class="cart-qty__btn"
+              data-qty-inc="${item.id}"
+              aria-label="افزایش"
+              ${atMax ? 'disabled aria-disabled="true"' : ''}
+            >
               ${ICONS.plus}
             </button>
           </div>
+
+          ${atMax ? `
+            <span class="cart-item__limit-hint">
+              ${ICONS.info}
+              حداکثر ${max.toLocaleString('fa-IR')} عدد
+            </span>
+          ` : ''}
 
           <button class="cart-item__remove" data-remove="${item.id}">
             ${ICONS.trash}
@@ -387,7 +411,6 @@ function render() {
 
 function applyCoupon(code) {
   const cleaned = (code || '').trim().toUpperCase();
-  const resultEl = document.getElementById('coupon-result');
 
   if (!cleaned) {
     showCouponResult('error', 'لطفاً کد تخفیف را وارد کنید');
@@ -441,22 +464,37 @@ function showCouponResult(type, message) {
 }
 
 /* ============================================
-   BIND EVENTS
+   BIND EVENTS — with B.10
    ============================================ */
 
 function bindEvents() {
   document.addEventListener('click', (e) => {
     const inc = e.target.closest('[data-qty-inc]');
     if (inc) {
+      if (inc.disabled) return;
+
       const id = inc.dataset.qtyInc;
       const item = cart.get().find((i) => i.id === id);
-      if (item) cart.updateQty(id, item.qty + 1);
+      if (item) {
+        // === B.10 ===
+        const result = cart.updateQty(id, item.qty + 1);
+        if (result?.clamped && result.error) {
+          toast({
+            type: 'warning',
+            title: 'محدودیت تعداد',
+            message: result.error,
+            duration: 2500,
+          });
+        }
+      }
       render();
       return;
     }
 
     const dec = e.target.closest('[data-qty-dec]');
     if (dec) {
+      if (dec.disabled) return;
+
       const id = dec.dataset.qtyDec;
       const item = cart.get().find((i) => i.id === id);
       if (item) {
@@ -553,7 +591,6 @@ function bindEvents() {
 
     const code = sample.dataset.coupon;
 
-    // Copy to clipboard with visual feedback
     const copied = await copyText(code);
     if (copied) {
       sample.classList.add('is-copied');
@@ -575,7 +612,7 @@ function init() {
   render();
   bindEvents();
 
-  console.log('%c✓ Cart page loaded (B.8)', 'color:#18B981;font-weight:bold;');
+  console.log('%c✓ Cart page loaded (B.10)', 'color:#18B981;font-weight:bold;');
 }
 
 init();

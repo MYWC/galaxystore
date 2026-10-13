@@ -1,7 +1,7 @@
 /* ============================================
    GLOBAL STATE + LOCALSTORAGE
    یک لایه واحد برای Cart، Wishlist، Compare
-   بعداً به‌راحتی به Supabase وصل می‌شود
+   + Quantity Limits (B.10)
    ============================================ */
 
 const KEYS = {
@@ -9,6 +9,13 @@ const KEYS = {
   wishlist: 'ms_wishlist',
   compare: 'ms_compare',
 };
+
+/* ============================================
+   QUANTITY LIMITS (B.10)
+   ============================================ */
+
+const MAX_PER_ITEM = 5;    // حداکثر تعداد هر محصول
+const MAX_TOTAL_ITEMS = 30; // حداکثر کل اقلام سبد
 
 /* ---------- Helpers ---------- */
 function read(key, fallback) {
@@ -42,36 +49,104 @@ export function onChange(key, cb) {
 }
 
 /* ============================================
-   CART
+   CART — با پشتیبانی Quantity Limits (B.10)
    ============================================ */
 
 export const cart = {
+  // Constants برای استفاده در UI
+  MAX_PER_ITEM,
+  MAX_TOTAL_ITEMS,
+
   get() {
     return read(KEYS.cart, []);
   },
 
+  /**
+   * محاسبه max مجاز برای یک آیتم
+   * = کمترینِ (موجودی، سقف کلی)
+   */
+  getMaxQty(item) {
+    if (!item) return MAX_PER_ITEM;
+    const stock = Number(item.stock);
+    if (!Number.isFinite(stock) || stock <= 0) return MAX_PER_ITEM;
+    return Math.min(stock, MAX_PER_ITEM);
+  },
+
+  /**
+   * افزودن محصول به سبد
+   * @param {Object} product — شامل stock (اختیاری)
+   * @param {number} qty
+   * @returns {{ items, added: number, error?: string, limited?: boolean }}
+   */
   add(product, qty = 1) {
     const items = this.get();
     const existing = items.find((i) => i.id === product.id);
+    const stock = Number(product.stock) || MAX_PER_ITEM;
+    const maxAllowed = Math.min(stock, MAX_PER_ITEM);
+
+    // چک کردن سقف کل سبد
+    const currentTotal = items.reduce((sum, i) => sum + i.qty, 0);
+    if (currentTotal + qty > MAX_TOTAL_ITEMS) {
+      return {
+        items,
+        added: 0,
+        error: `حداکثر ${MAX_TOTAL_ITEMS.toLocaleString('fa-IR')} کالا در سبد خرید مجاز است`,
+      };
+    }
 
     if (existing) {
-      existing.qty += qty;
+      const newQty = existing.qty + qty;
+
+      if (newQty > maxAllowed) {
+        // محدود کن به max
+        existing.qty = maxAllowed;
+        if (product.stock != null) existing.stock = product.stock;
+        write(KEYS.cart, items);
+
+        return {
+          items,
+          added: Math.max(0, maxAllowed - (newQty - qty)),
+          limited: true,
+          error: stock <= MAX_PER_ITEM
+            ? `فقط ${stock.toLocaleString('fa-IR')} عدد موجود است`
+            : `حداکثر ${MAX_PER_ITEM.toLocaleString('fa-IR')} عدد از هر محصول`,
+        };
+      }
+
+      existing.qty = newQty;
+      if (product.stock != null) existing.stock = product.stock;
     } else {
+      const addQty = Math.min(qty, maxAllowed);
+
       items.push({
         id: product.id,
         brand: product.brand,
         name: product.name,
         ram: product.ram || null,
         storage: product.storage || null,
+        color: product.color || null,
         price: product.price,
         oldPrice: product.oldPrice || null,
         image: product.image || null,
-        qty,
+        stock: Number.isFinite(stock) ? stock : null,
+        qty: addQty,
       });
+
+      if (addQty < qty) {
+        write(KEYS.cart, items);
+        return {
+          items,
+          added: addQty,
+          limited: true,
+          error: stock <= MAX_PER_ITEM
+            ? `فقط ${stock.toLocaleString('fa-IR')} عدد موجود است`
+            : `حداکثر ${MAX_PER_ITEM.toLocaleString('fa-IR')} عدد از هر محصول`,
+        };
+      }
     }
 
     write(KEYS.cart, items);
-    return items;
+    return { items, added: qty };
   },
 
   remove(id) {
@@ -80,18 +155,37 @@ export const cart = {
     return items;
   },
 
+  /**
+   * آپدیت تعداد — با clamp خودکار به محدوده مجاز
+   * @returns {{ items, clamped?: boolean, max?: number, error?: string }}
+   */
   updateQty(id, qty) {
     const items = this.get();
     const item = items.find((i) => i.id === id);
-    if (!item) return items;
+    if (!item) return { items };
 
     if (qty <= 0) {
-      return this.remove(id);
+      return { items: this.remove(id) };
+    }
+
+    const max = this.getMaxQty(item);
+
+    if (qty > max) {
+      item.qty = max;
+      write(KEYS.cart, items);
+      return {
+        items,
+        clamped: true,
+        max,
+        error: item.stock && item.stock <= MAX_PER_ITEM
+          ? `فقط ${item.stock.toLocaleString('fa-IR')} عدد موجود است`
+          : `حداکثر ${MAX_PER_ITEM.toLocaleString('fa-IR')} عدد از هر محصول`,
+      };
     }
 
     item.qty = qty;
     write(KEYS.cart, items);
-    return items;
+    return { items };
   },
 
   count() {
