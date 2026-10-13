@@ -1,0 +1,77 @@
+/* ============================================
+   BREADCRUMB — Phase B.1
+   Unified breadcrumb styling
+   ============================================ */
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  line-height: 1.6;
+}
+
+.breadcrumb__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s ease, background 0.2s ease;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-weight: var(--fw-medium);
+}
+
+.breadcrumb__link:hover {
+  color: var(--primary);
+  background: var(--bg-soft);
+}
+
+.breadcrumb__sep {
+  width: 14px;
+  height: 14px;
+  opacity: 0.5;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.breadcrumb__current {
+  color: var(--text);
+  font-weight: var(--fw-bold);
+  padding: 4px 8px;
+  line-height: 1.4;
+}
+
+/* ============ RESPONSIVE ============ */
+
+@media (max-width: 640px) {
+  .breadcrumb {
+    font-size: 11px;
+    gap: 2px;
+    margin-bottom: 18px;
+  }
+
+  .breadcrumb__link,
+  .breadcrumb__current {
+    padding: 3px 6px;
+  }
+
+  .breadcrumb__sep {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* در موبایل فقط آخرین ۲ آیتم رو نشون بده */
+  .breadcrumb__link:not(:last-of-type):not(:nth-last-of-type(2)) {
+    display: none;
+  }
+
+  .breadcrumb__sep:not(:last-of-type) {
+    display: none;
+  }
+}

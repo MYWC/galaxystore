@@ -3,6 +3,7 @@
    با Base Path + SEO + Performance + A11y
    + Effects + Motion + Story + Showcase + Final Touch
    + Skeleton (A.2) + Offline (A.3) + Forms (A.5)
+   + Empty State (A.7) + Breadcrumb (B.1)
    (بدون Dark Mode)
    ============================================ */
 
@@ -23,6 +24,7 @@ import { initMotion } from '../utils/motion.js';
 import { initStory } from '../utils/story.js';
 import { initShowcase } from '../utils/showcase.js';
 import { initFinalTouch } from '../utils/final-touch.js';
+import { autoBreadcrumb } from './breadcrumb.js';
 
 /* ============================================
    BASE PATH DETECTION
@@ -476,6 +478,24 @@ export function initLayout() {
     document.head.appendChild(skeletonLink);
   }
 
+  // Empty State CSS (Phase A.7)
+  if (!document.getElementById('empty-state-css')) {
+    const emptyLink = document.createElement('link');
+    emptyLink.id = 'empty-state-css';
+    emptyLink.rel = 'stylesheet';
+    emptyLink.href = u('css/components/empty-state.css');
+    document.head.appendChild(emptyLink);
+  }
+
+  // Breadcrumb CSS (Phase B.1)
+  if (!document.getElementById('breadcrumb-css')) {
+    const breadcrumbLink = document.createElement('link');
+    breadcrumbLink.id = 'breadcrumb-css';
+    breadcrumbLink.rel = 'stylesheet';
+    breadcrumbLink.href = u('css/components/breadcrumb.css');
+    document.head.appendChild(breadcrumbLink);
+  }
+
   // Offline CSS (Phase A.3)
   if (!document.getElementById('offline-css')) {
     const offlineLink = document.createElement('link');
@@ -536,6 +556,9 @@ export function initLayout() {
 
   // A11y
   initA11y();
+
+  // Breadcrumb (Phase B.1)
+  autoBreadcrumb();
 
   // Effects (Phase 1)
   initEffects();
