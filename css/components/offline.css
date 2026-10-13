@@ -1,0 +1,104 @@
+/* ============================================
+   OFFLINE BANNER — Phase A.3
+   ============================================ */
+
+.offline-banner {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 99998;
+  transform: translate3d(0, -100%, 0);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.offline-banner.is-visible {
+  transform: translate3d(0, 0, 0);
+  pointer-events: auto;
+}
+
+.offline-banner__inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #EF5350 0%, #D84343 100%);
+  color: #fff;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  box-shadow: 0 6px 24px -6px rgba(239, 83, 80, 0.55);
+  position: relative;
+  overflow: hidden;
+}
+
+.offline-banner__inner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.15),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: offlineShimmer 2.5s ease-in-out infinite;
+}
+
+@keyframes offlineShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.offline-banner__inner svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  animation: offlineIconPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes offlineIconPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.offline-banner__inner span {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 640px) {
+  .offline-banner__inner {
+    padding: 10px 14px;
+    font-size: 11px;
+    gap: 8px;
+  }
+
+  .offline-banner__inner svg {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .offline-banner {
+    transition: none;
+  }
+
+  .offline-banner__inner::before,
+  .offline-banner__inner svg {
+    animation: none;
+  }
+}

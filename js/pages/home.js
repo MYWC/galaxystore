@@ -1,5 +1,6 @@
 /* ============================================
    HOME PAGE — Entry Point
+   با Skeleton (A.2) + Error System (A.3)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -18,11 +19,23 @@ import { cart, wishlist, compare, onChange, KEYS } from '../store/state.js';
 import { products, formatPrice } from '../data/products.js';
 import { openCart } from '../components/cart-drawer.js';
 import { flyToCart } from '../utils/micro.js';
+import { autoSkeleton } from '../utils/skeleton.js';
+import { initErrorSystem } from '../utils/errors.js';
 
 /* ============================================
    INIT LAYOUT
    ============================================ */
 initLayout();
+
+/* ============================================
+   INIT ERROR SYSTEM
+   ============================================ */
+initErrorSystem();
+
+/* ============================================
+   SHOW SKELETONS BEFORE RENDER
+   ============================================ */
+autoSkeleton();
 
 /* ============================================
    INIT SECTIONS
