@@ -1,5 +1,6 @@
 /* ============================================
    SEARCH PAGE — with Enhanced Recent Searches (B.3) + Voice (B.4)
+   + Search Analytics (C.5)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -11,6 +12,7 @@ import { openCart } from '../components/cart-drawer.js';
 import { flyToCart } from '../utils/micro.js';
 import { mountEmptyState, hideEmptyState } from '../components/empty-state.js';
 import { attachVoiceButton } from '../utils/voice-search.js';
+import { trackSearchTerm, getPopularTerms } from '../services/search-analytics.js';
 
 /* ============================================
    INIT LAYOUT
@@ -25,23 +27,11 @@ const RECENT_KEY = 'ms_recent_searches';
 const MAX_RECENT = 10;
 const PER_PAGE = 12;
 
-const POPULAR_TERMS = [
-  'iPhone 16 Pro',
-  'Galaxy S25 Ultra',
-  'Xiaomi 14T',
-  'Pixel 9',
-  'گوشی اقتصادی',
-  'آیپد',
-  'تبلت سامسونگ',
-  'OnePlus 13',
-  'Redmi Note',
-  'هواوی',
-];
-
 const ICONS = {
   clock: `<svg class="recent-chip__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
   search: `<svg class="recent-chip__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
   close: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  fire: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>`,
 };
 
 /* ============================================
@@ -70,7 +60,7 @@ function normalize(str) {
 }
 
 /* ============================================
-   RECENT SEARCHES — with timestamp + type
+   RECENT SEARCHES
    ============================================ */
 
 function getRecent() {
@@ -115,11 +105,7 @@ function saveRecent(query) {
 
   let list = getRecent();
   list = list.filter((item) => normalize(item.q) !== normalize(q));
-  list.unshift({
-    q,
-    ts: Date.now(),
-    type,
-  });
+  list.unshift({ q, ts: Date.now(), type });
   list = list.slice(0, MAX_RECENT);
 
   try {
@@ -164,12 +150,7 @@ const GROUP_LABELS = {
 };
 
 function groupRecent(list) {
-  const groups = {
-    today: [],
-    yesterday: [],
-    week: [],
-    older: [],
-  };
+  const groups = { today: [], yesterday: [], week: [], older: [] };
 
   list.forEach((item) => {
     const group = getTimeGroup(item.ts || Date.now());
@@ -185,7 +166,7 @@ function groupRecent(list) {
 }
 
 /* ============================================
-   RENDER — RECENT CHIP
+   RENDER — RECENT
    ============================================ */
 
 function renderRecentChip(item) {
@@ -201,10 +182,6 @@ function renderRecentChip(item) {
     </button>
   `;
 }
-
-/* ============================================
-   RENDER — RECENT SEARCHES
-   ============================================ */
 
 function renderRecent() {
   const wrap = document.getElementById('recent-searches');
@@ -233,16 +210,46 @@ function renderRecent() {
 }
 
 /* ============================================
-   POPULAR SEARCHES
+   RENDER — POPULAR (C.5: dynamic)
    ============================================ */
 
-function renderPopular() {
+async function renderPopular() {
   const list = document.getElementById('popular-list');
   if (!list) return;
 
-  list.innerHTML = POPULAR_TERMS.map((t) => `
-    <button class="popular-chip" data-popular="${t}">${t}</button>
-  `).join('');
+  // Loading state
+  list.innerHTML = `
+    <span class="popular-chip popular-chip--skeleton"></span>
+    <span class="popular-chip popular-chip--skeleton"></span>
+    <span class="popular-chip popular-chip--skeleton"></span>
+    <span class="popular-chip popular-chip--skeleton"></span>
+  `;
+
+  try {
+    const terms = await getPopularTerms({ limit: 10 });
+
+    if (!terms.length) {
+      list.innerHTML = '';
+      return;
+    }
+
+    list.innerHTML = terms.map((item, idx) => {
+      const isHot = idx < 3 && item.count > 0;
+      return `
+        <button
+          class="popular-chip ${isHot ? 'popular-chip--hot' : ''}"
+          data-popular="${item.term}"
+          title="${item.count > 0 ? `${item.count.toLocaleString('fa-IR')} بار جستجو` : ''}"
+        >
+          ${isHot ? `<span class="popular-chip__fire">🔥</span>` : ''}
+          ${item.term}
+        </button>
+      `;
+    }).join('');
+  } catch (err) {
+    console.error('[Search] renderPopular error:', err);
+    list.innerHTML = '';
+  }
 }
 
 /* ============================================
@@ -344,6 +351,7 @@ function renderResults() {
   const pagination = document.getElementById('search-pagination');
   const countEl = document.getElementById('search-count');
   const queryEl = document.getElementById('search-query');
+  const emptyQueryEl = document.getElementById('empty-query');
 
   if (!grid) return;
 
@@ -362,6 +370,7 @@ function renderResults() {
   info.hidden = false;
   start.hidden = true;
   if (queryEl) queryEl.textContent = state.query;
+  if (emptyQueryEl) emptyQueryEl.textContent = state.query;
 
   const results = searchProducts(state.query);
   const filtered = filterByTab(results);
@@ -477,7 +486,7 @@ function renderPagination(container, totalPages) {
 }
 
 /* ============================================
-   QUERY HANDLING
+   QUERY HANDLING — with C.5 Tracking
    ============================================ */
 
 function performSearch(query, save = true) {
@@ -505,6 +514,9 @@ function performSearch(query, save = true) {
   if (save && state.query) {
     saveRecent(state.query);
     renderRecent();
+
+    // === C.5: Track search term ===
+    trackSearchTerm(state.query).catch(() => {});
   }
 
   const recent = document.getElementById('recent-searches');
@@ -539,9 +551,7 @@ function bindSearchForm() {
 
       if (!val) {
         const recent = document.getElementById('recent-searches');
-        if (recent) {
-          renderRecent();
-        }
+        if (recent) renderRecent();
       }
 
       debounceTimer = setTimeout(() => {
@@ -569,7 +579,7 @@ function bindSearchForm() {
     });
   }
 
-  // Voice button (Phase B.4)
+  // Voice button (B.4)
   if (form && input) {
     const submitBtn = form.querySelector('.search-box__submit');
     attachVoiceButton({
@@ -659,7 +669,7 @@ function bindSort() {
 }
 
 /* ============================================
-   GLOBAL CLICK HANDLER
+   GLOBAL CLICK HANDLER (Product actions)
    ============================================ */
 
 document.addEventListener('click', (e) => {
@@ -752,7 +762,7 @@ document.addEventListener('click', (e) => {
     const variantIndex = card ? Number(card.dataset.activeVariant || 0) : 0;
     const variant = product.variants[variantIndex] || product.variants[0];
 
-    cart.add({
+    const result = cart.add({
       id: `${product.id}-${variant.storage}`,
       brand: product.brand,
       name: product.name,
@@ -761,7 +771,19 @@ document.addEventListener('click', (e) => {
       price: variant.price,
       oldPrice: variant.oldPrice || null,
       image: product.image,
+      stock: variant.stock,
     }, 1);
+
+    if (result?.limited && result.error) {
+      toast({
+        type: 'warning',
+        title: 'محدودیت تعداد',
+        message: result.error,
+        duration: 3000,
+      });
+      setTimeout(() => openCart(), 400);
+      return;
+    }
 
     flyToCart(add);
 
@@ -790,7 +812,7 @@ function init() {
   const q = params.get('q') || '';
 
   renderRecent();
-  renderPopular();
+  renderPopular(); // ← C.5: async now
   bindSearchForm();
   bindRecentSearches();
   bindPopularSearches();
@@ -798,12 +820,12 @@ function init() {
   bindSort();
 
   if (q) {
-    performSearch(q, false);
+    performSearch(q, true); // ← C.5: track URL query too
   } else {
     renderResults();
   }
 
-  console.log('%c✓ Search page loaded (B.3 + B.4)', 'color:#18B981;font-weight:bold;');
+  console.log('%c✓ Search page loaded (C.5)', 'color:#18B981;font-weight:bold;');
 }
 
 init();

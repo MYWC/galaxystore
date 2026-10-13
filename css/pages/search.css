@@ -744,3 +744,58 @@
     height: 14px;
   }
 }
+/* ============================================
+   POPULAR CHIPS — C.5 enhancements
+   ============================================ */
+
+.popular-chip--hot {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-color: rgba(239, 108, 31, 0.35);
+  background: linear-gradient(135deg, #FFF7E6, #FFEED4);
+  color: #B45309;
+}
+
+.popular-chip--hot:hover {
+  border-color: #EF6C1F;
+  background: linear-gradient(135deg, #FFEED4, #FFE0B8);
+  color: #B45309;
+}
+
+.popular-chip__fire {
+  font-size: 11px;
+  line-height: 1;
+  animation: fireFlicker 1.6s ease-in-out infinite;
+  display: inline-block;
+  transform-origin: center bottom;
+}
+
+@keyframes fireFlicker {
+  0%, 100% { transform: scale(1) rotate(-2deg); }
+  50%      { transform: scale(1.15) rotate(2deg); }
+}
+
+/* Skeleton */
+.popular-chip--skeleton {
+  width: 80px;
+  height: 28px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #EFF3F7 25%, #F7FAFC 50%, #EFF3F7 75%);
+  background-size: 1000px 100%;
+  animation: shimmer 1.8s infinite;
+  border: none;
+  pointer-events: none;
+  display: inline-block;
+}
+
+.popular-chip--skeleton:nth-child(2) { width: 100px; }
+.popular-chip--skeleton:nth-child(3) { width: 70px; }
+.popular-chip--skeleton:nth-child(4) { width: 90px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .popular-chip__fire,
+  .popular-chip--skeleton {
+    animation: none !important;
+  }
+}
