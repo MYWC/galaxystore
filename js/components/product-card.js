@@ -1,6 +1,6 @@
 /* ============================================
    PRODUCT CARD RENDERER
-   Placeholder always (no image 404s)
+   با پشتیبانی از عکس واقعی + fallback
    ============================================ */
 
 import { formatPrice } from '../data/products.js';
@@ -47,6 +47,25 @@ function renderStock(variant) {
 }
 
 /* ============================================
+   IMAGE PATH
+   ============================================ */
+
+function getImagePath(product, id) {
+  const BASE = window.MS_BASE_PATH || './';
+
+  // اگه product.image ست شده، از اون استفاده کن
+  if (product.image) {
+    if (product.image.startsWith('http') || product.image.startsWith('/')) {
+      return product.image;
+    }
+    return BASE + product.image;
+  }
+
+  // وگرنه از id استفاده کن
+  return `${BASE}assets/images/products/${id}.jpg`;
+}
+
+/* ============================================
    RENDER
    ============================================ */
 
@@ -55,7 +74,6 @@ export function renderProductCard(product) {
 
   if (!variants.length) return '';
 
-  // Fallback برای نام
   const displayName = name || product.model || id || 'محصول';
   const displayModel = product.model || '';
 
@@ -67,11 +85,17 @@ export function renderProductCard(product) {
     .filter(Boolean)
     .join('');
 
-  // ✅ همیشه placeholder — بدون تلاش برای لود تصویر
+  const imgSrc = getImagePath(product, id);
+
+  // عکس با fallback خودکار به placeholder
   const imageHTML = `
-    <div class="ph ph--square">
-      ${displayModel || displayName}
-    </div>
+    <img
+      src="${imgSrc}"
+      alt="${displayName}"
+      loading="lazy"
+      decoding="async"
+      onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<div class=\\'ph ph--square\\'>${(displayModel || displayName).replace(/'/g, '')}</div>';"
+    />
   `;
 
   const storagesHTML = variants.map((v, i) => `
