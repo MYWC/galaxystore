@@ -709,7 +709,6 @@ function autoInitFormDrafts() {
     const key = el.dataset.draft;
     if (!key) return;
 
-    // Skip if already initialized
     if (el.dataset.draftReady === 'true') return;
     el.dataset.draftReady = 'true';
 
