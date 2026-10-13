@@ -1,8 +1,8 @@
 /* ============================================
    LAYOUT — Header + Nav + Footer + Common UI
    با Base Path + SEO + Performance + A11y
-   + Effects (1) + Motion (2) + Cinema (3)
-   + Story (4) + Showcase (5) + Final Touch (6)
+   + Effects + Motion + Story + Showcase + Final Touch
+   (بدون Dark Mode)
    ============================================ */
 
 import { initDrawer } from '../sections/drawer.js';
@@ -17,7 +17,7 @@ import { initMicro, bounceCartBadge } from '../utils/micro.js';
 import { injectSiteSchema } from '../utils/seo.js';
 import { initPerformance } from '../utils/performance.js';
 import { initA11y, announceCartUpdate } from '../utils/a11y.js';
-import { initEffects, toggleTheme } from '../utils/effects.js';
+import { initEffects } from '../utils/effects.js';
 import { initMotion } from '../utils/motion.js';
 import { initStory } from '../utils/story.js';
 import { initShowcase } from '../utils/showcase.js';
@@ -108,22 +108,6 @@ const HEADER_HTML = `
         <input type="search" class="header__search-input" placeholder="جستجوی گوشی، تبلت یا برند..." aria-label="جستجو در محصولات" autocomplete="off" />
       </div>
       <div class="header__actions">
-        <button class="theme-toggle" id="theme-toggle" aria-label="تغییر حالت روشن/تاریک">
-          <svg class="theme-toggle__sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="5"/>
-            <line x1="12" y1="1" x2="12" y2="3"/>
-            <line x1="12" y1="21" x2="12" y2="23"/>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-            <line x1="1" y1="12" x2="3" y2="12"/>
-            <line x1="21" y1="12" x2="23" y2="12"/>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-          </svg>
-          <svg class="theme-toggle__moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-          </svg>
-        </button>
         <a href="${u('wishlist.html')}" class="header__action header__action--optional" aria-label="لیست علاقه‌مندی‌ها">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           <span class="header__action-badge" data-badge="wishlist" aria-live="polite">0</span>
@@ -539,10 +523,6 @@ export function initLayout() {
 
   // Final Touch (Phase 6)
   initFinalTouch();
-
-  // Theme Toggle
-  const themeToggle = document.getElementById('theme-toggle');
-  if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
 
   syncBadges();
   onChange(KEYS.wishlist, syncBadges);
