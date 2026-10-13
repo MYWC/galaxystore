@@ -1,8 +1,9 @@
 /* ============================================
-   LIVE SEARCH — با Base Path + Recent Searches (B.3)
+   LIVE SEARCH — با Base Path + Recent Searches (B.3) + Voice (B.4)
    ============================================ */
 
 import { products, formatPrice } from '../data/products.js';
+import { attachVoiceButton } from '../utils/voice-search.js';
 
 const MAX_RESULTS = 6;
 const RECENT_KEY = 'ms_recent_searches';
@@ -87,7 +88,6 @@ function getRecent() {
     if (!raw) return [];
 
     const parsed = JSON.parse(raw);
-    // Backward compat: old format was array of strings
     return parsed.map((item) => {
       if (typeof item === 'string') {
         return { q: item, ts: Date.now(), type: 'keyword' };
@@ -170,7 +170,6 @@ function renderRecentItem(item) {
    ============================================ */
 
 function renderDropdown(dropdown, query, basePath) {
-  // اگه query خالیه → Recent searches
   if (!query) {
     const recent = getRecent().slice(0, MAX_RECENT_IN_DROPDOWN);
 
@@ -206,7 +205,6 @@ function renderDropdown(dropdown, query, basePath) {
     return;
   }
 
-  // Query داره → نتایج
   const results = search(query);
 
   if (!results.length) {
@@ -272,6 +270,16 @@ export function initSearch() {
       wrapper.appendChild(dropdown);
     }
 
+    // Voice button (Phase B.4)
+    attachVoiceButton({
+      input,
+      container: wrapper,
+      insertBefore: dropdown,
+      onResult: () => {
+        renderDropdown(dropdown, input.value.trim(), basePath);
+      },
+    });
+
     let debounceTimer;
 
     input.addEventListener('input', (e) => {
@@ -302,7 +310,6 @@ export function initSearch() {
   /* ---------- Global click delegation ---------- */
 
   document.addEventListener('click', (e) => {
-    // Close dropdown on outside click
     if (!e.target.closest('.header__search')) {
       document
         .querySelectorAll('.search-dropdown.is-open')
@@ -310,7 +317,6 @@ export function initSearch() {
       return;
     }
 
-    // Remove individual recent
     const removeBtn = e.target.closest('[data-recent-remove]');
     if (removeBtn) {
       e.stopPropagation();
@@ -318,7 +324,6 @@ export function initSearch() {
       const q = removeBtn.dataset.recentRemove;
       removeRecent(q);
 
-      // re-render
       const dd = removeBtn.closest('.search-dropdown');
       const input = removeBtn.closest('.header__search')?.querySelector('.header__search-input');
       if (dd && input) {
@@ -327,7 +332,6 @@ export function initSearch() {
       return;
     }
 
-    // Clear all recent
     const clearBtn = e.target.closest('[data-clear-all-recent]');
     if (clearBtn) {
       e.stopPropagation();
@@ -342,7 +346,6 @@ export function initSearch() {
       return;
     }
 
-    // Click on a recent item → fill input + go to results
     const recentItem = e.target.closest('[data-recent]');
     if (recentItem) {
       e.preventDefault();
@@ -355,7 +358,6 @@ export function initSearch() {
       return;
     }
 
-    // Show all results for query → navigate
     const showAll = e.target.closest('[data-show-all]');
     if (showAll) {
       e.preventDefault();

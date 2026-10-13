@@ -3,7 +3,7 @@
    با Base Path + SEO + Performance + A11y
    + Effects + Motion + Story + Showcase + Final Touch
    + Skeleton (A.2) + Offline (A.3) + Forms (A.5)
-   + Empty State (A.7) + Breadcrumb (B.1)
+   + Empty State (A.7) + Breadcrumb (B.1) + Voice (B.4)
    (بدون Dark Mode)
    ============================================ */
 
@@ -494,6 +494,27 @@ export function initLayout() {
     breadcrumbLink.rel = 'stylesheet';
     breadcrumbLink.href = u('css/components/breadcrumb.css');
     document.head.appendChild(breadcrumbLink);
+  }
+
+  // Sticky Cart CSS (Phase B.2) — فقط در صفحه محصول
+  if (
+    document.getElementById('product-page') &&
+    !document.getElementById('sticky-cart-css')
+  ) {
+    const stickyLink = document.createElement('link');
+    stickyLink.id = 'sticky-cart-css';
+    stickyLink.rel = 'stylesheet';
+    stickyLink.href = u('css/components/sticky-cart.css');
+    document.head.appendChild(stickyLink);
+  }
+
+  // Voice Search CSS (Phase B.4)
+  if (!document.getElementById('voice-search-css')) {
+    const voiceLink = document.createElement('link');
+    voiceLink.id = 'voice-search-css';
+    voiceLink.rel = 'stylesheet';
+    voiceLink.href = u('css/components/voice-search.css');
+    document.head.appendChild(voiceLink);
   }
 
   // Offline CSS (Phase A.3)

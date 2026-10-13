@@ -1,5 +1,5 @@
 /* ============================================
-   SEARCH PAGE — with Enhanced Recent Searches (B.3)
+   SEARCH PAGE — with Enhanced Recent Searches (B.3) + Voice (B.4)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -10,6 +10,7 @@ import { toast } from '../components/toast.js';
 import { openCart } from '../components/cart-drawer.js';
 import { flyToCart } from '../utils/micro.js';
 import { mountEmptyState, hideEmptyState } from '../components/empty-state.js';
+import { attachVoiceButton } from '../utils/voice-search.js';
 
 /* ============================================
    INIT LAYOUT
@@ -55,7 +56,7 @@ const state = {
 };
 
 /* ============================================
-   HELPERS — Normalize Persian
+   HELPERS
    ============================================ */
 
 function normalize(str) {
@@ -78,7 +79,6 @@ function getRecent() {
     if (!raw) return [];
 
     const parsed = JSON.parse(raw);
-    // Backward compat: old format was array of strings
     return parsed.map((item) => {
       if (typeof item === 'string') {
         return { q: item, ts: Date.now(), type: 'keyword' };
@@ -94,13 +94,11 @@ function detectType(query) {
   const q = normalize(query);
   if (!q) return 'keyword';
 
-  // Brand?
   const brandMatches = products.some((p) =>
     normalize(p.brand).includes(q) || q.includes(normalize(p.brand))
   );
   if (brandMatches && q.length >= 3) return 'brand';
 
-  // Direct product?
   const productMatch = products.find((p) =>
     normalize(p.name).includes(q) || normalize(p.model).includes(q)
   );
@@ -116,15 +114,12 @@ function saveRecent(query) {
   const type = detectType(q);
 
   let list = getRecent();
-  // Remove duplicates (by normalized text)
   list = list.filter((item) => normalize(item.q) !== normalize(q));
-  // Add to front
   list.unshift({
     q,
     ts: Date.now(),
     type,
   });
-  // Limit
   list = list.slice(0, MAX_RECENT);
 
   try {
@@ -573,6 +568,19 @@ function bindSearchForm() {
       if (input) input.focus();
     });
   }
+
+  // Voice button (Phase B.4)
+  if (form && input) {
+    const submitBtn = form.querySelector('.search-box__submit');
+    attachVoiceButton({
+      input,
+      container: form,
+      insertBefore: submitBtn,
+      onResult: (text) => {
+        performSearch(text);
+      },
+    });
+  }
 }
 
 function bindRecentSearches() {
@@ -581,7 +589,6 @@ function bindRecentSearches() {
 
   if (list) {
     list.addEventListener('click', (e) => {
-      // Remove individual chip
       const removeBtn = e.target.closest('[data-recent-remove]');
       if (removeBtn) {
         e.stopPropagation();
@@ -592,7 +599,6 @@ function bindRecentSearches() {
         return;
       }
 
-      // Click on chip itself
       const chip = e.target.closest('[data-recent]');
       if (!chip) return;
       performSearch(chip.dataset.recent);
@@ -797,7 +803,7 @@ function init() {
     renderResults();
   }
 
-  console.log('%c✓ Search page loaded (B.3)', 'color:#18B981;font-weight:bold;');
+  console.log('%c✓ Search page loaded (B.3 + B.4)', 'color:#18B981;font-weight:bold;');
 }
 
 init();
