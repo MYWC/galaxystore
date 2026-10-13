@@ -1,19 +1,23 @@
 /* ============================================
    STOCK ALERTS SERVICE — C.4
-   "Notify me when back in stock"
    ============================================ */
 
 import { supabase, isSupabaseConfigured } from './supabase.js';
 import { getCurrentUser } from './auth.js';
 import { withRetry } from '../utils/errors.js';
 
-const LOCAL_KEY = 'ms_stock_alerts';
-
 /* ============================================
-   LOCAL STORAGE
+   CONSTANTS
    ============================================ */
 
-function getLocalAlerts() {
+const LOCAL_KEY = 'ms_stock_alerts'; // [{ productId, variantKey, email, phone, createdAt }]
+const MAX_LOCAL = 50;
+
+/* ============================================
+   HELPERS
+   ============================================ */
+
+function getLocalList() {
   try {
     const raw = localStorage.getItem(LOCAL_KEY);
     if (!raw) return [];
@@ -24,73 +28,52 @@ function getLocalAlerts() {
   }
 }
 
-function saveLocalAlerts(list) {
+function saveLocalList(list) {
   try {
-    localStorage.setItem(LOCAL_KEY, JSON.stringify(list.slice(0, 100)));
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(list.slice(0, MAX_LOCAL)));
   } catch (e) {
     console.error('Save stock alerts error:', e);
   }
 }
 
-/* ============================================
-   VALIDATORS
-   ============================================ */
-
-export function isValidEmail(str) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(str || '').trim());
+function buildVariantKey(variant) {
+  if (!variant) return 'default';
+  return `${variant.storage || ''}-${variant.ram || ''}`.replace(/^-|-$/g, '') || 'default';
 }
 
-export function isValidPhone(str) {
-  const clean = String(str || '').replace(/\D/g, '');
-  return /^09\d{9}$/.test(clean);
+function isEmailValid(str) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str);
+}
+
+function isPhoneValid(str) {
+  return /^09\d{9}$/.test((str || '').replace(/\D/g, ''));
 }
 
 /* ============================================
-   CHECK EXISTING
+   HAS ALERT (sync — از localStorage)
    ============================================ */
 
 /**
- * آیا کاربر قبلاً برای این محصول alert ثبت کرده؟
- * @param {string} productId
- * @returns {Promise<boolean>}
+ * آیا کاربر برای این variant alert ثبت کرده؟
+ * (فقط از localStorage چک می‌کنه — برای رندر سریع)
  */
-export async function hasExistingAlert(productId) {
+export function hasStockAlert(productId, variantKey) {
   if (!productId) return false;
-
-  const user = await getCurrentUser();
-
-  if (isSupabaseConfigured()) {
-    try {
-      let query = supabase
-        .from('stock_alerts')
-        .select('id')
-        .eq('product_id', productId)
-        .eq('notified', false)
-        .limit(1);
-
-      if (user?.id) {
-        query = query.eq('user_id', user.id);
-      } else if (user?.email) {
-        query = query.eq('email', user.email);
-      } else {
-        // مهمان — از local چک می‌کنیم
-        return getLocalAlerts().some(
-          (a) => a.productId === productId && !a.notified
-        );
-      }
-
-      const { data, error } = await query.maybeSingle();
-
-      if (!error && data) return true;
-    } catch (err) {
-      console.warn('[StockAlerts] hasExisting check failed:', err);
-    }
-  }
-
-  // Local fallback
-  return getLocalAlerts().some(
-    (a) => a.productId === productId && !a.notified
+  const list = getLocalList();
+  return list.some(
+    (a) => a.productId === productId && a.variantKey === variantKey
   );
+}
+
+/**
+ * گرفتن alert ثبت‌شده (برای نمایش اطلاعات)
+ */
+export function getStockAlert(productId, variantKey) {
+  if (!productId) return null;
+  const list = getLocalList();
+  return list.find(
+    (a) => a.productId === productId && a.variantKey === variantKey
+  ) || null;
 }
 
 /* ============================================
@@ -98,69 +81,54 @@ export async function hasExistingAlert(productId) {
    ============================================ */
 
 /**
- * ثبت alert برای محصول ناموجود
- * @param {Object} data
- * @param {string} data.productId
- * @param {string} [data.email]
- * @param {string} [data.phone]
- * @param {string} [data.variantKey] — مثلاً storage
- * @returns {Promise<{ success: boolean, error?: { message: string }, alreadyExists?: boolean }>}
+ * ثبت درخواست اطلاع از موجودی
+ * @param {Object} opts
+ * @param {string} opts.productId
+ * @param {Object} opts.variant
+ * @param {string} [opts.email]
+ * @param {string} [opts.phone]
+ * @returns {Promise<{ success: boolean, error?: string, alert?: Object }>}
  */
-export async function createStockAlert({ productId, email, phone, variantKey }) {
+export async function createStockAlert({ productId, variant, email, phone }) {
   if (!productId) {
-    return { success: false, error: { message: 'شناسه محصول نامعتبر است' } };
+    return { success: false, error: 'شناسه محصول نامعتبر است' };
   }
 
-  const cleanEmail = String(email || '').trim().toLowerCase();
-  const cleanPhone = String(phone || '').replace(/\D/g, '');
+  const cleanEmail = (email || '').trim().toLowerCase();
+  const cleanPhone = (phone || '').trim().replace(/\D/g, '');
 
-  const hasEmail = isValidEmail(cleanEmail);
-  const hasPhone = isValidPhone(cleanPhone);
-
-  if (!hasEmail && !hasPhone) {
-    return {
-      success: false,
-      error: { message: 'حداقل یک راه ارتباطی (ایمیل یا موبایل) وارد کنید' },
-    };
+  // حداقل یکی
+  if (!cleanEmail && !cleanPhone) {
+    return { success: false, error: 'لطفاً ایمیل یا شماره موبایل را وارد کنید' };
   }
 
-  // چک تکراری
-  const exists = await hasExistingAlert(productId);
-  if (exists) {
-    return { success: false, alreadyExists: true, error: { message: 'قبلاً برای این محصول ثبت کرده‌اید' } };
+  if (cleanEmail && !isEmailValid(cleanEmail)) {
+    return { success: false, error: 'ایمیل معتبر نیست' };
   }
 
+  if (cleanPhone && !isPhoneValid(cleanPhone)) {
+    return { success: false, error: 'شماره موبایل باید ۱۱ رقم و با ۰۹ شروع شود' };
+  }
+
+  const variantKey = buildVariantKey(variant);
   const user = await getCurrentUser();
-
-  /* ---------- Local save ---------- */
-  const localRecord = {
-    id: 'alert-' + Date.now(),
-    productId,
-    userId: user?.id || null,
-    email: hasEmail ? cleanEmail : null,
-    phone: hasPhone ? cleanPhone : null,
-    variantKey: variantKey || null,
-    notified: false,
-    createdAt: new Date().toISOString(),
-  };
-
-  const list = getLocalAlerts();
-  list.unshift(localRecord);
-  saveLocalAlerts(list);
+  const now = new Date().toISOString();
 
   /* ---------- Supabase ---------- */
   if (isSupabaseConfigured()) {
     try {
-      const payload = {
-        product_id: productId,
-        user_id: user?.id || null,
-        email: hasEmail ? cleanEmail : null,
-        phone: hasPhone ? cleanPhone : null,
-        variant_key: variantKey || null,
-      };
-
       const { data, error } = await withRetry(
-        () => supabase.from('stock_alerts').insert(payload).select().single(),
+        () => supabase
+          .from('stock_alerts')
+          .insert({
+            product_id: productId,
+            variant_key: variantKey,
+            email: cleanEmail || null,
+            phone: cleanPhone || null,
+            user_id: user?.id || null,
+          })
+          .select()
+          .single(),
         {
           maxAttempts: 2,
           showToast: false,
@@ -169,117 +137,96 @@ export async function createStockAlert({ productId, email, phone, variantKey }) 
       );
 
       if (error) {
-        // اگه unique constraint بود → already exists
+        // Duplicate check
         if (error.code === '23505') {
-          return {
-            success: false,
-            alreadyExists: true,
-            error: { message: 'قبلاً برای این محصول ثبت کرده‌اید' },
-          };
+          return { success: false, error: 'قبلاً برای این محصول ثبت کرده‌اید' };
         }
-
-        console.warn('[StockAlerts] Supabase insert failed, saved locally');
-        return { success: true, saved: 'local', record: localRecord };
-      }
-
-      console.log(
-        `%c✓ Stock alert saved for ${productId}`,
-        'color:#18B981;font-weight:bold;'
-      );
-
-      return {
-        success: true,
-        saved: 'supabase',
-        record: {
+        console.warn('[StockAlert] Supabase insert failed, falling back:', error.message);
+      } else if (data) {
+        // ذخیره در localStorage هم
+        const localAlert = {
+          productId,
+          variantKey,
+          email: cleanEmail || null,
+          phone: cleanPhone || null,
+          createdAt: now,
           id: data.id,
-          productId: data.product_id,
-          email: data.email,
-          phone: data.phone,
-          variantKey: data.variant_key,
-          createdAt: data.created_at,
-        },
-      };
-    } catch (err) {
-      console.warn('[StockAlerts] exception:', err);
-      return { success: true, saved: 'local', record: localRecord };
-    }
-  }
+        };
+        const list = getLocalList();
+        list.unshift(localAlert);
+        saveLocalList(list);
 
-  return { success: true, saved: 'local', record: localRecord };
-}
-
-/* ============================================
-   LIST (my alerts)
-   ============================================ */
-
-export async function getMyStockAlerts() {
-  const user = await getCurrentUser();
-
-  if (isSupabaseConfigured() && user?.id) {
-    try {
-      const { data, error } = await withRetry(
-        () => supabase
-          .from('stock_alerts')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('notified', false)
-          .order('created_at', { ascending: false }),
-        {
-          maxAttempts: 2,
-          showToast: false,
-          context: 'getMyStockAlerts',
-        }
-      );
-
-      if (!error && data) {
-        return data.map((row) => ({
-          id: row.id,
-          productId: row.product_id,
-          variantKey: row.variant_key,
-          email: row.email,
-          phone: row.phone,
-          notified: row.notified,
-          createdAt: row.created_at,
-        }));
+        return { success: true, alert: localAlert };
       }
     } catch (err) {
-      console.warn('[StockAlerts] list exception:', err);
+      console.warn('[StockAlert] exception:', err);
     }
   }
 
-  return getLocalAlerts().filter((a) => !a.notified);
+  /* ---------- Local Fallback ---------- */
+  const list = getLocalList();
+
+  const exists = list.some(
+    (a) => a.productId === productId && a.variantKey === variantKey
+  );
+
+  if (exists) {
+    return { success: false, error: 'قبلاً برای این محصول ثبت کرده‌اید' };
+  }
+
+  const alert = {
+    productId,
+    variantKey,
+    email: cleanEmail || null,
+    phone: cleanPhone || null,
+    createdAt: now,
+    local: true,
+  };
+
+  list.unshift(alert);
+  saveLocalList(list);
+
+  return { success: true, alert };
 }
 
 /* ============================================
-   REMOVE
+   CANCEL ALERT
    ============================================ */
 
-export async function removeStockAlert(productId) {
-  if (!productId) return { success: false };
+/**
+ * لغو alert
+ */
+export async function cancelStockAlert(productId, variant) {
+  if (!productId) return { success: false, error: 'شناسه نامعتبر' };
 
-  // حذف از local
-  const list = getLocalAlerts().filter((a) => a.productId !== productId);
-  saveLocalAlerts(list);
-
-  // حذف از Supabase (فقط اگه کاربر لاگین باشه)
+  const variantKey = buildVariantKey(variant);
   const user = await getCurrentUser();
-  if (isSupabaseConfigured() && user?.id) {
+
+  // از localStorage حذف کن
+  const list = getLocalList();
+  const filtered = list.filter(
+    (a) => !(a.productId === productId && a.variantKey === variantKey)
+  );
+  saveLocalList(filtered);
+
+  // از Supabase هم حذف کن (اگه user لاگین بود)
+  if (isSupabaseConfigured() && user) {
     try {
       await withRetry(
         () => supabase
           .from('stock_alerts')
           .delete()
-          .eq('product_id', productId)
           .eq('user_id', user.id)
-          .eq('notified', false),
+          .eq('product_id', productId)
+          .eq('variant_key', variantKey),
         {
           maxAttempts: 2,
           showToast: false,
-          context: 'removeStockAlert',
+          context: 'cancelStockAlert',
         }
       );
     } catch (err) {
-      console.warn('[StockAlerts] remove exception:', err);
+      console.warn('[StockAlert] cancel exception:', err);
     }
   }
 
@@ -287,7 +234,19 @@ export async function removeStockAlert(productId) {
 }
 
 /* ============================================
+   LIST / COUNT
+   ============================================ */
+
+export function getLocalAlerts() {
+  return getLocalList();
+}
+
+export function countLocalAlerts() {
+  return getLocalList().length;
+}
+
+/* ============================================
    LOG
    ============================================ */
 
-console.log('%c✓ Stock Alerts service ready (C.4)', 'color:#18B981;font-weight:bold;');
+console.log('%c✓ Stock Alerts ready (C.4)', 'color:#18B981;font-weight:bold;');

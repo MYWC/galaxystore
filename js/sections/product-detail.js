@@ -2,7 +2,7 @@
    PRODUCT DETAIL PAGE
    with Cinema (Phase 3) + Loading (A.6) + Sticky Cart (B.2)
    + Quantity Limits (B.10) + Recently Viewed (B.12)
-   + Product Views Counter (C.1)
+   + Product Views Counter (C.1) + Stock Alert (C.4)
    ============================================ */
 
 import { allProducts, formatPrice } from '../data/products.js';
@@ -23,6 +23,8 @@ import {
   removeFromRecentlyViewed,
 } from '../utils/recently-viewed.js';
 import { trackProductView, getProductViewCount } from '../services/views.js';
+import { openStockModal, isSubscribed } from '../components/stock-alert.js';
+import { cancelStockAlert } from '../services/stock-alerts.js';
 
 const ICONS = {
   cart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`,
@@ -33,6 +35,8 @@ const ICONS = {
   truck: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`,
   return: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>`,
   eye: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,
+  bell: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>`,
+  bellOff: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.73 21a2 2 0 0 1-3.46 0"/><path d="M18.63 13A17.89 17.89 0 0 1 18 8"/><path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"/><path d="M18 8a6 6 0 0 0-9.33-5"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`,
 };
 
 let currentProduct = null;
@@ -151,6 +155,28 @@ function updateViewsBadge(productId) {
     const strong = el.querySelector('strong');
     if (strong) strong.textContent = count.toLocaleString('fa-IR');
   }
+}
+
+/* ============================================
+   STOCK ALERT BUTTON (C.4)
+   ============================================ */
+
+function renderStockAlertBtn(p, v) {
+  const subscribed = isSubscribed(p.id, v);
+
+  return `
+    <button
+      type="button"
+      class="product-info__stock-alert ${subscribed ? 'is-subscribed' : ''}"
+      id="stock-alert-btn"
+      data-product-id="${p.id}"
+      data-storage="${v.storage || ''}"
+      data-ram="${v.ram || ''}"
+    >
+      ${subscribed ? ICONS.bell : ICONS.bellOff}
+      ${subscribed ? 'ثبت شد — لغو' : 'اطلاع از موجودی'}
+    </button>
+  `;
 }
 
 /* ============================================
@@ -273,7 +299,7 @@ function renderInfo(p) {
       </span>
     </div>
 
-    <!-- ⬇️ C.1: View Count Badge -->
+    <!-- C.1: View Count Badge -->
     <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
       ${renderViewsBadge(p.id)}
     </div>
@@ -338,10 +364,14 @@ function renderInfo(p) {
     </div>
 
     <div class="product-info__cta">
-      <button class="product-info__add-cart" id="add-to-cart-btn" ${!isInStock ? 'disabled' : ''}>
-        ${ICONS.cart}
-        افزودن به سبد خرید
-      </button>
+      ${isInStock ? `
+        <button class="product-info__add-cart" id="add-to-cart-btn">
+          ${ICONS.cart}
+          افزودن به سبد خرید
+        </button>
+      ` : `
+        ${renderStockAlertBtn(p, v)}
+      `}
       <button class="product-info__wish ${isWished ? 'is-active' : ''}" id="wish-btn" aria-label="علاقه‌مندی">
         ${ICONS.heart}
       </button>
@@ -420,6 +450,54 @@ function bindInfoEvents(p) {
       });
     });
   }
+
+  // === C.4: Stock Alert Button ===
+  bindStockAlertBtn(p);
+}
+
+/* ============================================
+   STOCK ALERT BINDING (C.4)
+   ============================================ */
+
+function bindStockAlertBtn(p) {
+  const stockAlertBtn = document.getElementById('stock-alert-btn');
+  if (!stockAlertBtn) return;
+
+  stockAlertBtn.addEventListener('click', async () => {
+    const v = p.variants[currentVariantIndex];
+    const subscribed = stockAlertBtn.classList.contains('is-subscribed');
+
+    if (subscribed) {
+      // لغو
+      await cancelStockAlert(p.id, v);
+
+      toast({
+        type: 'info',
+        title: 'اطلاع‌رسانی لغو شد',
+        message: 'هر زمان خواستی دوباره می‌تونی ثبت کنی',
+        duration: 2500,
+      });
+
+      stockAlertBtn.classList.remove('is-subscribed');
+      stockAlertBtn.innerHTML = `${ICONS.bellOff} اطلاع از موجودی`;
+    } else {
+      // باز کردن modal
+      openStockModal({
+        productId: p.id,
+        productName: p.name,
+        variant: v,
+        onSubmit: ({ subscribed: newState }) => {
+          if (newState) {
+            stockAlertBtn.classList.add('is-subscribed');
+            stockAlertBtn.innerHTML = `${ICONS.bell} ثبت شد — لغو`;
+          } else {
+            stockAlertBtn.classList.remove('is-subscribed');
+            stockAlertBtn.innerHTML = `${ICONS.bellOff} اطلاع از موجودی`;
+          }
+        },
+      });
+    }
+  });
 }
 
 /* ============================================
@@ -487,6 +565,10 @@ async function addCurrentVariantToCart(p, btn) {
   });
 }
 
+/* ============================================
+   UPDATE PRICE + STOCK
+   ============================================ */
+
 function updatePriceAndStock(p) {
   const v = p.variants[currentVariantIndex];
 
@@ -522,9 +604,45 @@ function updatePriceAndStock(p) {
     storageLabel.textContent = `${v.storage} • ${v.ram}`;
   }
 
-  const addBtn = document.getElementById('add-to-cart-btn');
-  if (addBtn) {
-    addBtn.disabled = v.stock === 0;
+  // === به‌جای add-btn، اگه ناموجود بود، stock-alert-btn رو بازسازی کن ===
+  const ctaWrap = document.querySelector('.product-info__cta');
+  if (ctaWrap) {
+    const oldAddBtn = ctaWrap.querySelector('#add-to-cart-btn');
+    const oldAlertBtn = ctaWrap.querySelector('#stock-alert-btn');
+
+    if (v.stock === 0 && !oldAlertBtn) {
+      // تبدیل add → stock-alert
+      if (oldAddBtn) {
+        const temp = document.createElement('div');
+        temp.innerHTML = renderStockAlertBtn(p, v);
+        const newBtn = temp.firstElementChild;
+        oldAddBtn.replaceWith(newBtn);
+        bindStockAlertBtn(p);
+      }
+    } else if (v.stock > 0 && !oldAddBtn) {
+      // تبدیل stock-alert → add
+      if (oldAlertBtn) {
+        const newAddBtn = document.createElement('button');
+        newAddBtn.className = 'product-info__add-cart';
+        newAddBtn.id = 'add-to-cart-btn';
+        newAddBtn.innerHTML = `${ICONS.cart} افزودن به سبد خرید`;
+        newAddBtn.addEventListener('click', () => {
+          addCurrentVariantToCart(p, newAddBtn);
+        });
+        oldAlertBtn.replaceWith(newAddBtn);
+      }
+    } else if (oldAlertBtn) {
+      // فقط آپدیت دکمه alert (اگه وضعیت مشترک بودن عوض شده)
+      const wasSubscribed = oldAlertBtn.classList.contains('is-subscribed');
+      const isNowSubscribed = isSubscribed(p.id, v);
+
+      if (wasSubscribed !== isNowSubscribed) {
+        oldAlertBtn.classList.toggle('is-subscribed', isNowSubscribed);
+        oldAlertBtn.innerHTML = isNowSubscribed
+          ? `${ICONS.bell} ثبت شد — لغو`
+          : `${ICONS.bellOff} اطلاع از موجودی`;
+      }
+    }
   }
 
   if (stickyCart) {

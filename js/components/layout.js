@@ -7,7 +7,7 @@
    + Compare Bar (B.5) + Wishlist Feedback (B.6)
    + Copy Clipboard (B.8) + Password Strength (B.9)
    + Form Draft (B.11) + Recently Viewed (B.12)
-   + Recommendations (C.3)
+   + Recommendations (C.3) + Stock Alert (C.4)
    (بدون Dark Mode)
    ============================================ */
 
@@ -604,6 +604,15 @@ export function initLayout() {
     recLink.rel = 'stylesheet';
     recLink.href = u('css/components/recommendations.css');
     document.head.appendChild(recLink);
+  }
+
+  // Stock Alert CSS (Phase C.4)
+  if (!document.getElementById('stock-alert-css')) {
+    const stockLink = document.createElement('link');
+    stockLink.id = 'stock-alert-css';
+    stockLink.rel = 'stylesheet';
+    stockLink.href = u('css/components/stock-alert.css');
+    document.head.appendChild(stockLink);
   }
 
   // Preconnect
