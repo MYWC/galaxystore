@@ -1,5 +1,5 @@
 /* ============================================
-   ERROR HANDLING SYSTEM — Phase A.3
+   ERROR HANDLING SYSTEM — Phase A.3 + A.8
    Central error translation, retry logic, network detection
    ============================================ */
 
@@ -68,25 +68,17 @@ const ERROR_MESSAGES = {
    2. TRANSLATE ERROR
    ============================================ */
 
-/**
- * ترجمه پیام خطا به فارسی
- * @param {Error|string|Object} err
- * @returns {string}
- */
 export function translateError(err) {
   if (!err) return ERROR_MESSAGES['Unknown error'];
 
-  // If string
   if (typeof err === 'string') {
     return matchMessage(err);
   }
 
-  // If Error object
   if (err.message) {
     return matchMessage(err.message);
   }
 
-  // If Supabase error object
   if (err.error_description) {
     return matchMessage(err.error_description);
   }
@@ -103,36 +95,29 @@ function matchMessage(message) {
 
   const msg = String(message).trim();
 
-  // Exact match
   if (ERROR_MESSAGES[msg]) return ERROR_MESSAGES[msg];
 
-  // Numeric status
   const num = parseInt(msg, 10);
   if (!isNaN(num) && ERROR_MESSAGES[num]) return ERROR_MESSAGES[num];
 
-  // Partial match
   for (const key in ERROR_MESSAGES) {
     if (typeof key === 'string' && msg.toLowerCase().includes(key.toLowerCase())) {
       return ERROR_MESSAGES[key];
     }
   }
 
-  // JWT-related
   if (/jwt|token|session/i.test(msg)) {
     return ERROR_MESSAGES['JWT expired'];
   }
 
-  // Network-related
   if (/network|fetch|connection/i.test(msg)) {
     return ERROR_MESSAGES['Network request failed'];
   }
 
-  // Timeout
   if (/timeout|timed out/i.test(msg)) {
     return ERROR_MESSAGES['timeout'];
   }
 
-  // Default — return original message if short and readable, otherwise generic
   if (msg.length < 100 && !/^[0-9]+$/.test(msg)) {
     return msg;
   }
@@ -141,19 +126,86 @@ function matchMessage(message) {
 }
 
 /* ============================================
-   3. HANDLE ERROR (with toast)
+   3. RETRYABILITY — Phase A.8
+   تشخیص اینکه خطا قابل retry هست یا نه
    ============================================ */
 
 /**
- * مدیریت خطا + نمایش toast
- * @param {Error|string|Object} err
- * @param {Object} options
- * @param {string} [options.title='خطا']
- * @param {boolean} [options.showToast=true]
- * @param {string} [options.context] - توضیح زمینه خطا
- * @param {Function} [options.onRetry] - callback برای retry
- * @returns {{ message: string, original: any }}
+ * آیا این خطا قابل retry است؟
+ * - خطاهای شبکه، timeout، 5xx → بله
+ * - خطاهای 4xx (کاربر) → خیر
  */
+export function isRetryableError(err) {
+  if (!err) return false;
+
+  // اگه خود خطا صراحتاً گفته retryable نیست
+  if (err.noRetry === true) return false;
+
+  const msg = String(err?.message || err || '').toLowerCase();
+
+  // خطاهای شبکه — همیشه قابل retry
+  if (/network|fetch|failed to fetch|connection|econnrefused|econnreset|etimedout|timeout|timed out|aborted|load failed|net::err/i.test(msg)) {
+    return true;
+  }
+
+  // HTTP Status Code
+  const status = err?.status || err?.statusCode || err?.code;
+  if (typeof status === 'number') {
+    // 5xx قابل retry
+    if (status >= 500 && status <= 599) return true;
+    // 408 (timeout) و 429 (too many) قابل retry
+    if (status === 408 || status === 429) return true;
+    // بقیه (4xx) قابل retry نیستن
+    if (status >= 400 && status < 500) return false;
+  }
+
+  // Supabase error codes
+  const code = err?.code;
+  if (typeof code === 'string') {
+    // خطاهای RLS/Permission — بی‌فایده‌ست retry
+    if (/permission|rls|row-level|violates|duplicate|invalid|not.*found/i.test(code)) {
+      return false;
+    }
+  }
+
+  // پیش‌فرض: اگه پیام فارسی/Supabase خاصی نیست، بذار retry بشه
+  // چون احتمالاً موقتیه
+  return true;
+}
+
+/**
+ * آیا خطای Supabase قابل retry است؟
+ * برای استفاده در `withRetry` وقتی که `result.error` برمی‌گرده.
+ */
+export function shouldRetrySupabaseError(supabaseError) {
+  if (!supabaseError) return false;
+
+  const code = supabaseError.code || '';
+  const message = supabaseError.message || '';
+
+  // خطاهای client-side — نه
+  if (/PGRST|23505|23503|23502|42P01|42703|22P02|23514/i.test(code)) {
+    return false;
+  }
+
+  // خطاهای auth — نه
+  if (/jwt|invalid.*token|auth.*required/i.test(message)) {
+    return false;
+  }
+
+  // خطاهای permission — نه
+  if (/permission|row-level|rls/i.test(message)) {
+    return false;
+  }
+
+  // بقیه (احتمالاً شبکه‌ای) — بله
+  return true;
+}
+
+/* ============================================
+   4. HANDLE ERROR
+   ============================================ */
+
 export function handleError(err, options = {}) {
   const {
     title = 'خطا',
@@ -162,8 +214,7 @@ export function handleError(err, options = {}) {
     onRetry = null,
   } = options;
 
-  // Log to console in dev
-  if (process?.env?.NODE_ENV !== 'production') {
+  if (typeof process !== 'undefined' && process?.env?.NODE_ENV !== 'production') {
     console.error('[Error]', context, err);
   }
 
@@ -174,13 +225,13 @@ export function handleError(err, options = {}) {
       type: 'error',
       title,
       message,
-      duration: 5000,
+      duration: onRetry ? 8000 : 5000,
       position: 'top-left',
     };
 
-    if (onRetry) {
+    if (onRetry && isRetryableError(err)) {
       toastOptions.action = {
-        label: 'تلاش دوباره',
+        label: 'دوباره تلاش',
         icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>`,
         onClick: onRetry,
       };
@@ -193,15 +244,9 @@ export function handleError(err, options = {}) {
 }
 
 /* ============================================
-   4. SAFE ASYNC WRAPPER
+   5. SAFE ASYNC WRAPPER
    ============================================ */
 
-/**
- * اجرای امن یه async function با مدیریت خطا
- * @param {Function} fn
- * @param {Object} options
- * @returns {Promise<{ data?: any, error?: any }>}
- */
 export async function safeAsync(fn, options = {}) {
   try {
     const data = await fn();
@@ -218,13 +263,19 @@ export async function safeAsync(fn, options = {}) {
 }
 
 /* ============================================
-   5. RETRY WITH EXPONENTIAL BACKOFF
+   6. RETRY WITH EXPONENTIAL BACKOFF — Phase A.8
    ============================================ */
 
 /**
  * تلاش مجدد خودکار با تأخیر تدریجی
- * @param {Function} fn - تابع async
+ * @param {Function} fn — تابع async
  * @param {Object} options
+ * @param {number} [options.maxAttempts=3]
+ * @param {number} [options.baseDelay=500]
+ * @param {number} [options.maxDelay=5000]
+ * @param {Function} [options.onAttempt] — (attempt, maxAttempts) => void
+ * @param {Function} [options.beforeRetry] — (err, attempt) => void
+ * @param {Function} [options.shouldRetry] — (err, attempt) => boolean
  * @returns {Promise<any>}
  */
 export async function retryAsync(fn, options = {}) {
@@ -233,7 +284,8 @@ export async function retryAsync(fn, options = {}) {
     baseDelay = 500,
     maxDelay = 5000,
     onAttempt = null,
-    shouldRetry = () => true,
+    beforeRetry = null,
+    shouldRetry = (err) => isRetryableError(err),
   } = options;
 
   let lastError = null;
@@ -249,7 +301,11 @@ export async function retryAsync(fn, options = {}) {
         throw err;
       }
 
-      // Exponential backoff with jitter
+      if (beforeRetry) {
+        try { beforeRetry(err, attempt); } catch {}
+      }
+
+      // Exponential backoff با jitter
       const delay = Math.min(
         baseDelay * Math.pow(2, attempt - 1) + Math.random() * 200,
         maxDelay
@@ -263,14 +319,11 @@ export async function retryAsync(fn, options = {}) {
 }
 
 /* ============================================
-   6. NETWORK STATUS
+   7. NETWORK STATUS
    ============================================ */
 
 let networkListeners = [];
 
-/**
- * تشخیص قطع/وصل شدن اینترنت
- */
 export function initNetworkDetection() {
   if (!('onLine' in navigator)) return;
 
@@ -348,84 +401,18 @@ export function onNetworkChange(cb) {
 }
 
 /* ============================================
-   7. OFFLINE BANNER CSS (inline)
-   ============================================ */
-
-const OFFLINE_STYLES = `
-  .offline-banner {
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: 0;
-    z-index: 99998;
-    transform: translate3d(0, -100%, 0);
-    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-    pointer-events: none;
-  }
-
-  .offline-banner.is-visible {
-    transform: translate3d(0, 0, 0);
-  }
-
-  .offline-banner__inner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 10px 20px;
-    background: linear-gradient(135deg, #EF5350, #D84343);
-    color: #fff;
-    font-size: 13px;
-    font-weight: 700;
-    box-shadow: 0 4px 20px -4px rgba(239, 83, 80, 0.5);
-  }
-
-  .offline-banner__inner svg {
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
-  }
-
-  @media (max-width: 640px) {
-    .offline-banner__inner {
-      font-size: 11px;
-      padding: 8px 14px;
-    }
-
-    .offline-banner__inner svg {
-      width: 14px;
-      height: 14px;
-    }
-  }
-`;
-
-function injectOfflineStyles() {
-  if (document.getElementById('offline-banner-styles')) return;
-
-  const style = document.createElement('style');
-  style.id = 'offline-banner-styles';
-  style.textContent = OFFLINE_STYLES;
-  document.head.appendChild(style);
-}
-
-/* ============================================
    8. GLOBAL ERROR HANDLER
    ============================================ */
 
 export function initGlobalErrorHandler() {
-  // Unhandled promise rejections
   window.addEventListener('unhandledrejection', (event) => {
     const reason = event.reason;
 
-    // Ignore aborted fetches (normal on navigation)
     if (reason?.name === 'AbortError') return;
-
-    // Ignore Supabase auth errors (already handled elsewhere)
     if (reason?.message?.includes('Auth session missing')) return;
 
     console.error('[Unhandled Rejection]', reason);
 
-    // Show a subtle toast in production only
     if (isOnline()) {
       toast({
         type: 'error',
@@ -434,16 +421,10 @@ export function initGlobalErrorHandler() {
         duration: 4000,
       });
     }
-
-    // Prevent default console error spam
-    // event.preventDefault();
   });
 
-  // Uncaught exceptions
   window.addEventListener('error', (event) => {
-    // Ignore resource load errors (images, etc.)
     if (event.target && event.target !== window) return;
-
     console.error('[Uncaught Error]', event.error);
   });
 }
@@ -453,21 +434,25 @@ export function initGlobalErrorHandler() {
    ============================================ */
 
 export function initErrorSystem() {
-  injectOfflineStyles();
   initNetworkDetection();
   initGlobalErrorHandler();
 
-  console.log('%c✓ Error system ready (Phase A.3)', 'color:#18B981;font-weight:bold;');
+  console.log('%c✓ Error system ready (Phase A.3 + A.8)', 'color:#18B981;font-weight:bold;');
 }
 
 /* ============================================
-   10. USER-FRIENDLY API WRAPPER
+   10. USER-FRIENDLY API WRAPPER — Phase A.8
    ============================================ */
 
 /**
  * Wrapper برای Supabase queries با retry + error handling
- * @param {Function} queryFn - تابع async که query رو اجرا می‌کنه
+ *
+ * @param {Function} queryFn — async function که یه query رو اجرا می‌کنه
  * @param {Object} options
+ * @param {number} [options.maxAttempts=3]
+ * @param {string} [options.title='خطا در دریافت اطلاعات']
+ * @param {boolean} [options.showToast=true]
+ * @param {string} [options.context='']
  * @returns {Promise<{ data, error, message }>}
  */
 export async function withRetry(queryFn, options = {}) {
@@ -478,33 +463,78 @@ export async function withRetry(queryFn, options = {}) {
     context = '',
   } = options;
 
-  try {
-    const result = await retryAsync(queryFn, {
-      maxAttempts,
-      shouldRetry: (err) => {
-        // Retry on network errors only
-        const msg = err?.message || '';
-        return /network|fetch|timeout|connection/i.test(msg);
-      },
-    });
+  const attempt = async () => {
+    return await retryAsync(
+      async () => {
+        const result = await queryFn();
 
-    // Supabase returns { data, error } — check error
-    if (result?.error) {
-      const message = translateError(result.error);
-      if (showToast) {
-        toast({
-          type: 'error',
-          title,
-          message,
-          duration: 4500,
-        });
+        // Supabase style { data, error }
+        if (result && typeof result === 'object' && 'error' in result && result.error) {
+          const err = result.error;
+
+          // اگه خطای client-side هست، هیچ‌وقت retry نکن
+          if (!shouldRetrySupabaseError(err)) {
+            const nonRetryable = new Error(err.message || 'Client error');
+            nonRetryable.noRetry = true;
+            nonRetryable.code = err.code;
+            nonRetryable.status = err.status;
+            throw nonRetryable;
+          }
+
+          // وگرنه خطا رو پرت کن تا retry بشه
+          throw err;
+        }
+
+        return result;
+      },
+      {
+        maxAttempts,
+        shouldRetry: (err) => !err?.noRetry && isRetryableError(err),
       }
-      return { data: null, error: result.error, message };
+    );
+  };
+
+  try {
+    const result = await attempt();
+
+    // Supabase style response
+    if (result && typeof result === 'object' && 'data' in result) {
+      return { data: result.data, error: null, message: null };
     }
 
-    return { data: result?.data ?? result, error: null, message: null };
+    return { data: result, error: null, message: null };
   } catch (err) {
-    return handleError(err, { title, showToast, context });
+    const message = translateError(err);
+    const retryable = isRetryableError(err);
+
+    if (showToast) {
+      const toastOptions = {
+        type: 'error',
+        title,
+        message,
+        duration: retryable ? 8000 : 5000,
+      };
+
+      if (retryable) {
+        toastOptions.action = {
+          label: 'دوباره تلاش',
+          icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>`,
+          onClick: () => {
+            withRetry(queryFn, { ...options, showToast: false }).then((res) => {
+              if (res.data) {
+                window.dispatchEvent(new CustomEvent('ms:retry-success', {
+                  detail: { context, data: res.data },
+                }));
+              }
+            });
+          },
+        };
+      }
+
+      toast(toastOptions);
+    }
+
+    return { data: null, error: err, message, retryable };
   }
 }
 
@@ -512,4 +542,4 @@ export async function withRetry(queryFn, options = {}) {
    11. LOG
    ============================================ */
 
-console.log('%c✓ Error utilities loaded (Phase A.3)', 'color:#18B981;font-weight:bold;');
+console.log('%c✓ Error utilities loaded (Phase A.3 + A.8)', 'color:#18B981;font-weight:bold;');

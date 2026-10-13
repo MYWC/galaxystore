@@ -1,10 +1,11 @@
 /* ============================================
    NOTIFICATIONS SERVICE
-   Supabase Notifications + Local Fallback
+   Supabase Notifications + Local Fallback + Retry (A.8)
    ============================================ */
 
 import { supabase, isSupabaseConfigured } from './supabase.js';
 import { getCurrentUser } from './auth.js';
+import { withRetry } from '../utils/errors.js';
 
 /* ============================================
    CONSTANTS
@@ -55,7 +56,7 @@ function mapSupabaseNotification(row) {
 }
 
 /* ============================================
-   SEED (نمونه اولیه برای کاربر جدید)
+   SEED — نمونه اولیه
    ============================================ */
 
 function getDemoNotifications() {
@@ -129,49 +130,45 @@ function getDemoNotifications() {
    GET NOTIFICATIONS
    ============================================ */
 
-/**
- * گرفتن همه اعلان‌های کاربر جاری
- */
 export async function getNotifications() {
   const user = await getCurrentUser();
 
-  // اگه کاربر لاگین نیست، از local استفاده کن
   if (!user) {
     return getLocalNotifications();
   }
 
-  // اگه Supabase هست
   if (isSupabaseConfigured()) {
-    try {
-      const { data, error } = await supabase
+    const { data, error } = await withRetry(
+      () => supabase
         .from('notifications')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
-        .limit(100);
-
-      if (!error && data) {
-        const mapped = data.map(mapSupabaseNotification).filter(Boolean);
-
-        // اگه کاربر لاگین داره ولی اعلان توی Supabase نداره،
-        // از demo استفاده کن و در Supabase insert کن
-        if (mapped.length === 0) {
-          const demos = getDemoNotifications();
-          await seedNotificationsToSupabase(user.id, demos);
-          return demos;
-        }
-
-        return mapped;
+        .limit(100),
+      {
+        maxAttempts: 3,
+        title: 'خطا در دریافت اعلان‌ها',
+        context: 'getNotifications',
+        // برای این یکی، اگه شکست خورد، کاربر رو اذیت نکن
+        showToast: false,
       }
-    } catch (err) {
-      console.error('Fetch notifications exception:', err);
+    );
+
+    if (!error && data) {
+      const mapped = data.map(mapSupabaseNotification).filter(Boolean);
+
+      if (mapped.length === 0) {
+        const demos = getDemoNotifications();
+        await seedNotificationsToSupabase(user.id, demos);
+        return demos;
+      }
+
+      return mapped;
     }
   }
 
-  // Fallback
   const local = getLocalNotifications();
 
-  // اگه خالی بود، demo بذار
   if (local.length === 0) {
     const demos = getDemoNotifications();
     saveLocalNotifications(demos);
@@ -216,7 +213,6 @@ async function seedNotificationsToSupabase(userId, demos) {
 export async function markNotificationRead(id) {
   const user = await getCurrentUser();
 
-  // Local update
   const local = getLocalNotifications();
   const idx = local.findIndex((n) => n.id === id);
   if (idx !== -1) {
@@ -224,21 +220,20 @@ export async function markNotificationRead(id) {
     saveLocalNotifications(local);
   }
 
-  // Supabase update
   if (user && isSupabaseConfigured()) {
-    try {
-      const { error } = await supabase
+    await withRetry(
+      () => supabase
         .from('notifications')
         .update({ read: true })
         .eq('id', id)
-        .eq('user_id', user.id);
-
-      if (error) {
-        console.error('Mark read error:', error);
+        .eq('user_id', user.id),
+      {
+        maxAttempts: 2,
+        title: 'خطا در ذخیره',
+        showToast: false,
+        context: 'markNotificationRead',
       }
-    } catch (err) {
-      console.error('Mark read exception:', err);
-    }
+    );
   }
 
   return { success: true };
@@ -251,33 +246,31 @@ export async function markNotificationRead(id) {
 export async function markAllNotificationsRead() {
   const user = await getCurrentUser();
 
-  // Local update
   const local = getLocalNotifications();
   local.forEach((n) => { n.read = true; });
   saveLocalNotifications(local);
 
-  // Supabase update
   if (user && isSupabaseConfigured()) {
-    try {
-      const { error } = await supabase
+    await withRetry(
+      () => supabase
         .from('notifications')
         .update({ read: true })
         .eq('user_id', user.id)
-        .eq('read', false);
-
-      if (error) {
-        console.error('Mark all read error:', error);
+        .eq('read', false),
+      {
+        maxAttempts: 2,
+        title: 'خطا در ذخیره',
+        showToast: false,
+        context: 'markAllNotificationsRead',
       }
-    } catch (err) {
-      console.error('Mark all read exception:', err);
-    }
+    );
   }
 
   return { success: true };
 }
 
 /* ============================================
-   ADD NOTIFICATION (internal)
+   ADD NOTIFICATION
    ============================================ */
 
 export async function addNotification({ userId, type, icon, title, text, link = '' }) {
@@ -303,15 +296,13 @@ export async function addNotification({ userId, type, icon, title, text, link = 
     createdAt: now,
   };
 
-  // Local
   const list = getLocalNotifications();
   list.unshift(localNotif);
   saveLocalNotifications(list);
 
-  // Supabase
   if (isSupabaseConfigured()) {
-    try {
-      const { data, error } = await supabase
+    const { data, error } = await withRetry(
+      () => supabase
         .from('notifications')
         .insert({
           user_id: targetUserId,
@@ -323,21 +314,23 @@ export async function addNotification({ userId, type, icon, title, text, link = 
           read: false,
         })
         .select()
-        .single();
-
-      if (error) {
-        console.error('Add notification error:', error);
-        return { notification: localNotif, saved: 'local' };
+        .single(),
+      {
+        maxAttempts: 2,
+        title: 'خطا در ثبت اعلان',
+        showToast: false,
+        context: 'addNotification',
       }
+    );
 
-      return {
-        notification: mapSupabaseNotification(data),
-        saved: 'supabase',
-      };
-    } catch (err) {
-      console.error('Add notification exception:', err);
+    if (error) {
       return { notification: localNotif, saved: 'local' };
     }
+
+    return {
+      notification: mapSupabaseNotification(data),
+      saved: 'supabase',
+    };
   }
 
   return { notification: localNotif, saved: 'local' };

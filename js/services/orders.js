@@ -1,10 +1,11 @@
 /* ============================================
    ORDERS SERVICE
-   Supabase Orders + Local Fallback
+   Supabase Orders + Local Fallback + Retry (A.8)
    ============================================ */
 
 import { supabase, isSupabaseConfigured } from './supabase.js';
 import { getCurrentUser } from './auth.js';
+import { withRetry } from '../utils/errors.js';
 
 /* ============================================
    CONSTANTS
@@ -72,16 +73,10 @@ function mapSupabaseOrder(row) {
    CREATE ORDER
    ============================================ */
 
-/**
- * ثبت سفارش جدید
- * @param {Object} orderData - اطلاعات سفارش
- * @returns {Promise<{order: Object, saved: 'supabase' | 'local'}>}
- */
 export async function createOrder(orderData) {
   const user = await getCurrentUser();
   const orderNumber = orderData.orderNumber || generateOrderNumber();
 
-  // ---------- Payload برای Supabase ----------
   const supabasePayload = {
     order_number: orderNumber,
     user_id: user?.id || null,
@@ -97,7 +92,6 @@ export async function createOrder(orderData) {
     status: 'processing',
   };
 
-  // ---------- Local order object ----------
   const localOrder = {
     id: orderNumber,
     orderNumber,
@@ -115,7 +109,7 @@ export async function createOrder(orderData) {
     createdAt: new Date().toISOString(),
   };
 
-  // ---------- ذخیره در localStorage (cache/fallback) ----------
+  // ذخیره در local (cache)
   try {
     const localList = getLocalOrders();
     localList.unshift(localOrder);
@@ -125,33 +119,31 @@ export async function createOrder(orderData) {
     console.error('Save local order error:', e);
   }
 
-  // ---------- اگه Supabase هست و کاربر لاگین هست ----------
+  // ارسال به Supabase با retry
   if (isSupabaseConfigured() && user) {
-    try {
-      const { data, error } = await supabase
-        .from('orders')
-        .insert(supabasePayload)
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Supabase order insert error:', error);
-        return { order: localOrder, saved: 'local' };
+    const { data, error } = await withRetry(
+      () => supabase.from('orders').insert(supabasePayload).select().single(),
+      {
+        maxAttempts: 3,
+        title: 'خطا در ثبت سفارش',
+        context: 'createOrder',
       }
+    );
 
-      console.log(
-        `%c✓ Order ${orderNumber} saved to Supabase`,
-        'color:#18B981;font-weight:bold;'
-      );
-
-      return {
-        order: mapSupabaseOrder(data),
-        saved: 'supabase',
-      };
-    } catch (err) {
-      console.error('Supabase order exception:', err);
+    if (error) {
+      console.warn('Order save failed after retries — using local fallback');
       return { order: localOrder, saved: 'local' };
     }
+
+    console.log(
+      `%c✓ Order ${orderNumber} saved to Supabase`,
+      'color:#18B981;font-weight:bold;'
+    );
+
+    return {
+      order: mapSupabaseOrder(data),
+      saved: 'supabase',
+    };
   }
 
   console.log(
@@ -166,34 +158,31 @@ export async function createOrder(orderData) {
    GET USER ORDERS
    ============================================ */
 
-/**
- * دریافت همه سفارش‌های کاربر جاری
- */
 export async function getUserOrders() {
   const user = await getCurrentUser();
 
-  // اگه Supabase هست و کاربر لاگین
   if (isSupabaseConfigured() && user) {
-    try {
-      const { data, error } = await supabase
+    const { data, error } = await withRetry(
+      () => supabase
         .from('orders')
         .select('*')
         .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Supabase orders fetch error:', error);
-        return getLocalOrders();
+        .order('created_at', { ascending: false }),
+      {
+        maxAttempts: 3,
+        title: 'خطا در دریافت سفارش‌ها',
+        context: 'getUserOrders',
       }
+    );
 
-      return (data || []).map(mapSupabaseOrder);
-    } catch (err) {
-      console.error('Fetch orders exception:', err);
+    if (error) {
+      console.warn('Fetch orders failed — using local fallback');
       return getLocalOrders();
     }
+
+    return (data || []).map(mapSupabaseOrder);
   }
 
-  // Fallback: فقط سفارش‌های local
   return getLocalOrders();
 }
 
@@ -201,33 +190,31 @@ export async function getUserOrders() {
    GET ORDER BY NUMBER
    ============================================ */
 
-/**
- * پیدا کردن سفارش با شماره سفارش
- */
 export async function getOrderByNumber(orderNumber) {
   const cleaned = String(orderNumber || '').trim().toUpperCase();
   if (!cleaned) return null;
 
   const user = await getCurrentUser();
 
-  // اول از Supabase (اگه لاگین)
   if (isSupabaseConfigured() && user) {
-    try {
-      const { data, error } = await supabase
+    const { data, error } = await withRetry(
+      () => supabase
         .from('orders')
         .select('*')
         .eq('order_number', cleaned)
-        .maybeSingle();
-
-      if (!error && data) {
-        return mapSupabaseOrder(data);
+        .maybeSingle(),
+      {
+        maxAttempts: 3,
+        title: 'خطا در یافتن سفارش',
+        context: 'getOrderByNumber',
       }
-    } catch (err) {
-      console.error('Fetch order exception:', err);
+    );
+
+    if (!error && data) {
+      return mapSupabaseOrder(data);
     }
   }
 
-  // Fallback: local
   const local = getLocalOrders();
   return local.find(
     (o) => String(o.orderNumber || '').toUpperCase() === cleaned
@@ -238,37 +225,35 @@ export async function getOrderByNumber(orderNumber) {
    GET ORDER BY PHONE
    ============================================ */
 
-/**
- * پیدا کردن آخرین سفارش با شماره موبایل
- */
 export async function getOrderByPhone(phone) {
   const cleaned = String(phone || '').replace(/\D/g, '');
   if (!cleaned) return null;
 
   const user = await getCurrentUser();
 
-  // اگه Supabase هست و لاگین — سفارش‌های کاربر رو بگیر و فیلتر کن
   if (isSupabaseConfigured() && user) {
-    try {
-      const { data, error } = await supabase
+    const { data, error } = await withRetry(
+      () => supabase
         .from('orders')
         .select('*')
         .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (!error && data) {
-        const found = data.find((o) => {
-          const orderPhone = String(o.customer?.phone || '').replace(/\D/g, '');
-          return orderPhone === cleaned;
-        });
-        if (found) return mapSupabaseOrder(found);
+        .order('created_at', { ascending: false }),
+      {
+        maxAttempts: 3,
+        title: 'خطا در جستجو',
+        context: 'getOrderByPhone',
       }
-    } catch (err) {
-      console.error('Fetch by phone exception:', err);
+    );
+
+    if (!error && data) {
+      const found = data.find((o) => {
+        const orderPhone = String(o.customer?.phone || '').replace(/\D/g, '');
+        return orderPhone === cleaned;
+      });
+      if (found) return mapSupabaseOrder(found);
     }
   }
 
-  // Fallback: local
   const local = getLocalOrders();
   return local.find((o) => {
     const orderPhone = String(o.customer?.phone || '').replace(/\D/g, '');

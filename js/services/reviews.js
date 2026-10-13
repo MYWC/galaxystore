@@ -1,10 +1,11 @@
 /* ============================================
    REVIEWS SERVICE
-   Supabase Reviews + Local Fallback
+   Supabase Reviews + Local Fallback + Retry (A.8)
    ============================================ */
 
 import { supabase, isSupabaseConfigured } from './supabase.js';
 import { getCurrentUser } from './auth.js';
+import { withRetry } from '../utils/errors.js';
 
 /* ============================================
    CONSTANTS
@@ -91,63 +92,60 @@ function mapSupabaseReview(row) {
    GET REVIEWS FOR PRODUCT
    ============================================ */
 
-/**
- * گرفتن نظرات یک محصول
- * @param {string} productId
- * @param {number} limit
- */
 export async function getProductReviews(productId, limit = 20) {
   if (!productId) return [];
 
-  // اگه Supabase هست
   if (isSupabaseConfigured()) {
-    try {
-      const { data, error } = await supabase
+    const { data, error } = await withRetry(
+      () => supabase
         .from('reviews')
         .select('*')
         .eq('product_id', productId)
         .order('created_at', { ascending: false })
-        .limit(limit);
-
-      if (!error && data) {
-        const mapped = data.map(mapSupabaseReview).filter(Boolean);
-
-        // اگه از Supabase چیزی نیومد، از Local استفاده کن
-        if (mapped.length > 0) return mapped;
+        .limit(limit),
+      {
+        maxAttempts: 3,
+        title: 'خطا در دریافت نظرات',
+        showToast: false,
+        context: 'getProductReviews',
       }
-    } catch (err) {
-      console.error('Fetch reviews exception:', err);
+    );
+
+    if (!error && data) {
+      const mapped = data.map(mapSupabaseReview).filter(Boolean);
+      if (mapped.length > 0) return mapped;
     }
   }
 
-  // Fallback: Local storage
-  const local = getLocalReviews()
+  return getLocalReviews()
     .filter((r) => r.productId === productId)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     .slice(0, limit);
-
-  return local;
 }
 
 /* ============================================
-   GET ALL REVIEWS (for product listings)
+   GET ALL REVIEWS
    ============================================ */
 
 export async function getAllReviews(limit = 100) {
   if (isSupabaseConfigured()) {
-    try {
-      const { data, error } = await supabase
+    const { data, error } = await withRetry(
+      () => supabase
         .from('reviews')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(limit);
-
-      if (!error && data) {
-        const mapped = data.map(mapSupabaseReview).filter(Boolean);
-        if (mapped.length > 0) return mapped;
+        .limit(limit),
+      {
+        maxAttempts: 3,
+        title: 'خطا در دریافت نظرات',
+        showToast: false,
+        context: 'getAllReviews',
       }
-    } catch (err) {
-      console.error('Fetch all reviews exception:', err);
+    );
+
+    if (!error && data) {
+      const mapped = data.map(mapSupabaseReview).filter(Boolean);
+      if (mapped.length > 0) return mapped;
     }
   }
 
@@ -158,10 +156,6 @@ export async function getAllReviews(limit = 100) {
    ADD REVIEW
    ============================================ */
 
-/**
- * ثبت نظر جدید
- * @param {Object} data - { productId, rating, comment }
- */
 export async function addReview({ productId, rating, comment }) {
   const user = await getCurrentUser();
 
@@ -193,7 +187,6 @@ export async function addReview({ productId, rating, comment }) {
   const dateFa = formatFaDate(new Date());
   const now = new Date().toISOString();
 
-  // ---------- Payload برای Supabase ----------
   const supabasePayload = {
     product_id: productId,
     user_id: user.id,
@@ -206,7 +199,6 @@ export async function addReview({ productId, rating, comment }) {
     verified: true,
   };
 
-  // ---------- Local object ----------
   const localReview = {
     id: 'rev-' + Date.now(),
     productId,
@@ -221,7 +213,7 @@ export async function addReview({ productId, rating, comment }) {
     createdAt: now,
   };
 
-  // ---------- ذخیره در localStorage (cache) ----------
+  // ذخیره در localStorage
   try {
     const list = getLocalReviews();
     list.unshift(localReview);
@@ -230,33 +222,31 @@ export async function addReview({ productId, rating, comment }) {
     console.error('Save local review error:', e);
   }
 
-  // ---------- اگه Supabase هست، ارسال کن ----------
+  // ارسال به Supabase با retry
   if (isSupabaseConfigured()) {
-    try {
-      const { data, error } = await supabase
-        .from('reviews')
-        .insert(supabasePayload)
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Supabase review insert error:', error);
-        return { review: localReview, saved: 'local' };
+    const { data, error } = await withRetry(
+      () => supabase.from('reviews').insert(supabasePayload).select().single(),
+      {
+        maxAttempts: 3,
+        title: 'خطا در ثبت نظر',
+        context: 'addReview',
       }
+    );
 
-      console.log(
-        `%c✓ Review saved to Supabase for ${productId}`,
-        'color:#18B981;font-weight:bold;'
-      );
-
-      return {
-        review: mapSupabaseReview(data),
-        saved: 'supabase',
-      };
-    } catch (err) {
-      console.error('Supabase review exception:', err);
+    if (error) {
+      console.warn('Review save failed after retries — using local');
       return { review: localReview, saved: 'local' };
     }
+
+    console.log(
+      `%c✓ Review saved to Supabase for ${productId}`,
+      'color:#18B981;font-weight:bold;'
+    );
+
+    return {
+      review: mapSupabaseReview(data),
+      saved: 'supabase',
+    };
   }
 
   console.log(
@@ -271,31 +261,31 @@ export async function addReview({ productId, rating, comment }) {
    GET USER REVIEW FOR PRODUCT
    ============================================ */
 
-/**
- * چک کن که آیا کاربر قبلاً برای این محصول نظر داده
- */
 export async function getUserReviewForProduct(productId) {
   const user = await getCurrentUser();
   if (!user || !productId) return null;
 
   if (isSupabaseConfigured()) {
-    try {
-      const { data, error } = await supabase
+    const { data, error } = await withRetry(
+      () => supabase
         .from('reviews')
         .select('*')
         .eq('product_id', productId)
         .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!error && data) {
-        return mapSupabaseReview(data);
+        .maybeSingle(),
+      {
+        maxAttempts: 2,
+        title: 'خطا',
+        showToast: false,
+        context: 'getUserReviewForProduct',
       }
-    } catch (err) {
-      console.error('Check user review exception:', err);
+    );
+
+    if (!error && data) {
+      return mapSupabaseReview(data);
     }
   }
 
-  // Local fallback
   const local = getLocalReviews().find(
     (r) => r.productId === productId && r.userId === user.id
   );
@@ -306,9 +296,6 @@ export async function getUserReviewForProduct(productId) {
    REVIEW STATS
    ============================================ */
 
-/**
- * آمار نظرات یک محصول (میانگین امتیاز و تعداد)
- */
 export async function getReviewStats(productId) {
   const reviews = await getProductReviews(productId, 500);
 
@@ -320,7 +307,6 @@ export async function getReviewStats(productId) {
   const sum = reviews.reduce((s, r) => s + (r.rating || 0), 0);
   const average = Math.round((sum / count) * 10) / 10;
 
-  // توزیع امتیازها [1star, 2star, 3star, 4star, 5star]
   const distribution = [0, 0, 0, 0, 0];
   reviews.forEach((r) => {
     const idx = Math.max(0, Math.min(4, (r.rating || 5) - 1));
