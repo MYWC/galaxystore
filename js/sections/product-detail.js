@@ -2,6 +2,7 @@
    PRODUCT DETAIL PAGE
    with Cinema (Phase 3) + Loading (A.6) + Sticky Cart (B.2)
    + Quantity Limits (B.10) + Recently Viewed (B.12)
+   + Product Views Counter (C.1)
    ============================================ */
 
 import { allProducts, formatPrice } from '../data/products.js';
@@ -21,6 +22,7 @@ import {
   clearRecentlyViewed,
   removeFromRecentlyViewed,
 } from '../utils/recently-viewed.js';
+import { trackProductView, getProductViewCount } from '../services/views.js';
 
 const ICONS = {
   cart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`,
@@ -30,6 +32,7 @@ const ICONS = {
   shield: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v8c0 5 3.5 7.5 8 9 4.5-1.5 8-4 8-9V5l-8-3z"/><polyline points="9 12 11 14 15 10"/></svg>`,
   truck: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`,
   return: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>`,
+  eye: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,
 };
 
 let currentProduct = null;
@@ -122,6 +125,38 @@ function getImageSrc(product) {
   return `${BASE}assets/images/products/${product.id}.jpg`;
 }
 
+/* ============================================
+   VIEW COUNT BADGE (C.1)
+   ============================================ */
+
+function renderViewsBadge(productId) {
+  const count = getProductViewCount(productId);
+  if (!count || count < 1) return '';
+
+  return `
+    <span class="product-info__views" title="تعداد بازدید این محصول">
+      ${ICONS.eye}
+      <strong>${count.toLocaleString('fa-IR')}</strong>
+      بازدید
+    </span>
+  `;
+}
+
+function updateViewsBadge(productId) {
+  const el = document.querySelector('.product-info__views');
+  if (!el) return;
+
+  const count = getProductViewCount(productId);
+  if (count > 0) {
+    const strong = el.querySelector('strong');
+    if (strong) strong.textContent = count.toLocaleString('fa-IR');
+  }
+}
+
+/* ============================================
+   BREADCRUMB
+   ============================================ */
+
 function renderBreadcrumb(p) {
   const el = document.getElementById('breadcrumb-current');
   if (el) el.textContent = p.name;
@@ -139,6 +174,10 @@ function renderBreadcrumb(p) {
     { name: p.name, url: `${SITE_URL}/product.html?id=${p.id}` },
   ]);
 }
+
+/* ============================================
+   GALLERY
+   ============================================ */
 
 function renderGallery(p) {
   const mainEl = document.getElementById('gallery-main');
@@ -199,6 +238,10 @@ function renderGallery(p) {
   });
 }
 
+/* ============================================
+   INFO
+   ============================================ */
+
 function renderInfo(p) {
   const el = document.getElementById('product-info');
   if (!el) return;
@@ -228,6 +271,11 @@ function renderInfo(p) {
         <span class="product-info__rating-value">${p.rating.toFixed(1)}</span>
         <span>(${p.reviews} نظر)</span>
       </span>
+    </div>
+
+    <!-- ⬇️ C.1: View Count Badge -->
+    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      ${renderViewsBadge(p.id)}
     </div>
 
     <h1 class="product-info__title">${p.name}</h1>
@@ -374,16 +422,16 @@ function bindInfoEvents(p) {
   }
 }
 
-/**
- * افزودن variant فعلی به سبد — با Quantity Limits (B.10)
- */
+/* ============================================
+   ADD TO CART — with B.10
+   ============================================ */
+
 async function addCurrentVariantToCart(p, btn) {
   const v = p.variants[currentVariantIndex];
   if (!v || v.stock === 0) return;
 
   const cartItemId = `${p.id}-${v.storage}`;
 
-  // === B.10: چک سبد فعلی ===
   const existing = cart.get().find((i) => i.id === cartItemId);
   const maxAllowed = cart.getMaxQty({ stock: v.stock });
 
@@ -410,7 +458,7 @@ async function addCurrentVariantToCart(p, btn) {
       price: v.price,
       oldPrice: v.oldPrice || null,
       image: getImageSrc(p),
-      stock: v.stock, // ← B.10
+      stock: v.stock,
     };
 
     const result = cart.add(cartItem, 1);
@@ -479,7 +527,6 @@ function updatePriceAndStock(p) {
     addBtn.disabled = v.stock === 0;
   }
 
-  // Sync با نوار شناور
   if (stickyCart) {
     stickyCart.update(v);
   }
@@ -488,6 +535,10 @@ function updatePriceAndStock(p) {
     injectProductSchema(currentProduct, v.price);
   }
 }
+
+/* ============================================
+   TABS
+   ============================================ */
 
 function renderTabs(p) {
   const nav = document.querySelector('.product-tabs__nav');
@@ -815,6 +866,10 @@ function bindReviewForm(product, existingReview) {
   });
 }
 
+/* ============================================
+   SIMILAR
+   ============================================ */
+
 function renderSimilar(p) {
   const grid = document.getElementById('similar-grid');
   if (!grid) return;
@@ -908,7 +963,6 @@ function renderRecentlyViewed(currentProductId) {
     </div>
   `;
 
-  // Clear all
   const clearBtn = document.getElementById('rv-clear-btn');
   if (clearBtn) {
     clearBtn.addEventListener('click', () => {
@@ -919,7 +973,6 @@ function renderRecentlyViewed(currentProductId) {
     });
   }
 
-  // Remove individual
   section.querySelectorAll('[data-rv-remove]').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -979,8 +1032,15 @@ export function initProductDetail() {
 
   injectProductSchema(p, v.price);
 
-  // === B.12: Track view ===
+  // === B.12: Track view (recently viewed) ===
   trackView(p);
+
+  // === C.1: Track product view (counter) ===
+  trackProductView(p.id).then((count) => {
+    if (typeof count === 'number' && count > 0) {
+      updateViewsBadge(p.id);
+    }
+  });
 
   renderBreadcrumb(p);
   renderGallery(p);
@@ -988,7 +1048,7 @@ export function initProductDetail() {
   renderTabs(p);
   renderSimilar(p);
 
-  // === B.12: Recently Viewed ===
+  // === B.12: Recently Viewed section ===
   renderRecentlyViewed(p.id);
 
   // ===== Sticky Add to Cart (Phase B.2) =====
