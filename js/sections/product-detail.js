@@ -1,5 +1,6 @@
 /* ============================================
-   PRODUCT DETAIL PAGE — with Cinema + Button Loading
+   PRODUCT DETAIL PAGE
+   with Cinema (Phase 3) + Loading (A.6) + Sticky Cart (B.2)
    ============================================ */
 
 import { allProducts, formatPrice } from '../data/products.js';
@@ -12,6 +13,7 @@ import { getProductReviews, addReview, getUserReviewForProduct } from '../servic
 import { getCurrentUser } from '../services/auth.js';
 import { initCinema } from '../utils/cinema.js';
 import { withButtonLoading } from '../utils/button-loading.js';
+import { initStickyAddToCart } from '../utils/sticky-add-to-cart.js';
 
 const ICONS = {
   cart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`,
@@ -27,6 +29,7 @@ let currentProduct = null;
 let currentColor = null;
 let currentVariantIndex = 0;
 let currentTab = 'specs';
+let stickyCart = null;
 
 function getProductIdFromUrl() {
   const params = new URLSearchParams(window.location.search);
@@ -343,36 +346,8 @@ function bindInfoEvents(p) {
 
   const addBtn = document.getElementById('add-to-cart-btn');
   if (addBtn) {
-    addBtn.addEventListener('click', async () => {
-      const v = p.variants[currentVariantIndex];
-      if (v.stock === 0) return;
-
-      await withButtonLoading(addBtn, async () => {
-        const cartItem = {
-          id: `${p.id}-${v.storage}`,
-          brand: p.brand,
-          name: p.name,
-          ram: v.ram,
-          storage: v.storage,
-          color: currentColor || null,
-          price: v.price,
-          oldPrice: v.oldPrice || null,
-          image: getImageSrc(p),
-        };
-
-        cart.add(cartItem, 1);
-
-        toast({
-          type: 'success',
-          title: 'به سبد خرید اضافه شد',
-          message: `${p.name} — ${v.storage}`,
-        });
-
-        // تأخیر کوتاه برای اینکه کاربر انیمیشن اسپینر رو ببینه
-        await new Promise((r) => setTimeout(r, 400));
-
-        openCart();
-      });
+    addBtn.addEventListener('click', () => {
+      addCurrentVariantToCart(p, addBtn);
     });
   }
 
@@ -390,6 +365,41 @@ function bindInfoEvents(p) {
       });
     });
   }
+}
+
+/**
+ * افزودن variant فعلی به سبد — هم از دکمه‌ی اصلی، هم از نوار شناور استفاده می‌شه
+ */
+async function addCurrentVariantToCart(p, btn) {
+  const v = p.variants[currentVariantIndex];
+  if (!v || v.stock === 0) return;
+
+  await withButtonLoading(btn, async () => {
+    const cartItem = {
+      id: `${p.id}-${v.storage}`,
+      brand: p.brand,
+      name: p.name,
+      ram: v.ram,
+      storage: v.storage,
+      color: currentColor || null,
+      price: v.price,
+      oldPrice: v.oldPrice || null,
+      image: getImageSrc(p),
+    };
+
+    cart.add(cartItem, 1);
+
+    toast({
+      type: 'success',
+      title: 'به سبد خرید اضافه شد',
+      message: `${p.name} — ${v.storage}`,
+    });
+
+    // تأخیر کوتاه برای دیدن اسپینر
+    await new Promise((r) => setTimeout(r, 400));
+
+    openCart();
+  });
 }
 
 function updatePriceAndStock(p) {
@@ -430,6 +440,11 @@ function updatePriceAndStock(p) {
   const addBtn = document.getElementById('add-to-cart-btn');
   if (addBtn) {
     addBtn.disabled = v.stock === 0;
+  }
+
+  // Sync با نوار شناور
+  if (stickyCart) {
+    stickyCart.update(v);
   }
 
   if (currentProduct) {
@@ -824,6 +839,24 @@ export function initProductDetail() {
   renderInfo(p);
   renderTabs(p);
   renderSimilar(p);
+
+  // ===== Sticky Add to Cart (Phase B.2) =====
+  setTimeout(() => {
+    stickyCart = initStickyAddToCart({
+      product: p,
+      getImageSrc,
+      triggerSelector: '#add-to-cart-btn',
+      onAdd: () => {
+        const btn = document.getElementById('add-to-cart-btn');
+        if (btn) addCurrentVariantToCart(p, btn);
+      },
+    });
+
+    // مقدار اولیه
+    if (stickyCart && p.variants[currentVariantIndex]) {
+      stickyCart.update(p.variants[currentVariantIndex]);
+    }
+  }, 300);
 
   // ===== Cinema (Phase 3) =====
   setTimeout(() => initCinema(), 200);
