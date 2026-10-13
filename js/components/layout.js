@@ -2,6 +2,7 @@
    LAYOUT — Header + Nav + Footer + Common UI
    با Base Path + SEO + Performance + A11y
    + Effects + Motion + Story + Showcase + Final Touch
+   + Skeleton (A.2)
    (بدون Dark Mode)
    ============================================ */
 
@@ -464,6 +465,15 @@ export function initLayout() {
     finalLink.rel = 'stylesheet';
     finalLink.href = u('css/effects/final-touch.css');
     document.head.appendChild(finalLink);
+  }
+
+  // Skeleton CSS (Phase A.2)
+  if (!document.getElementById('skeleton-css')) {
+    const skeletonLink = document.createElement('link');
+    skeletonLink.id = 'skeleton-css';
+    skeletonLink.rel = 'stylesheet';
+    skeletonLink.href = u('css/components/skeleton.css');
+    document.head.appendChild(skeletonLink);
   }
 
   // Preconnect

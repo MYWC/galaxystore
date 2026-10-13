@@ -1,0 +1,674 @@
+/* ============================================
+   SKELETON LOADING SYSTEM — Phase A.2
+   Smart, contextual, animated placeholders
+   ============================================ */
+
+/* ============================================
+   1. BASE SKELETON
+   ============================================ */
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    90deg,
+    rgba(230, 236, 241, 1) 0%,
+    rgba(245, 249, 252, 1) 50%,
+    rgba(230, 236, 241, 1) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.6s ease-in-out infinite;
+  border-radius: 8px;
+  display: block;
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton--dark {
+  background: linear-gradient(
+    90deg,
+    rgba(30, 40, 52, 0.6) 0%,
+    rgba(45, 58, 72, 0.8) 50%,
+    rgba(30, 40, 52, 0.6) 100%
+  );
+  background-size: 200% 100%;
+}
+
+/* ============================================
+   2. SHAPES
+   ============================================ */
+
+.skeleton--text {
+  height: 14px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.skeleton--title {
+  height: 20px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.skeleton--heading {
+  height: 32px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.skeleton--circle {
+  border-radius: 50%;
+}
+
+.skeleton--square {
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+}
+
+.skeleton--rect {
+  border-radius: 12px;
+}
+
+.skeleton--pill {
+  height: 24px;
+  border-radius: 999px;
+}
+
+/* ============================================
+   3. WIDTHS
+   ============================================ */
+
+.skeleton--w-25 { width: 25%; }
+.skeleton--w-40 { width: 40%; }
+.skeleton--w-50 { width: 50%; }
+.skeleton--w-60 { width: 60%; }
+.skeleton--w-70 { width: 70%; }
+.skeleton--w-80 { width: 80%; }
+.skeleton--w-100 { width: 100%; }
+
+/* ============================================
+   4. PRODUCT CARD SKELETON
+   ============================================ */
+
+.skeleton-product-card {
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  overflow: hidden;
+  padding: 0;
+}
+
+.skeleton-product-card__media {
+  padding: 24px 20px 20px;
+  background: linear-gradient(180deg, #F8FBFF 0%, #F2F7FC 100%);
+}
+
+.skeleton-product-card__img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+}
+
+.skeleton-product-card__body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeleton-product-card__brand {
+  height: 11px;
+  width: 40%;
+  border-radius: 4px;
+}
+
+.skeleton-product-card__title {
+  height: 16px;
+  width: 100%;
+  border-radius: 5px;
+}
+
+.skeleton-product-card__title--short {
+  width: 70%;
+}
+
+.skeleton-product-card__storages {
+  display: flex;
+  gap: 6px;
+}
+
+.skeleton-product-card__storage {
+  height: 24px;
+  width: 60px;
+  border-radius: 8px;
+}
+
+.skeleton-product-card__rating {
+  height: 13px;
+  width: 50%;
+  border-radius: 4px;
+}
+
+.skeleton-product-card__divider {
+  height: 1px;
+  width: 100%;
+  background: var(--border-soft);
+  margin: 4px 0;
+}
+
+.skeleton-product-card__price {
+  height: 22px;
+  width: 60%;
+  border-radius: 5px;
+}
+
+.skeleton-product-card__cta {
+  height: 42px;
+  width: 100%;
+  border-radius: 12px;
+  margin-top: 4px;
+}
+
+/* ============================================
+   5. FLASH CARD SKELETON
+   ============================================ */
+
+.skeleton-flash-card {
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.skeleton-flash-card__media {
+  padding: 22px 18px 18px;
+  background: linear-gradient(180deg, #F8FAFF 0%, #EFF4FC 100%);
+  position: relative;
+}
+
+.skeleton-flash-card__badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+}
+
+.skeleton-flash-card__img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+}
+
+.skeleton-flash-card__body {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-flash-card__brand {
+  height: 10px;
+  width: 35%;
+  border-radius: 4px;
+}
+
+.skeleton-flash-card__title {
+  height: 14px;
+  width: 100%;
+  border-radius: 5px;
+}
+
+.skeleton-flash-card__price {
+  height: 20px;
+  width: 55%;
+  border-radius: 5px;
+  margin-top: 4px;
+}
+
+.skeleton-flash-card__progress {
+  height: 6px;
+  width: 100%;
+  border-radius: 999px;
+  margin-top: 6px;
+}
+
+.skeleton-flash-card__cta {
+  height: 40px;
+  width: 100%;
+  border-radius: 12px;
+  margin-top: 10px;
+}
+
+/* ============================================
+   6. CATEGORY CARD SKELETON
+   ============================================ */
+
+.skeleton-category-card {
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 22px 12px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.skeleton-category-card__icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+}
+
+.skeleton-category-card__title {
+  height: 13px;
+  width: 70%;
+  border-radius: 4px;
+}
+
+.skeleton-category-card__count {
+  height: 10px;
+  width: 50%;
+  border-radius: 4px;
+}
+
+/* ============================================
+   7. ARTICLE CARD SKELETON
+   ============================================ */
+
+.skeleton-article-card {
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.skeleton-article-card__media {
+  aspect-ratio: 16 / 10;
+}
+
+.skeleton-article-card__body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeleton-article-card__title {
+  height: 17px;
+  width: 100%;
+  border-radius: 5px;
+}
+
+.skeleton-article-card__title--short {
+  width: 60%;
+}
+
+.skeleton-article-card__desc {
+  height: 13px;
+  width: 100%;
+  border-radius: 4px;
+}
+
+.skeleton-article-card__desc--short {
+  width: 80%;
+}
+
+.skeleton-article-card__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.skeleton-article-card__meta-item {
+  height: 12px;
+  width: 40%;
+  border-radius: 4px;
+}
+
+/* ============================================
+   8. ORDER CARD SKELETON
+   ============================================ */
+
+.skeleton-order-card {
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.skeleton-order-card__head {
+  padding: 16px 20px;
+  background: var(--bg-soft);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.skeleton-order-card__num {
+  height: 16px;
+  width: 120px;
+  border-radius: 5px;
+}
+
+.skeleton-order-card__status {
+  height: 26px;
+  width: 100px;
+  border-radius: 999px;
+}
+
+.skeleton-order-card__body {
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.skeleton-order-card__thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.skeleton-order-card__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-order-card__name {
+  height: 14px;
+  width: 70%;
+  border-radius: 4px;
+}
+
+.skeleton-order-card__meta {
+  height: 11px;
+  width: 40%;
+  border-radius: 4px;
+}
+
+.skeleton-order-card__foot {
+  padding: 14px 20px;
+  background: var(--bg-soft);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.skeleton-order-card__total {
+  height: 20px;
+  width: 140px;
+  border-radius: 5px;
+}
+
+.skeleton-order-card__btn {
+  height: 34px;
+  width: 90px;
+  border-radius: 10px;
+}
+
+/* ============================================
+   9. REVIEW SKELETON
+   ============================================ */
+
+.skeleton-review {
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  padding: 24px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.skeleton-review__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.skeleton-review__avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton-review__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.skeleton-review__name {
+  height: 14px;
+  width: 45%;
+  border-radius: 4px;
+}
+
+.skeleton-review__date {
+  height: 11px;
+  width: 30%;
+  border-radius: 4px;
+}
+
+.skeleton-review__stars {
+  height: 14px;
+  width: 70px;
+  border-radius: 4px;
+}
+
+.skeleton-review__body {
+  height: 13px;
+  width: 100%;
+  border-radius: 4px;
+}
+
+.skeleton-review__body--short {
+  width: 75%;
+}
+
+/* ============================================
+   10. PRODUCT DETAIL SKELETON
+   ============================================ */
+
+.skeleton-product-detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+}
+
+.skeleton-product-detail__gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.skeleton-product-detail__main-img {
+  aspect-ratio: 1 / 1;
+  border-radius: 20px;
+}
+
+.skeleton-product-detail__thumbs {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.skeleton-product-detail__thumb {
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+}
+
+.skeleton-product-detail__info {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.skeleton-product-detail__brand {
+  height: 26px;
+  width: 100px;
+  border-radius: 999px;
+}
+
+.skeleton-product-detail__title {
+  height: 32px;
+  width: 90%;
+  border-radius: 8px;
+}
+
+.skeleton-product-detail__model {
+  height: 14px;
+  width: 40%;
+  border-radius: 4px;
+}
+
+.skeleton-product-detail__colors {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.skeleton-product-detail__color {
+  height: 36px;
+  width: 110px;
+  border-radius: 10px;
+}
+
+.skeleton-product-detail__storages {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.skeleton-product-detail__storage {
+  height: 60px;
+  width: 90px;
+  border-radius: 12px;
+}
+
+.skeleton-product-detail__price-box {
+  height: 110px;
+  width: 100%;
+  border-radius: 16px;
+  margin-top: 12px;
+}
+
+.skeleton-product-detail__cta {
+  height: 56px;
+  width: 100%;
+  border-radius: 14px;
+  margin-top: 8px;
+}
+
+/* ============================================
+   11. COMPACT / INLINE SKELETON
+   ============================================ */
+
+.skeleton-inline {
+  display: inline-block;
+  height: 1em;
+  width: 100px;
+  border-radius: 4px;
+  vertical-align: middle;
+  margin: 0 4px;
+}
+
+/* ============================================
+   12. SECTION HEAD SKELETON
+   ============================================ */
+
+.skeleton-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.skeleton-section-head__title {
+  height: 28px;
+  width: 200px;
+  border-radius: 8px;
+}
+
+.skeleton-section-head__link {
+  height: 16px;
+  width: 100px;
+  border-radius: 4px;
+}
+
+/* ============================================
+   13. FADE TRANSITION
+   ============================================ */
+
+.skeleton-fade-out {
+  animation: skeletonFadeOut 0.4s ease forwards;
+}
+
+@keyframes skeletonFadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
+.fade-in-content {
+  animation: fadeInContent 0.5s ease forwards;
+}
+
+@keyframes fadeInContent {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* ============================================
+   14. RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .skeleton-product-detail {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .skeleton-product-detail__title {
+    height: 24px;
+  }
+
+  .skeleton-product-card__cta {
+    height: 38px;
+  }
+}
+
+/* ============================================
+   15. REDUCED MOTION
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton,
+  .skeleton--dark {
+    animation: none;
+    background: rgba(230, 236, 241, 1);
+  }
+}
