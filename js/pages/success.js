@@ -1,5 +1,5 @@
 /* ============================================
-   SUCCESS PAGE — with Supabase Orders
+   SUCCESS PAGE — with Supabase Orders + Copy (B.8)
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
@@ -7,6 +7,7 @@ import { products, formatPrice } from '../data/products.js';
 import { renderProductCard } from '../components/product-card.js';
 import { toast } from '../components/toast.js';
 import { getOrderByNumber } from '../services/orders.js';
+import { copyWithFeedback } from '../utils/copy-clipboard.js';
 
 initLayout();
 
@@ -115,7 +116,7 @@ function renderInfo(order) {
 }
 
 /* ============================================
-   RENDER ORDER CODE
+   RENDER ORDER CODE (with copy)
    ============================================ */
 
 function renderOrderCode(order) {
@@ -127,24 +128,12 @@ function renderOrderCode(order) {
 
   if (codeBtn) {
     codeBtn.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(order.orderNumber);
-        codeBtn.classList.add('is-copied');
-        toast({
-          type: 'success',
-          title: 'کپی شد!',
-          message: `شماره سفارش: ${order.orderNumber}`,
-          duration: 2000,
-        });
-        setTimeout(() => codeBtn.classList.remove('is-copied'), 2000);
-      } catch {
-        toast({
-          type: 'info',
-          title: 'شماره سفارش',
-          message: order.orderNumber,
-          duration: 3000,
-        });
-      }
+      await copyWithFeedback({
+        text: order.orderNumber,
+        btn: codeBtn,
+        tooltipText: 'شماره سفارش کپی شد!',
+        showTooltip: true,
+      });
     });
   }
 }
@@ -162,7 +151,6 @@ function renderRecommended(order) {
     i.id.split('-').slice(0, -1).join('-')
   );
 
-  // ✅ از products (فقط عکس‌دارها)
   const recommended = products
     .filter((p) => !orderProductIds.includes(p.id))
     .filter((p) => p.rating >= 4.6)
@@ -263,7 +251,7 @@ async function init() {
   setTimeout(launchConfetti, 300);
 
   console.log(
-    `%c✓ Order ${order.orderNumber} confirmed`,
+    `%c✓ Order ${order.orderNumber} confirmed (B.8)`,
     'color:#18B981;font-weight:bold;'
   );
 }

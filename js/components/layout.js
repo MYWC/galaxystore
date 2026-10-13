@@ -4,7 +4,8 @@
    + Effects + Motion + Story + Showcase + Final Touch
    + Skeleton (A.2) + Offline (A.3) + Forms (A.5)
    + Empty State (A.7) + Breadcrumb (B.1) + Voice (B.4)
-   + Compare Bar (B.5)
+   + Compare Bar (B.5) + Wishlist Feedback (B.6)
+   + Copy Clipboard (B.8)
    (بدون Dark Mode)
    ============================================ */
 
@@ -27,6 +28,8 @@ import { initShowcase } from '../utils/showcase.js';
 import { initFinalTouch } from '../utils/final-touch.js';
 import { autoBreadcrumb } from './breadcrumb.js';
 import { initCompareBar } from '../utils/compare-bar.js';
+import { initWishlistFeedback } from '../utils/wishlist-feedback.js';
+import { initCopyButtons } from '../utils/copy-clipboard.js';
 
 /* ============================================
    BASE PATH DETECTION
@@ -528,6 +531,24 @@ export function initLayout() {
     document.head.appendChild(compareLink);
   }
 
+  // Wishlist Feedback CSS (Phase B.6)
+  if (!document.getElementById('wishlist-feedback-css')) {
+    const wishLink = document.createElement('link');
+    wishLink.id = 'wishlist-feedback-css';
+    wishLink.rel = 'stylesheet';
+    wishLink.href = u('css/components/wishlist-feedback.css');
+    document.head.appendChild(wishLink);
+  }
+
+  // Copy Button CSS (Phase B.8)
+  if (!document.getElementById('copy-button-css')) {
+    const copyLink = document.createElement('link');
+    copyLink.id = 'copy-button-css';
+    copyLink.rel = 'stylesheet';
+    copyLink.href = u('css/components/copy-button.css');
+    document.head.appendChild(copyLink);
+  }
+
   // Offline CSS (Phase A.3)
   if (!document.getElementById('offline-css')) {
     const offlineLink = document.createElement('link');
@@ -580,6 +601,8 @@ export function initLayout() {
   initQuickView();
   initSearch();
   initCompareBar();
+  initWishlistFeedback();
+  initCopyButtons();
   initFooter();
   initAnimations();
   initMicro();
