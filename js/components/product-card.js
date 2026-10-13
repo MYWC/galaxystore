@@ -1,5 +1,6 @@
 /* ============================================
-   PRODUCT CARD RENDERER — با Storage Pills + عکس خودکار
+   PRODUCT CARD RENDERER
+   Placeholder always (no image 404s)
    ============================================ */
 
 import { formatPrice } from '../data/products.js';
@@ -50,9 +51,13 @@ function renderStock(variant) {
    ============================================ */
 
 export function renderProductCard(product) {
-  const { id, brand, name, rating, reviews, badges = [], image, variants = [] } = product;
+  const { id, brand, name, rating = 0, reviews = 0, badges = [], variants = [] } = product;
 
   if (!variants.length) return '';
+
+  // Fallback برای نام
+  const displayName = name || product.model || id || 'محصول';
+  const displayModel = product.model || '';
 
   const defaultVariant = [...variants].sort((a, b) => a.price - b.price)[0];
   const vIndex = variants.indexOf(defaultVariant);
@@ -62,16 +67,11 @@ export function renderProductCard(product) {
     .filter(Boolean)
     .join('');
 
-  // عکس خودکار از id
-  const imgSrc = image || `assets/images/products/${id}.jpg`;
-
+  // ✅ همیشه placeholder — بدون تلاش برای لود تصویر
   const imageHTML = `
-    <img
-      src="${imgSrc}"
-      alt="${name}"
-      loading="lazy"
-      onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'ph ph--square\\'>تصویر محصول</div>';"
-    />
+    <div class="ph ph--square">
+      ${displayModel || displayName}
+    </div>
   `;
 
   const storagesHTML = variants.map((v, i) => `
@@ -106,10 +106,10 @@ export function renderProductCard(product) {
       <div class="p-card__body">
         <span class="p-card__brand">
           <span class="p-card__brand-dot"></span>
-          ${brand}
+          ${brand || ''}
         </span>
 
-        <h3 class="p-card__title" title="${name}">${name}</h3>
+        <h3 class="p-card__title" title="${displayName}">${displayName}</h3>
 
         <div class="p-card__storages" data-storages="${id}">
           ${storagesHTML}

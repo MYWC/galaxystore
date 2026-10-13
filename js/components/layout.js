@@ -143,9 +143,8 @@ const NAV_HTML = `
       <a href="${u('brand.html?id=samsung')}" class="nav__link">سامسونگ</a>
       <a href="${u('brand.html?id=xiaomi')}" class="nav__link">شیائومی</a>
       <a href="${u('brand.html?id=google')}" class="nav__link">گوگل پیکسل</a>
-      <a href="${u('brand.html?id=oneplus')}" class="nav__link">وان‌پلاس</a>
       <a href="${u('brand.html?id=honor')}" class="nav__link">آنر</a>
-      <a href="${u('brand.html?id=huawei')}" class="nav__link">هواوی</a>
+      <a href="${u('brand.html?id=nothing')}" class="nav__link">ناتینگ</a>
       <a href="${u('category.html?filter=discount')}" class="nav__link">تخفیف‌ها</a>
     </div>
   </div>
@@ -192,12 +191,8 @@ const DRAWER_HTML = `
         <a href="${u('brand.html?id=samsung')}" class="drawer__link">Samsung</a>
         <a href="${u('brand.html?id=xiaomi')}" class="drawer__link">Xiaomi</a>
         <a href="${u('brand.html?id=google')}" class="drawer__link">Google</a>
-        <a href="${u('brand.html?id=oneplus')}" class="drawer__link">OnePlus</a>
         <a href="${u('brand.html?id=honor')}" class="drawer__link">Honor</a>
         <a href="${u('brand.html?id=nothing')}" class="drawer__link">Nothing</a>
-        <a href="${u('brand.html?id=motorola')}" class="drawer__link">Motorola</a>
-        <a href="${u('brand.html?id=realme')}" class="drawer__link">Realme</a>
-        <a href="${u('brand.html?id=huawei')}" class="drawer__link">Huawei</a>
       </div>
     </div>
     <div class="drawer__section">
@@ -306,7 +301,7 @@ const FOOTER_HTML = `
           </span>
         </a>
         <p class="footer__desc">
-          فروشگاه تخصصی موبایل و تبلت با ۱۰ برند معتبر جهانی،
+          فروشگاه تخصصی موبایل و تبلت با ۶ برند معتبر جهانی،
           ضمانت اصالت کالا و خدمات پس از فروش مطمئن.
         </p>
         <div class="footer__social" role="navigation" aria-label="شبکه‌های اجتماعی">
@@ -338,7 +333,7 @@ const FOOTER_HTML = `
           <a href="${u('brand.html?id=samsung')}" class="footer__col-link">Samsung</a>
           <a href="${u('brand.html?id=xiaomi')}" class="footer__col-link">Xiaomi</a>
           <a href="${u('brand.html?id=google')}" class="footer__col-link">Google</a>
-          <a href="${u('brand.html?id=huawei')}" class="footer__col-link">Huawei</a>
+          <a href="${u('brand.html?id=nothing')}" class="footer__col-link">Nothing</a>
         </div>
       </div>
       <div class="footer__col">
@@ -396,6 +391,20 @@ export function initLayout() {
   // SEO
   injectSiteSchema();
 
+  // Favicon
+  if (!document.querySelector('link[rel="icon"]')) {
+    const favicon = document.createElement('link');
+    favicon.rel = 'icon';
+    favicon.type = 'image/svg+xml';
+    favicon.href = u('assets/images/favicon.svg');
+    document.head.appendChild(favicon);
+
+    const appleTouch = document.createElement('link');
+    appleTouch.rel = 'apple-touch-icon';
+    appleTouch.href = u('assets/images/favicon.svg');
+    document.head.appendChild(appleTouch);
+  }
+
   // Preconnect
   const preconnect = document.createElement('link');
   preconnect.rel = 'preconnect';
@@ -444,7 +453,6 @@ export function initLayout() {
   onChange(KEYS.cart, () => {
     syncBadges();
     bounceCartBadge();
-    // a11y announcement
     try {
       announceCartUpdate(cart.count());
     } catch {}
