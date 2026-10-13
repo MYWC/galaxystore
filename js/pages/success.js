@@ -8,15 +8,15 @@ import { renderProductCard } from '../components/product-card.js';
 import { toast } from '../components/toast.js';
 import { getOrderByNumber } from '../services/orders.js';
 
-/* ============================================
-   INIT LAYOUT
-   ============================================ */
-
 initLayout();
 
 /* ============================================
    HELPERS
    ============================================ */
+
+function getBasePath() {
+  return window.MS_BASE_PATH || './';
+}
 
 function getOrderNumberFromUrl() {
   const params = new URLSearchParams(window.location.search);
@@ -33,7 +33,7 @@ function renderItems(order) {
 
   wrap.innerHTML = order.items.map((item) => {
     const productId = item.id.split('-').slice(0, -1).join('-');
-    const imgSrc = item.image || `assets/images/products/${productId}.jpg`;
+    const imgSrc = item.image || `${getBasePath()}assets/images/products/${productId}.jpg`;
 
     const specs = [item.storage, item.ram, item.color].filter(Boolean).join(' • ');
 
@@ -162,6 +162,7 @@ function renderRecommended(order) {
     i.id.split('-').slice(0, -1).join('-')
   );
 
+  // ✅ از products (فقط عکس‌دارها)
   const recommended = products
     .filter((p) => !orderProductIds.includes(p.id))
     .filter((p) => p.rating >= 4.6)

@@ -2,7 +2,7 @@
    PRODUCT DETAIL PAGE — با SEO + Reviews
    ============================================ */
 
-import { products, formatPrice } from '../data/products.js';
+import { allProducts, formatPrice } from '../data/products.js';
 import { cart, wishlist, compare, onChange, KEYS } from '../store/state.js';
 import { toast } from '../components/toast.js';
 import { openCart } from '../components/cart-drawer.js';
@@ -36,7 +36,11 @@ let currentTab = 'specs';
 
 function getProductIdFromUrl() {
   const params = new URLSearchParams(window.location.search);
-  return params.get('id') || 'iphone-16-pro';
+  return params.get('id') || '';
+}
+
+function getBasePath() {
+  return window.MS_BASE_PATH || './';
 }
 
 function renderStars(rating) {
@@ -103,6 +107,17 @@ function getStockLabel(stock) {
   return 'موجود در انبار';
 }
 
+function getImageSrc(product) {
+  const BASE = getBasePath();
+  if (product.image) {
+    if (product.image.startsWith('http') || product.image.startsWith('/')) {
+      return product.image;
+    }
+    return BASE + product.image;
+  }
+  return `${BASE}assets/images/products/${product.id}.jpg`;
+}
+
 /* ============================================
    BREADCRUMB
    ============================================ */
@@ -136,18 +151,20 @@ function renderGallery(p) {
 
   if (!mainEl || !thumbsEl) return;
 
-  const baseSrc = `assets/images/products/${p.id}.jpg`;
+  const imgSrc = getImageSrc(p);
+  const displayName = (p.model || p.name || '').replace(/'/g, '');
 
   const images = [
-    { src: baseSrc, label: 'اصلی' },
-    { src: `assets/images/products/${p.id}-2.jpg`, label: 'پشت' },
-    { src: `assets/images/products/${p.id}-3.jpg`, label: 'کنار' },
-    { src: `assets/images/products/${p.id}-4.jpg`, label: 'جعبه' },
-    { src: `assets/images/products/${p.id}-5.jpg`, label: 'جزئیات' },
+    { src: imgSrc, label: 'اصلی' },
+    { src: `${getBasePath()}assets/images/products/${p.id}-2.jpg`, label: 'پشت' },
+    { src: `${getBasePath()}assets/images/products/${p.id}-3.jpg`, label: 'کنار' },
+    { src: `${getBasePath()}assets/images/products/${p.id}-4.jpg`, label: 'جعبه' },
+    { src: `${getBasePath()}assets/images/products/${p.id}-5.jpg`, label: 'جزئیات' },
   ];
 
   mainEl.innerHTML = `
-    <img src="${images[0].src}" alt="${p.name}" loading="eager" onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='<div class=\'ph ph--square\'>تصویر محصول</div>';" />
+    <img src="${images[0].src}" alt="${p.name}" loading="eager"
+         onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<div class=\\'ph ph--square\\'>${displayName}</div>';" />
   `;
 
   if (badgeEl) {
@@ -162,7 +179,8 @@ function renderGallery(p) {
 
   thumbsEl.innerHTML = images.map((img, i) => `
     <button class="product-gallery__thumb ${i === 0 ? 'is-active' : ''}" data-thumb-index="${i}">
-      <img src="${img.src}" alt="${img.label}" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'ph ph--xs\'>${img.label}</div>';" />
+      <img src="${img.src}" alt="${img.label}" loading="lazy"
+           onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'ph ph--xs\\'>${img.label}</div>';" />
     </button>
   `).join('');
 
@@ -175,7 +193,8 @@ function renderGallery(p) {
     btn.classList.add('is-active');
 
     mainEl.innerHTML = `
-      <img src="${images[idx].src}" alt="${p.name}" onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='<div class=\'ph ph--square\'>تصویر محصول</div>';" />
+      <img src="${images[idx].src}" alt="${p.name}"
+           onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<div class=\\'ph ph--square\\'>${displayName}</div>';" />
     `;
   });
 }
@@ -351,7 +370,7 @@ function bindInfoEvents(p) {
         color: currentColor || null,
         price: v.price,
         oldPrice: v.oldPrice || null,
-        image: p.image || `assets/images/products/${p.id}.jpg`,
+        image: getImageSrc(p),
       };
 
       cart.add(cartItem, 1);
@@ -603,7 +622,7 @@ async function renderTabContent(p, tab) {
     const guestNotice = !user ? `
       <div class="product-review-form__notice">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        <span>برای ثبت نظر ابتدا <a href="auth/login.html">وارد حساب کاربری</a> شوید.</span>
+        <span>برای ثبت نظر ابتدا <a href="${getBasePath()}auth/login.html">وارد حساب کاربری</a> شوید.</span>
       </div>
     ` : '';
 
@@ -788,7 +807,10 @@ function renderSimilar(p) {
   const grid = document.getElementById('similar-grid');
   if (!grid) return;
 
-  const similar = products
+  // فقط محصولات عکس‌دار
+  const { products } = window.MS_PRODUCTS_CONTEXT || {};
+
+  const similar = (products || allProducts)
     .filter((x) => x.id !== p.id)
     .filter((x) => x.category === p.category || x.type === p.type)
     .slice(0, 4);
@@ -805,7 +827,20 @@ export function initProductDetail() {
   if (!page) return;
 
   const id = getProductIdFromUrl();
-  const p = products.find((x) => x.id === id);
+
+  if (!id) {
+    page.innerHTML = `
+      <div class="container" style="padding: 80px 20px; text-align: center;">
+        <h2 style="font-size: 24px; margin-bottom: 12px;">محصول انتخاب نشده</h2>
+        <p style="color: var(--text-muted); margin-bottom: 24px;">لطفاً از فروشگاه محصول انتخاب کنید.</p>
+        <a href="index.html" class="btn btn--primary">بازگشت به فروشگاه</a>
+      </div>
+    `;
+    return;
+  }
+
+  // ✅ از allProducts استفاده می‌کنیم (نه products فیلتر‌شده)
+  const p = allProducts.find((x) => x.id === id);
 
   if (!p) {
     page.innerHTML = `
@@ -825,7 +860,7 @@ export function initProductDetail() {
   setPageMeta({
     title: `${p.name} | خرید با بهترین قیمت | موبایل استور`,
     description: `خرید ${p.name} با ضمانت اصالت، گارانتی رسمی و ارسال سریع. قیمت از ${formatPrice(v.price)} تومان.`,
-    image: p.image,
+    image: getImageSrc(p),
     url: `${SITE_URL}/product.html?id=${p.id}`,
     type: 'product',
   });

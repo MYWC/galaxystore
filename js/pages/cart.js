@@ -3,14 +3,10 @@
    ============================================ */
 
 import { initLayout } from '../components/layout.js';
-import { products, formatPrice } from '../data/products.js';
+import { allProducts, products, formatPrice } from '../data/products.js';
 import { cart, wishlist, onChange, KEYS } from '../store/state.js';
 import { renderProductCard } from '../components/product-card.js';
 import { toast } from '../components/toast.js';
-
-/* ============================================
-   INIT LAYOUT
-   ============================================ */
 
 initLayout();
 
@@ -18,15 +14,15 @@ initLayout();
    CONSTANTS
    ============================================ */
 
-const FREE_SHIPPING_THRESHOLD = 5000000; // ۵ میلیون تومان
-const SHIPPING_FEE = 350000; // ۳۵۰ هزار تومان
+const FREE_SHIPPING_THRESHOLD = 5000000;
+const SHIPPING_FEE = 350000;
 
 const COUPONS = {
   WELCOME10: {
     code: 'WELCOME10',
     type: 'percent',
     value: 10,
-    max: 5000000, // حداکثر تخفیف ۵ میلیون
+    max: 5000000,
     label: '۱۰٪ تخفیف',
   },
   MOBILE20: {
@@ -66,6 +62,10 @@ let appliedCoupon = null;
 /* ============================================
    HELPERS
    ============================================ */
+
+function getBasePath() {
+  return window.MS_BASE_PATH || './';
+}
 
 function colorToHex(colorName) {
   if (!colorName) return null;
@@ -149,11 +149,12 @@ function calcTotal(items) {
 }
 
 /* ============================================
-   RENDER — CART ITEMS
+   RENDER — CART ITEM
    ============================================ */
 
 function renderCartItem(item) {
-  const imgSrc = item.image || `assets/images/products/${item.id.split('-').slice(0, -1).join('-')}.jpg`;
+  const productId = item.id.split('-').slice(0, -1).join('-');
+  const imgSrc = item.image || `${getBasePath()}assets/images/products/${productId}.jpg`;
   const colorHex = item.color ? colorToHex(item.color) : null;
   const hasDiscount = item.oldPrice && item.oldPrice > item.price;
 
@@ -182,7 +183,7 @@ function renderCartItem(item) {
 
       <div class="cart-item__info">
         <span class="cart-item__brand">${item.brand || ''}</span>
-        <a href="product.html?id=${item.id.split('-').slice(0, -1).join('-')}" class="cart-item__name" style="text-decoration:none; color:inherit;">${item.name}</a>
+        <a href="${getBasePath()}product.html?id=${productId}" class="cart-item__name" style="text-decoration:none; color:inherit;">${item.name}</a>
 
         ${specs.length ? `<div class="cart-item__specs">${specs.join('')}</div>` : ''}
 
@@ -219,8 +220,8 @@ function renderCartItem(item) {
         </div>
 
         <button
-          class="cart-item__wish ${wishlist.has(item.id.split('-').slice(0, -1).join('-')) ? 'is-active' : ''}"
-          data-wishlist="${item.id.split('-').slice(0, -1).join('-')}"
+          class="cart-item__wish ${wishlist.has(productId) ? 'is-active' : ''}"
+          data-wishlist="${productId}"
           aria-label="علاقه‌مندی"
         >
           ${ICONS.heart}
@@ -238,11 +239,9 @@ function renderSummary() {
   const items = cart.get();
   const calc = calcTotal(items);
 
-  // Subtotal
   const subEl = document.getElementById('sum-subtotal');
   if (subEl) subEl.textContent = `${formatPrice(calc.subtotal)} تومان`;
 
-  // Discount
   const discountRow = document.getElementById('row-discount');
   const discountEl = document.getElementById('sum-discount');
   if (calc.discount > 0) {
@@ -252,7 +251,6 @@ function renderSummary() {
     if (discountRow) discountRow.hidden = true;
   }
 
-  // Coupon
   const couponRow = document.getElementById('row-coupon');
   const couponEl = document.getElementById('sum-coupon');
   const couponCodeEl = document.getElementById('sum-coupon-code');
@@ -266,7 +264,6 @@ function renderSummary() {
     if (couponRow) couponRow.hidden = true;
   }
 
-  // Shipping
   const shippingEl = document.getElementById('sum-shipping');
   const shippingHint = document.getElementById('shipping-hint');
   if (calc.shipping === 0) {
@@ -277,11 +274,9 @@ function renderSummary() {
     if (shippingHint) shippingHint.textContent = '';
   }
 
-  // Total
   const totalEl = document.getElementById('sum-total');
   if (totalEl) totalEl.textContent = formatPrice(calc.total);
 
-  // Savings
   const savingsWrap = document.getElementById('summary-savings');
   const savingsEl = document.getElementById('sum-savings');
   const totalSavings = calc.discount + calc.couponDiscount;
@@ -294,7 +289,7 @@ function renderSummary() {
 }
 
 /* ============================================
-   RENDER — FREE SHIPPING PROGRESS
+   RENDER — FREE SHIPPING
    ============================================ */
 
 function renderFreeShipping() {
@@ -329,7 +324,7 @@ function renderRecommended() {
 
   const cartIds = cart.get().map((i) => i.id.split('-').slice(0, -1).join('-'));
 
-  // محصولات با امتیاز بالا که در سبد نیستند
+  // ✅ از products (فقط عکس‌دارها)
   const recommended = products
     .filter((p) => !cartIds.includes(p.id))
     .filter((p) => p.rating >= 4.5)
@@ -346,7 +341,7 @@ function renderRecommended() {
 }
 
 /* ============================================
-   RENDER — FULL PAGE
+   RENDER — FULL
    ============================================ */
 
 function render() {
@@ -410,7 +405,6 @@ function applyCoupon(code) {
   const calc = calcTotal(items);
   const subtotalAfter = calc.subtotal - calc.discount;
 
-  // حداقل مبلغ برای کد
   if (coupon.type === 'percent' && subtotalAfter < 1000000) {
     showCouponResult('error', 'حداقل مبلغ خرید برای این کد ۱ میلیون تومان است');
     return;
@@ -451,9 +445,7 @@ function showCouponResult(type, message) {
    ============================================ */
 
 function bindEvents() {
-  /* ---------- Quantity / Remove ---------- */
   document.addEventListener('click', (e) => {
-    /* Increment */
     const inc = e.target.closest('[data-qty-inc]');
     if (inc) {
       const id = inc.dataset.qtyInc;
@@ -463,7 +455,6 @@ function bindEvents() {
       return;
     }
 
-    /* Decrement */
     const dec = e.target.closest('[data-qty-dec]');
     if (dec) {
       const id = dec.dataset.qtyDec;
@@ -476,7 +467,6 @@ function bindEvents() {
       return;
     }
 
-    /* Remove */
     const remove = e.target.closest('[data-remove]');
     if (remove) {
       const id = remove.dataset.remove;
@@ -492,7 +482,6 @@ function bindEvents() {
       return;
     }
 
-    /* Clear cart */
     const clear = e.target.closest('#clear-cart');
     if (clear) {
       if (!confirm('آیا از پاک کردن سبد خرید مطمئن هستید؟')) return;
@@ -507,11 +496,10 @@ function bindEvents() {
       return;
     }
 
-    /* Wishlist */
     const wish = e.target.closest('.cart-item__wish');
     if (wish) {
       const id = wish.dataset.wishlist;
-      const product = products.find((p) => p.id === id);
+      const product = allProducts.find((p) => p.id === id);
       if (!product) return;
       const { added } = wishlist.toggle(product);
       wish.classList.toggle('is-active', added);
@@ -524,12 +512,11 @@ function bindEvents() {
       return;
     }
 
-    /* Wishlist in recommended cards */
     const wishRec = e.target.closest('.p-card [data-wishlist]');
     if (wishRec) {
       e.preventDefault();
       const id = wishRec.dataset.wishlist;
-      const product = products.find((p) => p.id === id);
+      const product = allProducts.find((p) => p.id === id);
       if (!product) return;
       const { added } = wishlist.toggle(product);
       wishRec.classList.toggle('is-active', added);
@@ -543,7 +530,6 @@ function bindEvents() {
     }
   });
 
-  /* ---------- Coupon ---------- */
   const couponBtn = document.getElementById('coupon-apply');
   const couponInput = document.getElementById('coupon-input');
 
@@ -560,7 +546,6 @@ function bindEvents() {
     });
   }
 
-  /* ---------- Coupon samples ---------- */
   document.addEventListener('click', (e) => {
     const sample = e.target.closest('[data-coupon]');
     if (!sample) return;
@@ -569,7 +554,6 @@ function bindEvents() {
     applyCoupon(code);
   });
 
-  /* ---------- Cart changes ---------- */
   onChange(KEYS.cart, render);
 }
 
